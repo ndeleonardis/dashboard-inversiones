@@ -9,7 +9,7 @@ entre los dos, y el detalle por cuenta/broker y por tipo de activo. La v1 muestr
 datos **importados una vez** desde el Excel; sin precios en vivo y sin edición.
 
 ## 2. Usuarios objetivo
-- **Sergio y Noelia** (pareja). Los dos consultan; en la v1 nadie edita.
+- **Sergio y Noelia**. Los dos consultan; en la v1 nadie edita.
 - Cada uno tiene cuentas/brokers que el otro no; necesitan ver **lo de cada uno y el
   consolidado**.
 - Uso desde el **celular**, en momentos y lugares distintos.
@@ -18,10 +18,10 @@ datos **importados una vez** desde el Excel; sin precios en vivo y sin edición.
 ## 3. Contexto del problema
 - Hoy usan un Excel que funciona bien, pero vive en un archivo y no es cómodo de
   consultar juntos desde el celular.
-- Cuesta ver el **consolidado familiar** porque cada uno tiene brokers propios.
+- Cuesta ver el **consolidado familiar** porque cada uno tiene brokers propios y bancos propios.
 - El Excel ya modela: **cuentas por titular, FCI, ON, Acciones y Criptomonedas**.
 - Aclaración: la dificultad de traer valores de FCI (cuotaparte CAFCI) y ON **no se
-  resuelve acá** — es un problema aparte, futuro.
+  resuelve acá** — es un problema aparte, en una versión futura.
 
 ## 4. Alcance v1
 
@@ -36,6 +36,7 @@ datos **importados una vez** desde el Excel; sin precios en vivo y sin edición.
 - Siempre queda claro **de quién es** cada cosa (Sergio / Noelia / conjunto).
 
 **Queda FUERA (v2+):**
+- Login 
 - Editar o cargar datos desde la app.
 - Precios/valores automáticos (Google Finance, cuotaparte CAFCI, valuación de ON).
 - Gráficos e insights (posible v1.1, no en el mínimo).
@@ -63,9 +64,6 @@ datos **importados una vez** desde el Excel; sin precios en vivo y sin edición.
 - **Celdas vacías o formato raro en el Excel** → la importación no falla en silencio;
   si una fila no se entiende, reporta cuál y por qué.
 - **Monedas mezcladas** → nunca sumar $ con USD; los totales van **separados por moneda**.
-- **Datos sensibles (patrimonio familiar)** → el acceso **no puede quedar público en
-  internet**; debe haber al menos una barrera de acceso. Sin eso, la v1 no se publica.
-  *(El mecanismo concreto se define en el plan.)*
 - **Dato viejo confundido con dato en vivo** → dejar MUY claro que es una foto a una
   fecha, para no decidir creyendo que es tiempo real.
 - **Alguien espera editar** → como es read-only, la app comunica que la carga sigue en
