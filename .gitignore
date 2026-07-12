@@ -1,0 +1,28 @@
+# === Datos reales / sensibles — NUNCA committear ===
+data/real/
+
+# El Excel real, esté donde esté
+*.xlsx
+!data/sample/*.xlsx        # excepción: los de ejemplo (falsos) sí se guardan
+
+# === Secretos / entorno ===
+.env
+.env.*
+
+# === Dependencias ===
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# === Build / salida ===
+dist/
+build/
+
+# === Sistema operativo ===
+.DS_Store
+Thumbs.db
+
+# === Editores ===
+.idea/
