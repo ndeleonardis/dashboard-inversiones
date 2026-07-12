@@ -1,0 +1,58 @@
+/* Reset y base mobile-first. La UI real se construye en T5/T6. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+:root {
+  --bg: #f6f7f9;
+  --fg: #1a1d21;
+  --muted: #5c636e;
+  --card: #ffffff;
+  --borde: #e3e6ea;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14171a;
+    --fg: #f0f2f4;
+    --muted: #9aa2ac;
+    --card: #1e2226;
+    --borde: #2c3238;
+  }
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 100dvh;
+  -webkit-text-size-adjust: 100%;
+}
+
+.app {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 3rem;
+}
+
+h1 {
+  font-size: 1.5rem;
+}
+
+.lead {
+  color: var(--muted);
+}
+
+.nota {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--card);
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
