@@ -1,0 +1,135 @@
+{
+  "fechaActualizacion": "2026-07-10",
+  "titulares": ["Noelia", "Sergio"],
+  "cuentas": [
+    {
+      "id": "brokerA-noelia",
+      "nombre": "Broker Local A",
+      "titular": "Noelia",
+      "saldos": [
+        { "moneda": "ARS", "monto": 3200000 },
+        { "moneda": "USD", "monto": 1500 }
+      ]
+    },
+    {
+      "id": "banco2-noelia",
+      "nombre": "Banco 2",
+      "titular": "Noelia",
+      "saldos": [
+        { "moneda": "ARS", "monto": 850000 }
+      ]
+    },
+    {
+      "id": "brokerint-sergio",
+      "nombre": "Broker Internacional",
+      "titular": "Sergio",
+      "saldos": [
+        { "moneda": "USD", "monto": 8200 }
+      ]
+    },
+    {
+      "id": "brokerB-sergio",
+      "nombre": "Broker Local B",
+      "titular": "Sergio",
+      "saldos": [
+        { "moneda": "ARS", "monto": 5400000 },
+        { "moneda": "USD", "monto": 2100 }
+      ]
+    },
+    {
+      "id": "exchange-sergio",
+      "nombre": "Exchange Cripto",
+      "titular": "Sergio",
+      "saldos": [
+        { "moneda": "USD", "monto": 640 }
+      ]
+    }
+  ],
+  "tenencias": [
+    {
+      "tipo": "FCI",
+      "titular": "Noelia",
+      "cuentaId": "brokerA-noelia",
+      "ticker": "AL.DIVER.A",
+      "moneda": "ARS",
+      "cantidad": 23000,
+      "valorCompra": 95,
+      "valorActual": 125,
+      "rendimiento": 0.0925,
+      "estado": "ABIERTA",
+      "comentario": "Allaria Diversificado Clase A"
+    },
+    {
+      "tipo": "FCI",
+      "titular": "Sergio",
+      "cuentaId": "brokerB-sergio",
+      "ticker": "FCI Dólar Ahorro",
+      "moneda": "USD",
+      "cantidad": 45000,
+      "valorCompra": 1.01,
+      "valorActual": 1.05,
+      "rendimiento": 0.0396,
+      "estado": "ABIERTA"
+    },
+    {
+      "tipo": "ON",
+      "titular": "Sergio",
+      "cuentaId": "brokerB-sergio",
+      "ticker": "ON YPF 2026",
+      "moneda": "USD",
+      "cantidad": 100,
+      "valorCompra": 1.037,
+      "valorActual": 1.1,
+      "rendimiento": 0.0608,
+      "estado": "ABIERTA"
+    },
+    {
+      "tipo": "Accion",
+      "titular": "Noelia",
+      "cuentaId": "brokerA-noelia",
+      "ticker": "GGAL",
+      "moneda": "ARS",
+      "cantidad": 25,
+      "valorCompra": 7000,
+      "valorActual": 8000,
+      "rendimiento": 0.1429,
+      "estado": "ABIERTA"
+    },
+    {
+      "tipo": "Accion",
+      "titular": "Sergio",
+      "cuentaId": "brokerint-sergio",
+      "ticker": "GOOGL",
+      "moneda": "USD",
+      "cantidad": 2,
+      "valorCompra": 165,
+      "valorActual": 355,
+      "rendimiento": 1.1515,
+      "estado": "ABIERTA"
+    },
+    {
+      "tipo": "Accion",
+      "titular": "Sergio",
+      "cuentaId": "brokerB-sergio",
+      "ticker": "YPFD",
+      "moneda": "ARS",
+      "cantidad": 4,
+      "valorCompra": 45000,
+      "valorActual": 46000,
+      "rendimiento": -0.02,
+      "estado": "CERRADA"
+    },
+    {
+      "tipo": "Cripto",
+      "titular": "Sergio",
+      "cuentaId": "exchange-sergio",
+      "ticker": "TAO",
+      "moneda": "USD",
+      "cantidad": 0.2529,
+      "valorCompra": 495,
+      "valorActual": 265,
+      "rendimiento": -0.4646,
+      "estado": "ABIERTA"
+    }
+  ]
+}

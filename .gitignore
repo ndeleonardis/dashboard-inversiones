@@ -19,6 +19,7 @@ __pycache__/
 # === Build / salida ===
 dist/
 build/
+*.tsbuildinfo
 
 # === Sistema operativo ===
 .DS_Store
