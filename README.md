@@ -1,4 +1,4 @@
-# Dashboard de inversiones familiar
+# Dashboard de inversiones matrimonio parejas
 
 App web para que Sergio y Noelia consulten sus inversiones desde el celular: cuánto
 tiene cada uno, cuánto entre los dos, y el detalle por cuenta/broker y por tipo de
