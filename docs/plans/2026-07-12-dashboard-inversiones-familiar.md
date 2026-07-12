@@ -61,14 +61,23 @@ Definido en T2; forma tentativa (los montos vienen **tal cual el Excel**, sin co
 Regla dura: `moneda` nunca se agrega entre distintos valores; los totales se calculan
 **por moneda**.
 
+## 5b. Decisiones tomadas (2026-07-12)
+- **Moneda de FCI/ON** (no traen columna): por defecto **USD**; solo los tickers en
+  una **lista ARS** explícita se marcan pesos. La lista arranca con el fondo en pesos
+  que indique el usuario (candidato del demo: `AL.DIVER.A` / Allaria Diversificado).
+  Acciones usan su columna *Moneda* (USD/Pesos); Cripto = USD.
+- **Posiciones**: se muestran **solo las ABIERTA**. Las CERRADA no aparecen en el
+  detalle de tenencias ni en cálculos derivados. (Los saldos por cuenta salen de
+  Ctas_Titulares, que es independiente de esto.)
+
 ## 6. Lista de tareas (atómicas — 1 tarea = 1 commit)
 
 | id | Archivo/módulo | Qué hace | Cómo se verifica | Dep. |
 |----|----------------|----------|------------------|------|
 | **T1** | raíz del proyecto (`package.json`, `vite`, `src/`, `index.html`) | Scaffold Vite + React + TS, viewport mobile, página en blanco que levanta. | `npm run dev` levanta; la página carga en viewport de celular sin errores de consola. | — |
 | **T2** | `src/types.ts`, `data/sample/data.json` | Define los tipos TS del contrato JSON (§5) y crea datos de ejemplo **falsos** con ambos titulares, cuentas en $ y USD, y tenencias de los 4 tipos. | El JSON tipa sin error contra `types.ts`; incluye ≥1 cuenta por titular y ≥1 tenencia por tipo de activo. | T1 |
-| **T3** | `scripts/importar-excel.ts` | Script Node que lee `data/real/*.xlsx` y genera `data/real/data.json` según §5. Si una fila no se entiende, **reporta cuál y por qué** (no falla en silencio). | Corriéndolo contra un `.xlsx` de prueba con una fila rota: genera JSON de las filas válidas y lista la fila rota con motivo. (Mitiga §6 "celdas vacías/formato raro".) | T2 |
-| **T4** | `src/data.ts` | Capa de datos: carga el JSON, expone helpers `totalPorTitular(moneda)`, `totalCombinado(moneda)`, `porCuenta()`, `tenenciasPorTipo(tipo)`. **Nunca** suma monedas distintas. | Prueba con el sample: los totales por moneda cuadran y no existe ningún total que mezcle ARS+USD. | T2 |
+| **T3** | `scripts/importar-excel.ts` | Script Node que lee `data/real/*.xlsx` y genera `data/real/data.json` según §5. Moneda: **Acciones** usa su columna *Moneda*; **Cripto** = USD; **FCI/ON** = USD por defecto salvo los tickers de la **lista ARS** (ver Decisiones). Solo importa filas **ABIERTA**. Si una fila no se entiende, **reporta cuál y por qué** (no falla en silencio). | Corriéndolo contra un `.xlsx` de prueba con una fila rota: genera JSON de las filas válidas (solo abiertas) y lista la fila rota con motivo. (Mitiga §6 "celdas vacías/formato raro".) | T2 |
+| **T4** | `src/data.ts` | Capa de datos: carga el JSON, filtra tenencias a **estado ABIERTA**, expone helpers `totalPorTitular(moneda)`, `totalCombinado(moneda)`, `porCuenta()`, `tenenciasPorTipo(tipo)`. **Nunca** suma monedas distintas. | Prueba con el sample: los totales por moneda cuadran, se excluyen las cerradas y no existe ningún total que mezcle ARS+USD. | T2 |
 | **T5** | `src/vistas/Resumen.tsx` + layout | Vista home: total Sergio, total Noelia y combinado (separados $ y USD); desglose por cuenta/broker con su **titular** y monto en $ y USD. | Cumple criterios spec §5.1, §5.2, §5.4. Se ve en el celular: 3 totales por moneda + lista de cuentas con titular. | T4 |
 | **T6** | `src/vistas/DetalleActivo.tsx` + navegación | Entrar a un tipo de activo (FCI/ON/Acciones/Cripto) y ver la lista de tenencias con los campos del Excel (ticker, cantidad, valor compra, valor actual, rendimiento) y el **titular** de cada una. | Cumple criterio spec §5.3 y §5.4. Navegación resumen ↔ detalle funciona en el celular. | T4, T5 |
 | **T7** | layout global (`src/App.tsx`) | Elementos transversales: **fecha de última actualización** siempre visible; nota fija de que es una **foto a una fecha (no en vivo)** y que la carga sigue en el Excel (read-only). | Cumple criterio spec §5.5 y mitigaciones §6 (dato viejo / expectativa de editar). La fecha y la nota se ven en toda vista. | T1 |
