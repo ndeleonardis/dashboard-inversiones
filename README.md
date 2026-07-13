@@ -1,8 +1,7 @@
-# Dashboard de inversiones matrimonio parejas
+# 🍋 Lemon House 
+Cuánto tengo, cuánto tenés, cuánto tenemos.
 
-App web para que Sergio y Noelia consulten sus inversiones desde el celular: cuánto
-tiene cada uno, cuánto entre los dos, y el detalle por cuenta/broker y por tipo de
-activo (FCI, ON, Acciones, Criptomonedas).
+Lemon House es un dashboard de inversiones que se consulta desde el celular y responde esa pregunta de un vistazo cuánto tiene cada uno, cuánto sumamos juntos, en pesos y en dólares, entre todos nuestros fondos, bonos, acciones y cripto. Una sola fuente de verdad para las finanzas de la pareja.
 
 > **v1**: solo consulta (read-only), datos importados una vez desde el Excel, sin
 > precios en vivo. Editar y traer valores automáticos (CAFCI, Google Finance) es v2+.
