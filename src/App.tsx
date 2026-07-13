@@ -19,8 +19,8 @@ export default function App() {
     <div className="layout">
       <header className="cabecera">
         <div className="cabecera-titulo">
-          <h1>Inversiones</h1>
-          <p className="subtitulo">Sergio y Noelia</p>
+          <h1>🍋 Lemon House</h1>
+          <p className="subtitulo">Cuánto tengo, cuánto tenés, cuánto tenemos</p>
         </div>
         <p className="fecha" title="Fecha de la foto de datos">
           Datos al <strong>{formatFecha(fechaActualizacion)}</strong>
@@ -47,11 +47,6 @@ export default function App() {
           </button>
         ))}
       </nav>
-
-      <p className="aviso" role="note">
-        Es una <strong>foto</strong> de esa fecha, no son precios en vivo. La carga de
-        datos sigue en el Excel.
-      </p>
 
       <main className="contenido">
         {vista === 'resumen' ? <Resumen /> : <DetalleActivo tipo={vista} />}

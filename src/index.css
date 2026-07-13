@@ -13,9 +13,6 @@
   --card: #ffffff;
   --borde: #e3e6ea;
   --acento: #2f6f4f;         /* verde sobrio para acentos de encabezado */
-  --aviso-bg: #fff7e6;
-  --aviso-fg: #7a5a12;
-  --aviso-borde: #f0dca8;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   line-height: 1.5;
 }
@@ -28,9 +25,6 @@
     --card: #1e2226;
     --borde: #2c3238;
     --acento: #6cc39a;
-    --aviso-bg: #2a2410;
-    --aviso-fg: #e6cf94;
-    --aviso-borde: #4a3f17;
   }
 }
 
@@ -122,17 +116,6 @@ body {
 
 .nav-btn.activo .nav-conteo {
   background: rgba(255, 255, 255, 0.25);
-}
-
-/* --- Aviso "foto a una fecha" (siempre visible) --- */
-.aviso {
-  margin-top: 0.9rem;
-  padding: 0.6rem 0.8rem;
-  background: var(--aviso-bg);
-  color: var(--aviso-fg);
-  border: 1px solid var(--aviso-borde);
-  border-radius: 0.5rem;
-  font-size: 0.82rem;
 }
 
 /* --- Tarjetas --- */
