@@ -47,6 +47,16 @@ export function tenenciasPorTipo(tipo: TipoActivo): Tenencia[] {
   return tenenciasActivas.filter((t) => t.tipo === tipo)
 }
 
+/** Cantidad de tenencias ABIERTA por tipo (para los accesos del menú). */
+export function conteoPorTipo(tipo: TipoActivo): number {
+  return tenenciasPorTipo(tipo).length
+}
+
+/** Cuenta/broker por id; undefined si no existe. */
+export function cuentaPorId(id: string): Cuenta | undefined {
+  return datos.cuentas.find((c) => c.id === id)
+}
+
 /** Monedas presentes en los saldos de una cuenta (para render por moneda). */
 export function monedasDeCuenta(cuenta: Cuenta): Moneda[] {
   return cuenta.saldos.map((s) => s.moneda)

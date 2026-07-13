@@ -77,6 +77,53 @@ body {
   color: var(--fg);
 }
 
+/* --- Navegación por secciones --- */
+.nav {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.9rem;
+  overflow-x: auto;
+  padding-bottom: 0.2rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.nav-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.nav-btn:hover {
+  border-color: var(--acento);
+}
+
+.nav-btn.activo {
+  background: var(--acento);
+  border-color: var(--acento);
+  color: #fff;
+}
+
+.nav-conteo {
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  padding: 0.02rem 0.4rem;
+}
+
+.nav-btn.activo .nav-conteo {
+  background: rgba(255, 255, 255, 0.25);
+}
+
 /* --- Aviso "foto a una fecha" (siempre visible) --- */
 .aviso {
   margin-top: 0.9rem;
@@ -221,4 +268,104 @@ body {
 .cuenta-monto {
   font-variant-numeric: tabular-nums;
   font-size: 0.95rem;
+}
+
+/* --- Detalle por activo (tenencias) --- */
+.detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.vacio {
+  color: var(--muted);
+  padding: 1rem 0;
+}
+
+.lista-tenencias {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.tenencia-cab {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.ticker {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.rend {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.rend.pos {
+  color: #1f8a4c;
+}
+
+.rend.neg {
+  color: #c0392b;
+}
+
+@media (prefers-color-scheme: dark) {
+  .rend.pos {
+    color: #52c47f;
+  }
+  .rend.neg {
+    color: #e57368;
+  }
+}
+
+.tenencia-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.5rem 0 0.7rem;
+}
+
+.chip {
+  font-size: 0.75rem;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  background: var(--acento);
+  color: #fff;
+}
+
+.chip-suave {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--borde);
+}
+
+.tenencia-campos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.tenencia-campos dt {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+
+.tenencia-campos dd {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.95rem;
+  margin-top: 0.1rem;
+}
+
+.comentario {
+  margin-top: 0.6rem;
+  font-size: 0.82rem;
+  color: var(--muted);
 }
