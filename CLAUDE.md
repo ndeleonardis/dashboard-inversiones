@@ -10,8 +10,7 @@ desde el celular. Read-only, datos importados del Excel, sin precios en vivo.
    `data/real/` (ignorado por git). Para desarrollo y demo se usan datos FALSOS en
    `data/sample/`.
 3. **v1 es read-only**: no implementar edición ni carga desde la app.
-4. **Datos sensibles (patrimonio familiar)**: la app no se publica sin barrera de acceso.
-5. **No mezclar monedas**: nunca sumar $ (pesos) con USD; totales separados por moneda.
+4. **No mezclar monedas**: nunca sumar $ (pesos) con USD; totales separados por moneda.
 
 ## Metodología de trabajo (Spec-Driven Development)
 El desarrollo sigue el flujo SDD con las skills locales de `.claude/skills/`:
