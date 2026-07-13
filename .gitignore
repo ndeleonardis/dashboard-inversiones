@@ -3,7 +3,10 @@ data/real/
 
 # El Excel real, esté donde esté
 *.xlsx
-!data/sample/*.xlsx        # excepción: los de ejemplo (falsos) sí se guardan
+# excepción: los de ejemplo (falsos) sí se guardan
+!data/sample/*.xlsx
+# temporales/lock de Excel (archivos "~$...") nunca se guardan
+~$*.xlsx
 
 # === Secretos / entorno ===
 .env
