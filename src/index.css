@@ -1,4 +1,4 @@
-/* Reset y base mobile-first. La UI real se construye en T5/T6. */
+/* Base y sistema visual mobile-first. Cifras en tinta, etiquetas atenuadas. */
 *,
 *::before,
 *::after {
@@ -12,6 +12,10 @@
   --muted: #5c636e;
   --card: #ffffff;
   --borde: #e3e6ea;
+  --acento: #2f6f4f;         /* verde sobrio para acentos de encabezado */
+  --aviso-bg: #fff7e6;
+  --aviso-fg: #7a5a12;
+  --aviso-borde: #f0dca8;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   line-height: 1.5;
 }
@@ -23,6 +27,10 @@
     --muted: #9aa2ac;
     --card: #1e2226;
     --borde: #2c3238;
+    --acento: #6cc39a;
+    --aviso-bg: #2a2410;
+    --aviso-fg: #e6cf94;
+    --aviso-borde: #4a3f17;
   }
 }
 
@@ -33,26 +41,184 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 
-.app {
+.layout {
   max-width: 640px;
   margin: 0 auto;
-  padding: 1.25rem 1rem 3rem;
+  padding: 1rem 1rem 3rem;
 }
 
-h1 {
-  font-size: 1.5rem;
+/* --- Cabecera --- */
+.cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
-.lead {
-  color: var(--muted);
+.cabecera h1 {
+  font-size: 1.4rem;
+  letter-spacing: -0.01em;
 }
 
-.nota {
-  margin-top: 1rem;
-  padding: 0.75rem 1rem;
-  background: var(--card);
-  border: 1px solid var(--borde);
-  border-radius: 0.5rem;
+.subtitulo {
   color: var(--muted);
   font-size: 0.9rem;
+}
+
+.fecha {
+  font-size: 0.85rem;
+  color: var(--muted);
+  white-space: nowrap;
+  padding-top: 0.2rem;
+}
+
+.fecha strong {
+  color: var(--fg);
+}
+
+/* --- Aviso "foto a una fecha" (siempre visible) --- */
+.aviso {
+  margin-top: 0.9rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--aviso-bg);
+  color: var(--aviso-fg);
+  border: 1px solid var(--aviso-borde);
+  border-radius: 0.5rem;
+  font-size: 0.82rem;
+}
+
+/* --- Tarjetas --- */
+.tarjeta {
+  background: var(--card);
+  border: 1px solid var(--borde);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.contenido {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.resumen {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Hero: total familiar */
+.hero h2 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--acento);
+  font-weight: 700;
+}
+
+/* Montos por moneda (Pesos / Dólares lado a lado) */
+.montos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem 1rem;
+  margin-top: 0.6rem;
+}
+
+.monto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.monto-etq {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.monto-cifra {
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.hero .monto-cifra {
+  font-size: 1.6rem;
+}
+
+/* Tarjetas por titular */
+.grid-titulares {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.tarjeta-titular h3 {
+  font-size: 1rem;
+}
+
+.tarjeta-titular .monto-cifra {
+  font-size: 1.1rem;
+}
+
+@media (max-width: 380px) {
+  .grid-titulares {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Cuentas y brokers --- */
+.titulo-seccion {
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+
+.grupo-cuentas {
+  margin-top: 0.75rem;
+}
+
+.grupo-cuentas h4 {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+}
+
+.lista-cuentas {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cuenta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  background: var(--card);
+  border: 1px solid var(--borde);
+  border-radius: 0.6rem;
+  padding: 0.6rem 0.8rem;
+}
+
+.cuenta-nombre {
+  font-weight: 600;
+}
+
+.cuenta-montos {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+}
+
+.cuenta-monto {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.95rem;
 }
