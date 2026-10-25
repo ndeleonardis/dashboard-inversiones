@@ -1,5 +1,7 @@
 # Spec: Dashboard de inversiones familiar — v1
 
+> **Superada el 2026-10-25** por `PRD.md`, cuando LemonHouse pasó a ser una app con base de datos y login. Se conserva como historial.
+
 > Estado: **aprobada** (2026-07-12). Generada con el flujo Spec-Driven Development.
 
 ## 1. Overview

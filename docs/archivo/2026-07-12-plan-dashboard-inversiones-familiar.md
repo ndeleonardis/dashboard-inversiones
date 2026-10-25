@@ -1,5 +1,7 @@
 # Plan: Dashboard de inversiones familiar — v1
 
+> **Superada el 2026-10-25** por `PRD.md`, cuando LemonHouse pasó a ser una app con base de datos y login. Se conserva como historial.
+
 > Estado: **propuesto** (2026-07-12). Derivado de la spec aprobada del mismo nombre.
 
 ## 1. Objetivo

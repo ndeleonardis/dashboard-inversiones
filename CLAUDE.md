@@ -1,27 +1,34 @@
-# Dashboard de inversiones familiar — Contexto para Claude
+# LemonHouse. Contexto para Claude
 
 ## Qué es
-App web (v1) que replica el Excel de inversiones de Sergio y Noelia para consultarlo
-desde el celular. Read-only, datos importados del Excel, sin precios en vivo.
+App para llevar en un solo lugar los ingresos, los gastos y las inversiones de una persona o de un grupo, en pesos y en dólares. Por qué existe y qué reglas tiene el producto está en `PRD.md`. El diseño visual está en `DESIGN.md`.
 
 ## Reglas no negociables (constitución)
-1. **Español** en todo el contenido de usuario (UI, textos, docs).
-2. **NUNCA committear datos reales.** El Excel real y cualquier dato real van en
-   `data/real/` (ignorado por git). Para desarrollo y demo se usan datos FALSOS en
-   `data/sample/`.
-3. **v1 es read-only**: no implementar edición ni carga desde la app.
-4. **No mezclar monedas**: nunca sumar $ (pesos) con USD; totales separados por moneda.
+1. **Español** en toda la interfaz y en los documentos del proyecto. `DESIGN.md` es la única excepción.
+2. **Nunca sumar pesos con dólares.** Todo monto lleva su moneda y los totales van separados por moneda.
+3. **Datos reales solo en la base de cada grupo.** El repo es público y lleva solo semillas con datos ficticios.
+4. **Toda operación tiene cuenta**, y cada cuenta tiene un dueño.
+5. **Sin precio no es cero.** Un precio que falta se muestra como "sin precio" con la fecha del último conocido.
+6. **Nada específico de un grupo en el código.** Personas, bancos, brokers y categorías son datos.
+7. **Secretos solo en `.env`**, que no se versiona.
 
-## Metodología de trabajo (Spec-Driven Development)
-El desarrollo sigue el flujo SDD con las skills locales de `.claude/skills/`:
-1. `design-spec` → `docs/specs/` (el QUÉ) — con approval gate.
-2. `design-plan` → `docs/plans/` (el CÓMO).
-3. Implementar tarea por tarea (**1 tarea = 1 commit**).
-4. `verify-after-changes` → probar en el navegador contra spec y plan.
+Cada regla necesita una guarda en código (restricción de la base, test o tipo). La define cada `design-plan`. Una regla que solo está escrita acá no cuenta como guarda.
 
-No elegir stack ni escribir código antes de tener el plan aprobado.
+## Metodología (Spec-Driven Development)
+Flujo con las skills de `.claude/skills/`.
+1. `design-spec` escribe la spec en `docs/specs/` si es producto nuevo, o en `docs/changes/AAAA-MM-DD-nombre/` si es un cambio. Tiene approval gate.
+2. `design-plan` escribe el plan, con un test por cada criterio de la spec. Tiene approval gate.
+3. Se implementa tarea por tarea. Test que falla, código, test que pasa, y 1 commit por tarea.
+4. `verify-after-changes` corre los tests, prueba en el navegador y chequea la deriva entre código y spec.
+5. `/code-review` antes de dar algo por terminado.
+6. Cierre. Un cambio se fusiona en la spec principal, y una versión cerrada lleva tag.
+
+No se escribe código sin spec y plan aprobados.
 
 ## Archivos clave
-- `docs/specs/2026-07-12-dashboard-inversiones-familiar.md` — spec v1 (fuente de verdad del QUÉ).
-- `docs/plans/` — planes técnicos (se llenan con design-plan).
-- `.claude/skills/` — las 3 skills del flujo SDD.
+- `PRD.md`. Contexto permanente del producto.
+- `DESIGN.md`. Guía visual, con los ajustes para LemonHouse al final.
+- `docs/modelo-de-datos.md`. Modelo de datos propuesto.
+- `docs/specs/`, `docs/plans/` y `docs/changes/`. El ciclo SDD.
+- `docs/archivo/`. Versiones superadas, solo como historial.
+- `.claude/skills/`. Las skills del flujo.

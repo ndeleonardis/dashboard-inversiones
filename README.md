@@ -1,34 +1,33 @@
-# 🍋 Lemon House 
+# 🍋 Lemon House
 Cuánto tengo, cuánto tenés, cuánto tenemos.
 
-Lemon House es un dashboard de inversiones que se consulta desde el celular y responde esa pregunta de un vistazo cuánto tiene cada uno, cuánto sumamos juntos, en pesos y en dólares, entre todos nuestros fondos, bonos, acciones y cripto. Una sola fuente de verdad para las finanzas de la pareja.
+Lemon House es una app para llevar en un solo lugar las finanzas de una persona, una pareja o un grupo. Registra los ingresos, los gastos comunitarios o de cada uno y las inversiones de cada persona, en pesos y en dólares, para saber cuánto queda para invertir y cómo va lo invertido.
 
-> **v1**: solo consulta (read-only), datos importados una vez desde el Excel, sin
-> precios en vivo. Editar y traer valores automáticos (CAFCI, Google Finance) es v2+.
+> **Estado.** En diseño. El producto está definido en [PRD.md](PRD.md) y el desarrollo arranca con la spec de la v1.
 
-## Cómo se construyó: Spec-Driven Development (SDD)
+## Cómo se construye
 
-Este proyecto se desarrolla con SDD — se define **qué** construir antes de escribir
-código, y se verifica contra eso. El proceso vive en `docs/` y se ejecuta con skills
-de Claude Code:
+Con Spec-Driven Development. Primero se define qué construir, después cómo, y recién ahí se escribe código, verificándolo contra lo que se definió. El proceso corre con skills de Claude Code.
 
-| Paso | Skill | Artefacto |
-|------|-------|-----------|
-| 1. Especificar (el QUÉ) | `design-spec` | `docs/specs/` |
-| 2. Planear (el CÓMO) | `design-plan` | `docs/plans/` |
-| 3. Implementar | — | código (1 tarea = 1 commit) |
-| 4. Verificar | `verify-after-changes` | pruebas en navegador |
+| Paso | Skill | Resultado |
+|---|---|---|
+| 1. Especificar el qué | `design-spec` | `docs/specs/` o `docs/changes/` |
+| 2. Planear el cómo | `design-plan` | `docs/plans/`, con un test por criterio |
+| 3. Implementar | | Test antes del código, 1 commit por tarea |
+| 4. Verificar | `verify-after-changes` | Tests, prueba en el navegador y chequeo contra la spec |
+| 5. Revisar | `/code-review` | Revisión del código antes de cerrar |
 
 ## Estructura
 
-    .claude/skills/   Las 3 skills del flujo SDD
-    docs/specs/       Especificaciones (el QUÉ)
-    docs/plans/       Planes técnicos (el CÓMO)
-    data/real/        Datos reales (NO se committean — ver .gitignore)
-    data/sample/      Datos de ejemplo, falsos (sí se committean)
+    PRD.md                   Por qué existe y reglas del producto
+    DESIGN.md                Guía visual
+    docs/modelo-de-datos.md  Modelo de datos
+    docs/specs/              Specs (el qué)
+    docs/plans/              Planes (el cómo)
+    docs/changes/            Cambios sobre una versión existente
+    docs/archivo/            Versiones superadas
+    .claude/skills/          Skills del flujo SDD
 
-## Privacidad
+## Datos y privacidad
 
-Los datos reales (patrimonio familiar) **nunca** se suben al repo: `data/real/` y
-cualquier `.xlsx` están en `.gitignore`. El repo usa datos de ejemplo falsos en
-`data/sample/`. Mantené el repositorio **privado**.
+El repositorio es público y no tiene datos reales. Cada grupo levanta su propia copia con su propia base, y sus datos quedan ahí. Las claves van en `.env`, que no se versiona.
