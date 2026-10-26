@@ -12,7 +12,7 @@ const INTRUSO = 'intruso@example.com'
 
 // Las funciones que alguien con sesión puede ejecutar. Cualquier otra que
 // aparezca tiene que sumarse acá a propósito.
-const FUNCIONES_PARA_MIEMBROS = ['costo_promedio', 'email_de_la_sesion', 'es_miembro', 'validar_posicion']
+const FUNCIONES_PARA_MIEMBROS = ['costo_promedio', 'email_de_la_sesion', 'es_miembro', 'resumen_mes', 'validar_posicion']
 
 beforeAll(async () => {
   base = await crearBase()
@@ -103,12 +103,27 @@ describe('con sesión pero sin invitación tampoco (C1)', () => {
 })
 
 describe('un miembro ve y edita todo', () => {
-  it('ve todas las filas de cada tabla y vista', async () => {
+  it('ve todas las filas de cada tabla', async () => {
     const ana = base.conSesion(ANA)
-    for (const relacion of relaciones) {
-      const [deAdmin] = await base.admin.consultar<{ n: string }>(`select count(*) as n from public.${relacion}`)
-      const [deAna] = await ana.consultar<{ n: string }>(`select count(*) as n from public.${relacion}`)
-      expect(deAna?.n, relacion).toBe(deAdmin?.n)
+    const tablas = await base.admin.consultar<{ nombre: string }>(
+      `select relname as nombre from pg_class where relnamespace = 'public'::regnamespace and relkind = 'r'`,
+    )
+    for (const { nombre } of tablas) {
+      const [deAdmin] = await base.admin.consultar<{ n: string }>(`select count(*) as n from public.${nombre}`)
+      const [deAna] = await ana.consultar<{ n: string }>(`select count(*) as n from public.${nombre}`)
+      expect(deAna?.n, nombre).toBe(deAdmin?.n)
+    }
+  })
+
+  it('ve datos en cada vista', async () => {
+    const ana = base.conSesion(ANA)
+    const vistas = await base.admin.consultar<{ nombre: string }>(
+      `select relname as nombre from pg_class where relnamespace = 'public'::regnamespace and relkind = 'v'`,
+    )
+    expect(vistas.length).toBeGreaterThan(0)
+    for (const { nombre } of vistas) {
+      const [deAna] = await ana.consultar<{ n: string }>(`select count(*) as n from public.${nombre}`)
+      expect(Number(deAna?.n), nombre).toBeGreaterThan(0)
     }
   })
 
