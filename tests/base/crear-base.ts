@@ -37,14 +37,15 @@ export function listarMigraciones(): string[] {
     .map((archivo) => join(CARPETA_MIGRACIONES, archivo))
 }
 
-export async function crearBase(): Promise<BaseDePrueba> {
+export async function crearBase(opciones: { semillas?: boolean } = {}): Promise<BaseDePrueba> {
   const pg = new PGlite()
   await pg.exec(readFileSync('tests/base/supabase-de-fabrica.sql', 'utf8'))
-  for (const migracion of listarMigraciones()) {
+  const archivos = [...listarMigraciones(), ...(opciones.semillas ? ['supabase/seed.sql'] : [])]
+  for (const archivo of archivos) {
     try {
-      await pg.exec(readFileSync(migracion, 'utf8'))
+      await pg.exec(readFileSync(archivo, 'utf8'))
     } catch (error) {
-      throw new Error(`Falló la migración ${migracion}: ${(error as Error).message}`)
+      throw new Error(`Falló ${archivo}: ${(error as Error).message}`)
     }
   }
 

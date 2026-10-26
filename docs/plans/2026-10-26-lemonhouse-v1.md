@@ -222,7 +222,7 @@ Cada tarea de esta fase agrega un archivo de migración en `supabase/migrations/
 - Datos ficticios para el proyecto de desarrollo: dos personas, cuentas en entidades de ejemplo, instrumentos, operaciones, gastos e ingresos, en las dos monedas. No se cargan en la copia real.
 - **Test.**
   - `tests/base/semillas.test.ts` verifica que las semillas carguen sobre las migraciones sin errores y que sus emails sean de `example.com` (regla 3, C28).
-  - `tests/repo/sin-datos-del-grupo.test.ts` verifica que ningún texto literal de `src/` coincida con un nombre de las semillas o de las categorías (regla 6).
+  - `tests/base/sin-datos-del-grupo.test.ts` verifica que ningún texto literal de `src/` coincida con un nombre de las semillas o de las categorías (regla 6). Va en el grupo `base` porque lee los nombres de la base con las semillas cargadas.
 - **Depende de** T12.
 
 ### Fase 2. App

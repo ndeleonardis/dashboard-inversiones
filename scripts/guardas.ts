@@ -40,6 +40,21 @@ export function revisarRuta(ruta: string): string | null {
   return null
 }
 
+// Regla 6: personas, bancos, brokers y categorías son datos. Un texto literal
+// o un texto de JSX del código que sea exactamente uno de esos nombres es un
+// dato del grupo escrito en el código. Un texto que solo lo contiene no cuenta.
+const TEXTO_LITERAL = /'((?:[^'\\\n]|\\.)*)'|"((?:[^"\\\n]|\\.)*)"|`((?:[^`\\]|\\.)*)`/g
+const TEXTO_JSX = />([^<>{}]+)</g
+
+export function buscarNombresDelGrupo(codigo: string, nombres: string[]): string[] {
+  const buscados = new Set(nombres.map((nombre) => nombre.trim().toLowerCase()))
+  const textos = [
+    ...[...codigo.matchAll(TEXTO_LITERAL)].map((m) => m[1] ?? m[2] ?? m[3] ?? ''),
+    ...[...codigo.matchAll(TEXTO_JSX)].map((m) => m[1] ?? ''),
+  ]
+  return textos.map((texto) => texto.trim()).filter((texto) => texto !== '' && buscados.has(texto.toLowerCase()))
+}
+
 function listarVersionados(): string[] {
   return execFileSync('git', ['ls-files', '-z'], { encoding: 'utf8' }).split('\0').filter(Boolean)
 }

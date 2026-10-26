@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { buscarEmailsReales, buscarSecretos, revisarRepo, revisarRuta } from '../../scripts/guardas.ts'
+import {
+  buscarEmailsReales,
+  buscarNombresDelGrupo,
+  buscarSecretos,
+  revisarRepo,
+  revisarRuta,
+} from '../../scripts/guardas.ts'
 
 // Los textos falsos se arman con concatenaciones para que este mismo archivo
 // no tenga nada con forma de secreto o de email real cuando se revisa el repo.
@@ -68,6 +74,24 @@ describe('detector de rutas prohibidas (reglas 3 y 7)', () => {
     expect(revisarRuta('.env.production')).toBe('archivo de entorno con valores')
     expect(revisarRuta('.env')).toBe('archivo de entorno con valores')
     expect(revisarRuta('.env.example')).toBeNull()
+  })
+})
+
+describe('detector de datos de un grupo en el código (regla 6)', () => {
+  const nombres = ['Súper', 'Banco Ejemplo', 'Ana Ejemplo']
+
+  it('marca un texto literal igual a un nombre de los datos', () => {
+    const codigo = `const categoria = 'súper'\nif (cuenta.entidad === "Banco Ejemplo") {}`
+    expect(buscarNombresDelGrupo(codigo, nombres)).toEqual(['súper', 'Banco Ejemplo'])
+  })
+
+  it('marca un texto de JSX igual a un nombre de los datos', () => {
+    expect(buscarNombresDelGrupo('<option> Ana Ejemplo </option>', nombres)).toEqual(['Ana Ejemplo'])
+  })
+
+  it('no marca un texto que solo contiene el nombre', () => {
+    const codigo = `const ayuda = 'Por ejemplo, el súper del barrio'\n<p>Banco Ejemplo y otros</p>`
+    expect(buscarNombresDelGrupo(codigo, nombres)).toEqual([])
   })
 })
 
