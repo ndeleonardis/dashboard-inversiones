@@ -23,7 +23,15 @@ export default mergeConfig(
         },
         {
           extends: true,
-          test: { name: 'base', environment: 'node', include: ['tests/base/**/*.test.ts'], testTimeout: 30_000 },
+          // Cada archivo levanta su propia base PGlite con todas las migraciones.
+          // En paralelo eso tarda, sobre todo el beforeAll que la crea.
+          test: {
+            name: 'base',
+            environment: 'node',
+            include: ['tests/base/**/*.test.ts'],
+            testTimeout: 30_000,
+            hookTimeout: 120_000,
+          },
         },
         {
           extends: true,
