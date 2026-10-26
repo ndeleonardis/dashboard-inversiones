@@ -1,6 +1,8 @@
 # Spec de LemonHouse v1
 
 > Producto nuevo. Fecha 2026-10-26. Contexto permanente en `PRD.md`, modelo de datos propuesto en `docs/modelo-de-datos.md`. Esta spec dice qué hace la v1, no cómo se construye.
+>
+> Actualizada el 2026-10-26, al aprobar el plan. Suma C32 (instalable en el celular) y C33 (notebook), y resuelve la moneda de la operación.
 
 ## 1. Overview
 
@@ -32,6 +34,7 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 - Resumen con dos bloques: el mes (ingresos, gastos, lo que queda) y lo invertido a costo de compra, por persona y del grupo.
 - Registro de quién cargó cada cosa y cuándo.
 - Carga inicial de las tenencias actuales a mano, como una compra por tenencia.
+- Instalar la app en el celular desde el navegador, y usarla también desde la notebook.
 
 ### Queda fuera
 
@@ -47,6 +50,8 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 | Permisos por persona | Prematuro. En una copia por grupo todos ven y editan todo |
 | Cuentas compartidas, dividir gastos, efectivo sin invertir, impuestos, operar desde la app, varios grupos por copia | Fuera del producto según el PRD |
 | Equivalencias entre pesos y dólares | Prematuro. Exige elegir un dólar y una fecha, y la v1 no tiene cotizaciones |
+| App en las tiendas (App Store y Play Store) | Muy complejo. Pide cuentas de desarrollador pagas y una revisión en cada actualización, y la app instalable desde el navegador resuelve lo mismo |
+| Usar la app sin conexión | Poco impacto. Los datos viven en la base, así que sin conexión no hay nada actualizado que mostrar |
 
 ## 6. Comportamiento esperado
 
@@ -99,6 +104,11 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 - **C27 (P0).** DADO cualquier alta, CUANDO se guarda, ENTONCES queda registrado quién la cargó y cuándo, y se puede ver en el detalle.
 - **C28 (P0).** DADO el repositorio público, CUANDO se levanta una copia nueva, ENTONCES solo trae datos ficticios de ejemplo y ningún nombre de persona, banco o broker real.
 
+### Celular y notebook
+
+- **C32 (P1).** DADO un celular, CUANDO se abre LemonHouse en el navegador, ENTONCES se puede instalar en la pantalla de inicio, se abre a pantalla completa con su ícono y se entra con Google sin salir de la app.
+- **C33 (P1).** DADO una notebook, CUANDO se abre LemonHouse, ENTONCES las pantallas aprovechan el ancho (el resumen muestra sus dos bloques lado a lado y las listas se acomodan en grilla) y está todo lo que hay en el celular.
+
 ### Futuro (P2, no se construye)
 
 - **C29 (P2).** El diseño permite sumar precios actuales con fecha y fuente, y mostrar "sin precio" con la fecha del último conocido.
@@ -110,7 +120,7 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 | Caso | Mitigación |
 |---|---|
 | Moneda distinta de pesos o dólares | No se acepta. Solo hay dos opciones |
-| Operación en una moneda distinta a la del instrumento | Se avisa antes de guardar, porque casi siempre es un error de especie (AAPL contra AAPLD) |
+| Operación en una moneda distinta a la del instrumento | No puede pasar. La moneda de la operación sale del instrumento y se ve apenas se lo elige, así un error de especie (AAPL contra AAPLD) se nota antes de guardar |
 | Monto, cantidad o precio en cero o negativo | No se guarda y se marca el campo |
 | Fecha futura en una operación, gasto o ingreso | Se avisa y se pide confirmar |
 | Venta mayor que la posición | No se guarda (C14) |
@@ -122,9 +132,8 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 | Google no responde o la persona cancela el login | Vuelve al login con "No se pudo entrar con Google. Probá de nuevo." |
 | Error al guardar (sin conexión, sesión vencida) | Se muestra el error, no se pierde lo escrito y no se da por guardado |
 | Dos personas editan lo mismo a la vez | Gana la última edición y queda registrado quién la hizo |
+| En un iPhone, el login con Google deja la sesión en Safari y no en la app instalada | El login se abre en una ventana que iOS mantiene dentro de la app. Si iOS la bloquea, se avisa y la app no se queda esperando |
 
 ## 8. Preguntas abiertas
 
-| Pregunta | Tipo |
-|---|---|
-| ¿La moneda de la operación se guarda o se toma siempre del instrumento? | No bloqueante (decisión del plan) |
+Ninguna. La moneda de la operación quedó resuelta en el plan: se guarda en la operación y tiene que ser la del instrumento.

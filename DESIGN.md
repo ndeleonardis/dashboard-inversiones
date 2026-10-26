@@ -327,6 +327,24 @@ Son tonos oscuros a propósito. El mínimo de accesibilidad para texto chico (WC
 - **Tarjetas de transacciones** muestran los últimos gastos e ingresos.
 - **"Total Balance"** pasa a ser un total por moneda, nunca un único total.
 
+### Pantallas grandes
+
+> Agregado el 2026-10-26. La guía de arriba es solo para celular, y LemonHouse también se usa desde la notebook.
+
+- **Hasta 767 px** vale el diseño de celular de esta guía.
+- **Desde 768 px** el contenido se centra con un ancho máximo de 1.120 px y márgenes de 32 px.
+- **El resumen** pone sus dos bloques lado a lado, el del mes y el de inversiones.
+- **Las listas** pasan a una grilla de tarjetas de al menos 280 px de ancho.
+- **Los formularios** siguen en una sola columna de hasta 560 px. Un formulario más ancho no se llena más rápido.
+- **La barra flotante** sigue abajo y al centro, igual que en el celular.
+- **El carrusel** de personas o cuentas muestra todas las tarjetas sin desplazarse cuando entran en el ancho.
+
+### App instalable
+
+- **Nombre** LemonHouse.
+- **Color de fondo** `#F9D2E5`, el fondo base. **Color del tema** `#0D0C11`, el de la barra flotante.
+- **Ícono** un limón en negro sobre el fondo rosa, con el margen que piden los íconos adaptables de Android para que no se recorte.
+
 ### Idioma
 
 La guía queda en inglés. Toda la interfaz va en español.
