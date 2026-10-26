@@ -31,20 +31,20 @@ Valen para todas las versiones. Cambiar una de estas reglas es cambiar el produc
 
 ## 4. Glosario
 
-| Término | Qué es |
-|---|---|
-| Persona | Integrante del grupo. Puede tener usuario para entrar a la app o no |
-| Usuario | El acceso a la app con email y contraseña |
-| Cuenta | Cuenta bancaria o comitente, nacional o del exterior, a nombre de una persona |
-| Tipo de cuenta | Banco, comitente nacional, comitente del exterior, billetera, y los que agregue cada grupo |
-| Instrumento | Lo que se compra para invertir. Acción, CEDEAR, ON, ETF, FCI o cripto |
-| Especie | La versión exacta de un instrumento según la moneda en que cotiza. AAPL en pesos, AAPLD en dólar MEP, AAPLC en dólar cable |
-| Operación | Una compra o una venta de un instrumento desde una cuenta |
-| Posición | Lo que se tiene hoy de un instrumento en una cuenta. Se calcula a partir de las operaciones |
-| Gasto | Una salida de plata, comunitaria o de una persona |
-| Ingreso | Una entrada de plata de una persona, como un sueldo o un cobro |
-| Categoría | Clasificación de gastos e ingresos que arma cada grupo |
-| Precio | Valor de un instrumento en un momento, con su fuente |
+| Término        | Qué es                                                                                                                     |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Persona        | Integrante del grupo. Puede tener usuario para entrar a la app o no                                                        |
+| Usuario        | El acceso a la app con email y contraseña                                                                                  |
+| Cuenta         | Cuenta bancaria o comitente, nacional o del exterior, a nombre de una persona                                              |
+| Tipo de cuenta | Banco, comitente nacional, comitente del exterior, billetera, y los que agregue cada grupo                                 |
+| Instrumento    | Lo que se compra para invertir. Acción, CEDEAR, ON, ETF, FCI o cripto                                                      |
+| Especie        | La versión exacta de un instrumento según la moneda en que cotiza. AAPL en pesos, AAPLD en dólar MEP, AAPLC en dólar cable |
+| Operación      | Una compra o una venta de un instrumento desde una cuenta                                                                  |
+| Posición       | Lo que se tiene hoy de un instrumento en una cuenta. Se calcula a partir de las operaciones                                |
+| Gasto          | Una salida de plata, comunitaria o de una persona                                                                          |
+| Ingreso        | Una entrada de plata de una persona, como un sueldo o un cobro                                                             |
+| Categoría      | Clasificación de gastos e ingresos que arma cada grupo                                                                     |
+| Precio         | Valor de un instrumento en un momento, con su fuente                                                                       |
 
 ## 5. Fuentes externas de precios
 
@@ -92,6 +92,8 @@ Los precios van en una versión aparte porque dependen de fuentes externas, y el
 - Base PostgreSQL en Supabase, con el login de Supabase.
 - En la copia de Sergio y Noelia, backup diario cifrado de la base desde un servidor propio.
 - Precios de FCI y dólar desde la FastAPI de datos-financieros-ar, que es privada.
+- En la copia de Sergio y Noelia, la app se sirve como sitio estático desde Nginx en el servidor propio de Oracle, en un subdominio de `rumbosagrado.com` con HTTPS.
+- La app llega a la FastAPI por una ruta `/api` que publica el mismo Nginx. La FastAPI valida el token de Supabase de quien consulta, así que no queda abierta a cualquiera.
 - El framework de la app se elige en el primer `design-plan`.
 - Diseño visual en `DESIGN.md`. Modelo de datos en `docs/modelo-de-datos.md`.
 
@@ -99,6 +101,4 @@ Los precios van en una versión aparte porque dependen de fuentes externas, y el
 
 | Pregunta | Qué bloquea |
 |---|---|
-| ¿Dónde se hostea la copia de Sergio y Noelia? | El `design-plan` de la v1, porque la app tiene que poder usarse desde el celular |
-| ¿Cómo llega la app a la FastAPI, que hoy es privada en el servidor? | El `design-plan` de la v2 |
 | ¿Cómo se calcula el costo de una posición con varias compras, con precio promedio o primero que entra primero que sale? | El `design-plan` de la v2 |
