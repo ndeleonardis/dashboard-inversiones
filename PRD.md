@@ -34,7 +34,7 @@ Valen para todas las versiones. Cambiar una de estas reglas es cambiar el produc
 | Término        | Qué es                                                                                                                     |
 | -------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | Persona        | Integrante del grupo. Puede tener usuario para entrar a la app o no                                                        |
-| Usuario        | El acceso a la app con email y contraseña                                                                                  |
+| Usuario        | El acceso a la app con una cuenta de Google cuyo email invitó quien administra la copia                                    |
 | Cuenta         | Cuenta bancaria o comitente, nacional o del exterior, a nombre de una persona                                              |
 | Tipo de cuenta | Banco, comitente nacional, comitente del exterior, billetera, y los que agregue cada grupo                                 |
 | Instrumento    | Lo que se compra para invertir. Acción, CEDEAR, ON, ETF, FCI o cripto                                                      |
