@@ -431,7 +431,7 @@ T15 y T17 necesitan los pasos de tu lado de la sección 9. Si esos pasos demoran
 
 ## 10. Riesgos y notas
 
-- **PGlite usa Postgres 18, y Supabase puede estar en una versión anterior.** Las migraciones evitan lo que es nuevo de la 18, como `uuidv7()`. En la 18 los `not null` tienen nombre propio y antes no, así que el mapeo de errores los reconoce por la columna. La prueba final es T15, cuando las migraciones se suben al proyecto de desarrollo.
+- **PGlite usa Postgres 18, y Supabase usa la 17** (es la que trae la configuración de la CLI). Las migraciones evitan lo que es nuevo de la 18, como `uuidv7()`. En la 18 los `not null` tienen nombre propio y antes no, así que el mapeo de errores los reconoce por la columna. En la 18 una clave foránea `restrict` da el código 23001, así que las claves usan `no action`, que da 23503 en todas las versiones (visto en T4). La prueba final es T15, cuando las migraciones se suben al proyecto de desarrollo.
 - **El mensaje del hook en la URL** se confirmó leyendo el código de Supabase Auth, no probándolo. T17 lo prueba antes que nada.
 - **Backup.** El PRD pide un backup diario cifrado de la base real. Eso no está en la spec de la v1, y no conviene depender de los backups del plan Free. Conviene armarlo como un cambio aparte antes de dejar el Excel.
 - **Supabase Free pausa los proyectos** después de una semana sin uso. Si pasa, se reactiva desde el panel.
