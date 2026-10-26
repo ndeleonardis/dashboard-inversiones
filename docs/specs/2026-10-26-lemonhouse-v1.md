@@ -72,7 +72,7 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 ### Operaciones y posición
 
 - **C11 (P0).** DADO una cuenta y un instrumento, CUANDO se carga una compra o venta, ENTONCES se exige cuenta, instrumento, fecha, cantidad mayor que cero, precio unitario y moneda. La comisión es opcional. Sin cuenta no se guarda.
-- **C12 (P0).** DADO operaciones cargadas, CUANDO se mira la posición, ENTONCES cada cuenta muestra por instrumento la cantidad (compras menos ventas) y el costo de compra en la moneda de las operaciones.
+- **C12 (P0).** DADO operaciones cargadas, CUANDO se mira la posición, ENTONCES cada cuenta muestra por instrumento la cantidad (compras menos ventas) y el costo de compra en la moneda de las operaciones. El costo se calcula con precio promedio: cada compra suma su monto más su comisión, y cada venta descuenta la cantidad vendida al promedio vigente, sin cambiarlo. Ejemplo: 10 a $ 100 y 10 a $ 200 dan un promedio de $ 150, y si después se venden 5 quedan 15 con un costo de $ 2.250. El método es provisorio y se revisa después de usarlo.
 - **C13 (P0).** DADO una operación cargada, CUANDO se edita o se borra, ENTONCES la posición y el resumen reflejan el cambio sin ningún paso extra.
 - **C14 (P0).** DADO una posición de 10 unidades, CUANDO se carga una venta de 15, ENTONCES la app no la guarda y avisa que la cuenta solo tiene 10.
 - **C15 (P1).** DADO una lista de operaciones, CUANDO se filtra por persona, cuenta o instrumento, ENTONCES se ven solo esas.
@@ -127,5 +127,4 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 
 | Pregunta | Tipo |
 |---|---|
-| ¿El costo de una posición con varias compras se calcula con precio promedio o primero que entra primero que sale? En la v1 el total invertido es la suma de lo comprado menos lo vendido a su costo, y el método pesa recién con el rendimiento | No bloqueante (bloquea el plan de la v2) |
 | ¿La moneda de la operación se guarda o se toma siempre del instrumento? | No bloqueante (decisión del plan) |

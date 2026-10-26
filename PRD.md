@@ -101,4 +101,4 @@ Los precios van en una versión aparte porque dependen de fuentes externas, y el
 
 | Pregunta | Qué bloquea |
 |---|---|
-| ¿Cómo se calcula el costo de una posición con varias compras, con precio promedio o primero que entra primero que sale? | El `design-plan` de la v2 |
+| ¿El precio promedio sirve para el costo de las posiciones, o conviene primero que entra primero que sale? Se usa precio promedio desde el 2026-10-26 y se revisa después de usarlo | Nada. Si cambia, es un cambio sobre la spec de la v1 |

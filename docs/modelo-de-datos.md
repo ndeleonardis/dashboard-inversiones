@@ -87,4 +87,4 @@ Las operaciones ya cargadas se migran asignándolas al dueño actual de su cuent
 
 - Nombres y tipos exactos de las columnas.
 - Si la moneda de la operación se guarda o se toma siempre del instrumento.
-- Cómo se calcula el costo de una posición con varias compras (precio promedio, o primero que entra primero que sale). Pesa recién en la v2, con el rendimiento.
+- Cómo se guarda o se calcula el precio promedio de una posición. El método quedó decidido el 2026-10-26 (C12 de la spec de la v1): cada compra suma su monto más su comisión y cada venta descuenta al promedio vigente.
