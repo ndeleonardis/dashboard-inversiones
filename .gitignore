@@ -11,6 +11,8 @@ data/real/
 # === Secretos / entorno ===
 .env
 .env.*
+# excepción: la plantilla sin valores sí se guarda
+!.env.example
 
 # === Dependencias ===
 node_modules/
