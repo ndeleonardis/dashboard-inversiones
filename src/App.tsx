@@ -10,6 +10,7 @@ import { ProveedorDeRepositorio } from './datos/contexto.tsx'
 import type { Repositorio } from './datos/repositorio.ts'
 import { EditarCuenta, ListaDeCuentas, NuevaCuenta } from './pantallas/cuentas/Cuentas.tsx'
 import { Entrar } from './pantallas/Entrar.tsx'
+import { EditarInstrumento, ListaDeInstrumentos, NuevoInstrumento } from './pantallas/instrumentos/Instrumentos.tsx'
 import { EditarPersona, ListaDePersonas, NuevaPersona } from './pantallas/personas/Personas.tsx'
 import { RUTAS } from './rutas.ts'
 
@@ -47,7 +48,10 @@ export default function App({ autenticacion, repositorio, avisoInicial = null }:
                   <Route path={RUTAS.cuentas} element={<ListaDeCuentas />} />
                   <Route path={RUTAS.cuentaNueva} element={<NuevaCuenta />} />
                   <Route path={`${RUTAS.cuentas}/:id`} element={<EditarCuenta />} />
-                  {/* Las demás pantallas llegan en T20 a T23. */}
+                  <Route path={RUTAS.instrumentos} element={<ListaDeInstrumentos />} />
+                  <Route path={RUTAS.instrumentoNuevo} element={<NuevoInstrumento />} />
+                  <Route path={`${RUTAS.instrumentos}/:id`} element={<EditarInstrumento />} />
+                  {/* Las demás pantallas llegan en T21 a T23. */}
                   <Route path="*" element={<Navigate to={RUTAS.resumen} replace />} />
                 </Route>
               </Route>

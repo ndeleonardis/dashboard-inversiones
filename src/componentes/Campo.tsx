@@ -13,9 +13,19 @@ type PropsCampo = {
   opciones?: Opcion[]
   /** El texto de la opción vacía de la lista. */
   sinElegir?: string
+  /** Cambia lo que se escribe mientras se escribe, como pasar un ticker a mayúsculas. */
+  transformar?: (valor: string) => string
 } & Pick<InputHTMLAttributes<HTMLInputElement>, 'type' | 'inputMode' | 'autoComplete' | 'max' | 'disabled'>
 
-export function Campo({ nombre, etiqueta, ayuda, opciones, sinElegir = 'Elegí una opción', ...atributos }: PropsCampo) {
+export function Campo({
+  nombre,
+  etiqueta,
+  ayuda,
+  opciones,
+  sinElegir = 'Elegí una opción',
+  transformar = (valor) => valor,
+  ...atributos
+}: PropsCampo) {
   const { valores, errores, cambiar } = useFormulario()
   const id = useId()
   const error = errores[nombre]
@@ -43,7 +53,7 @@ export function Campo({ nombre, etiqueta, ayuda, opciones, sinElegir = 'Elegí u
           ))}
         </select>
       ) : (
-        <input {...atributos} {...comunes} onChange={(evento) => cambiar(nombre, evento.target.value)} />
+        <input {...atributos} {...comunes} onChange={(evento) => cambiar(nombre, transformar(evento.target.value))} />
       )}
       {ayuda && (
         <p id={`${id}-ayuda`} className="campo-ayuda">

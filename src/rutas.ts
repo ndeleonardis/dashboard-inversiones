@@ -13,7 +13,9 @@ export const RUTAS = {
   personas: '/personas',
   personaNueva: '/personas/nueva',
   instrumentos: '/instrumentos',
+  instrumentoNuevo: '/instrumentos/nuevo',
 } as const
 
 export const rutaDePersona = (id: string) => `${RUTAS.personas}/${id}`
 export const rutaDeCuenta = (id: string) => `${RUTAS.cuentas}/${id}`
+export const rutaDeInstrumento = (id: string) => `${RUTAS.instrumentos}/${id}`

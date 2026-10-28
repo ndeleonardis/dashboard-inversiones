@@ -3,7 +3,7 @@
 import { render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from '../../src/App.tsx'
-import type { Repositorio } from '../../src/datos/repositorio.ts'
+import type { Fila, Repositorio } from '../../src/datos/repositorio.ts'
 import { crearAutenticacionFalsa } from './autenticacion-falsa.ts'
 import { crearRepositorioFalso } from './repositorio-falso.ts'
 
@@ -16,6 +16,18 @@ export function abrirApp(ruta: string, repositorio: Repositorio = crearRepositor
   render(<App autenticacion={crearAutenticacionFalsa(EMAIL_CONECTADO)} repositorio={repositorio} />)
   return { usuario, repositorio }
 }
+
+const deFabrica = { creado_por: null, creado_en: '2026-10-26T12:00:00Z', modificado_por: null, modificado_en: null }
+
+/** Los seis tipos de instrumento, como los carga la migración. Tienen código en lugar de id. */
+export const TIPOS_DE_INSTRUMENTO: Fila<'tipo_instrumento'>[] = [
+  { codigo: 'ACCION', nombre: 'Acción', precio_cada: 1, ...deFabrica },
+  { codigo: 'CEDEAR', nombre: 'CEDEAR', precio_cada: 1, ...deFabrica },
+  { codigo: 'ON', nombre: 'ON', precio_cada: 100, ...deFabrica },
+  { codigo: 'ETF', nombre: 'ETF', precio_cada: 1, ...deFabrica },
+  { codigo: 'FCI', nombre: 'FCI', precio_cada: 1, ...deFabrica },
+  { codigo: 'CRIPTO', nombre: 'Cripto', precio_cada: 1, ...deFabrica },
+]
 
 /** Ana entra a la app y Beto no. Dos tipos de cuenta y una cuenta de Ana. */
 export async function cargarEjemplo(repositorio: Repositorio) {
