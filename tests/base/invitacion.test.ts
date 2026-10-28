@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { leerAvisoDeLaUrl } from '../../src/acceso/aviso-de-entrada.ts'
 import { errorDe } from './ayudas.ts'
 import { crearBase, type BaseDePrueba } from './crear-base.ts'
 
@@ -47,6 +48,14 @@ describe('hook de invitación (C3)', () => {
     expect(await preguntarAlHook('intruso@example.com')).toEqual({
       error: { http_code: 403, message: `${TEXTO_C3} [intruso@example.com]` },
     })
+  })
+
+  it('la app reconoce el rechazo en la URL con la que vuelve Supabase, con el email', async () => {
+    const respuesta = (await preguntarAlHook('intruso@example.com')) as { error: { message: string } }
+    const vuelta = new URL('http://localhost:5173/')
+    vuelta.searchParams.set('error', 'access_denied')
+    vuelta.searchParams.set('error_description', respuesta.error.message)
+    expect(leerAvisoDeLaUrl(vuelta.toString())).toEqual({ mensaje: TEXTO_C3, email: 'intruso@example.com' })
   })
 
   it('un email invitado pasa, sin importar las mayúsculas', async () => {

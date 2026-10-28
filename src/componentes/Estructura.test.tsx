@@ -1,13 +1,13 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { Estructura } from './Estructura.tsx'
 
-function enLaRuta(ruta: string) {
+function enLaRuta(ruta: string, alSalir = () => {}) {
   return render(
     <MemoryRouter initialEntries={[ruta]}>
-      <Estructura>
+      <Estructura alSalir={alSalir}>
         <h1>Contenido</h1>
       </Estructura>
     </MemoryRouter>,
@@ -59,5 +59,14 @@ describe('Estructura', () => {
 
     await usuario.click(screen.getByRole('link', { name: 'Cuentas' }))
     expect(boton).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('el menú termina con "Salir"', async () => {
+    const usuario = userEvent.setup()
+    const alSalir = vi.fn()
+    enLaRuta('/', alSalir)
+    const menu = screen.getByRole('navigation', { name: 'Secciones' })
+    await usuario.click(within(menu).getByRole('button', { name: 'Salir' }))
+    expect(alSalir).toHaveBeenCalledOnce()
   })
 })

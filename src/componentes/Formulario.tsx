@@ -53,6 +53,17 @@ function escribirBorrador(clave: string, valores: Valores | null) {
   }
 }
 
+/** Borra todos los borradores que quedaron en el navegador. Se usa al salir (C4). */
+export function borrarBorradores() {
+  try {
+    for (const clave of Object.keys(localStorage)) {
+      if (clave.startsWith(PREFIJO_BORRADOR)) localStorage.removeItem(clave)
+    }
+  } catch {
+    // Sin almacenamiento no hay borradores que borrar.
+  }
+}
+
 type PropsFormulario<V extends Valores> = {
   /** Nombre del borrador en el navegador, por ejemplo "gasto-nuevo" o "gasto-<id>". */
   clave: string

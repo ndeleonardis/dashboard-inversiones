@@ -130,3 +130,63 @@
   flex-wrap: wrap;
   gap: var(--space-2);
 }
+
+/* Pantalla de entrar */
+.entrar {
+  display: grid;
+  align-content: center;
+  gap: var(--space-5);
+  min-height: 100dvh;
+  max-width: 440px;
+  margin-inline: auto;
+  padding: max(var(--space-6), env(safe-area-inset-top)) var(--layout-gutter);
+}
+
+.entrar-marca {
+  margin: 0;
+  font-size: var(--font-size-balance);
+  line-height: 1;
+  letter-spacing: var(--letter-spacing-tightest);
+}
+
+.entrar-bajada {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-subhead);
+}
+
+.entrar-aviso {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-card);
+}
+
+.entrar-aviso p:first-child {
+  font-weight: var(--font-weight-semibold);
+}
+
+.entrar-aviso p + p {
+  color: var(--color-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.entrar > .boton {
+  justify-self: start;
+}
+
+/* Mientras se revisa la sesión, ni la estructura ni datos. */
+.cargando {
+  padding: var(--space-10) var(--layout-gutter);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.falla-configuracion {
+  max-width: var(--layout-form-width);
+  margin: var(--space-10) auto;
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-card);
+  font-weight: var(--font-weight-semibold);
+}

@@ -7,5 +7,8 @@ import type { Database } from './tipos-base.ts'
 export type Cliente = SupabaseClient<Database>
 
 export function crearCliente({ supabaseUrl, supabaseKey }: Configuracion): Cliente {
-  return createClient<Database>(supabaseUrl, supabaseKey)
+  return createClient<Database>(supabaseUrl, supabaseKey, {
+    // PKCE: Google vuelve con un código de un solo uso, no con los tokens en la URL.
+    auth: { flowType: 'pkce' },
+  })
 }

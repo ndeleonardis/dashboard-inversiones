@@ -1,5 +1,6 @@
 // Las direcciones de cada pantalla. Las pantallas llegan en T17 a T23.
 export const RUTAS = {
+  entrar: '/entrar',
   resumen: '/',
   gastos: '/gastos',
   gastoNuevo: '/gastos/nuevo',

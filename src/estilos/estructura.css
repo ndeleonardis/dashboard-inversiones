@@ -78,6 +78,26 @@
   color: var(--color-text-inverse);
 }
 
+/* Salir va último y más apagado: no es una sección. */
+.menu-salir {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 48px;
+  padding-inline: var(--space-5);
+  border: 1.5px dashed var(--color-border-dashed);
+  border-radius: var(--radius-full);
+  background: none;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-subhead);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+.menu-salir:hover {
+  color: var(--color-text-primary);
+}
+
 @media (min-width: 768px) {
   .cabecera {
     flex-wrap: nowrap;
@@ -100,10 +120,16 @@
     padding: 0;
   }
 
-  .menu a {
+  .menu a,
+  .menu-salir {
     min-height: 40px;
     padding-inline: var(--space-4);
     font-size: 14px;
+  }
+
+  .menu-salir {
+    width: auto;
+    margin-left: var(--space-2);
   }
 }
 

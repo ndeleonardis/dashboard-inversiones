@@ -37,7 +37,9 @@ function IconoMenu() {
   )
 }
 
-export function Estructura({ children }: { children: ReactNode }) {
+type PropsEstructura = { alSalir: () => void | Promise<void>; children: ReactNode }
+
+export function Estructura({ alSalir, children }: PropsEstructura) {
   const [menuAbierto, setMenuAbierto] = useState(false)
   const idMenu = useId()
 
@@ -66,6 +68,18 @@ export function Estructura({ children }: { children: ReactNode }) {
                 </NavLink>
               </li>
             ))}
+            <li>
+              <button
+                type="button"
+                className="menu-salir"
+                onClick={() => {
+                  setMenuAbierto(false)
+                  void alSalir()
+                }}
+              >
+                Salir
+              </button>
+            </li>
           </ul>
         </nav>
       </header>
