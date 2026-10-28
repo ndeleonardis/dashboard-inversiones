@@ -20,6 +20,7 @@ export class ErrorDeLaApp extends Error {
 export const MENSAJE_GENERICO = 'No se pudo guardar. Probá de nuevo.'
 export const MENSAJE_SIN_CONEXION = 'No hay conexión. Lo que escribiste sigue acá, probá de nuevo cuando vuelva.'
 export const MENSAJE_SESION_VENCIDA = 'Tu sesión venció. Volvé a entrar: lo que escribiste queda guardado.'
+export const MENSAJE_NO_SE_ENCONTRO = 'No se encontró. Puede que alguien lo haya borrado'
 
 const enCampo = (mensaje: string, campo: string): ErrorParaMostrar => ({ mensaje, campo })
 const sinCampo = (mensaje: string): ErrorParaMostrar => ({ mensaje })
