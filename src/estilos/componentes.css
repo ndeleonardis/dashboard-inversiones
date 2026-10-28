@@ -1,0 +1,132 @@
+/* Piezas comunes: montos, autoría, botones, campos, formulario y confirmación. */
+
+/* Cifras tabulares, para que los montos se alineen en las listas. */
+.monto {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.autoria {
+  display: grid;
+  gap: 2px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+}
+
+/* Botones */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: var(--space-3) var(--space-6);
+  border: 0;
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
+  cursor: pointer;
+}
+
+.boton:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.boton-principal {
+  background: var(--color-surface-active);
+  color: var(--color-text-inverse);
+}
+
+.boton-secundario {
+  background: var(--color-surface-pill);
+  color: var(--color-text-primary);
+}
+
+/* Campos */
+.campo {
+  display: grid;
+  gap: 6px;
+}
+
+.campo label {
+  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.campo input,
+.campo select {
+  width: 100%;
+  min-height: 48px;
+  padding: var(--space-3) var(--space-4);
+  border: 1.5px solid var(--color-text-secondary);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-card-subtle);
+  font-size: var(--font-size-input);
+}
+
+.campo [aria-invalid='true'] {
+  border-color: var(--color-loss);
+  border-width: 2px;
+}
+
+.campo-ayuda {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+}
+
+.campo-error {
+  color: var(--color-loss);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Formulario */
+.formulario {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.formulario > .boton {
+  justify-self: start;
+}
+
+.formulario-error {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-card);
+  color: var(--color-loss);
+  font-weight: var(--font-weight-semibold);
+}
+
+.formulario-aviso {
+  padding: var(--space-3) var(--space-4);
+  border: 1.5px dashed var(--color-border-dashed);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+}
+
+.formulario-guardado {
+  color: var(--color-gain);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Confirmación dentro de la pantalla */
+.confirmacion {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border: 2px solid var(--color-surface-active);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-card);
+}
+
+.confirmacion p {
+  font-weight: var(--font-weight-semibold);
+}
+
+.confirmacion-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}

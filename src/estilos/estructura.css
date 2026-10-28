@@ -1,0 +1,208 @@
+/* Piezas de layout: cabecera con menú, contenedor, grilla de tarjetas,
+   columna de formulario y barra flotante. Hasta 767 px vale el diseño de
+   celular. Desde 768 px el contenido se centra y aprovecha el ancho (C33). */
+
+/* Cabecera */
+.cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  max-width: var(--layout-max-width);
+  margin-inline: auto;
+  padding-block: max(var(--space-4), env(safe-area-inset-top)) var(--space-2);
+  padding-inline: max(var(--layout-gutter), env(safe-area-inset-left)) max(var(--layout-gutter), env(safe-area-inset-right));
+}
+
+.marca {
+  font-family: var(--font-family-display);
+  font-size: 22px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-tight);
+  text-decoration: none;
+}
+
+.boton-menu {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: var(--space-2) var(--space-4);
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-pill);
+  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+.boton-menu svg {
+  fill: currentColor;
+}
+
+.menu {
+  flex-basis: 100%;
+}
+
+.menu[data-abierto='false'] {
+  display: none;
+}
+
+.menu ul {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: var(--space-2) 0;
+  list-style: none;
+}
+
+.menu a {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding-inline: var(--space-5);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-subhead);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+}
+
+.menu a:hover {
+  background: var(--color-surface-card-subtle);
+}
+
+/* La sección actual, en negro como la tarjeta activa de la guía. */
+.menu a[aria-current='page'] {
+  background: var(--color-surface-active);
+  color: var(--color-text-inverse);
+}
+
+@media (min-width: 768px) {
+  .cabecera {
+    flex-wrap: nowrap;
+  }
+
+  .boton-menu {
+    display: none;
+  }
+
+  .menu,
+  .menu[data-abierto='false'] {
+    display: block;
+    flex-basis: auto;
+  }
+
+  .menu ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    padding: 0;
+  }
+
+  .menu a {
+    min-height: 40px;
+    padding-inline: var(--space-4);
+    font-size: 14px;
+  }
+}
+
+/* Contenedor de cada pantalla */
+.contenedor {
+  max-width: var(--layout-max-width);
+  margin-inline: auto;
+  padding-inline: max(var(--layout-gutter), env(safe-area-inset-left)) max(var(--layout-gutter), env(safe-area-inset-right));
+  padding-bottom: calc(var(--layout-dock-space) + env(safe-area-inset-bottom));
+}
+
+/* Listas: una columna en el celular, grilla desde 768 px. */
+.grilla {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .grilla {
+    grid-template-columns: repeat(auto-fill, minmax(var(--layout-card-min-width), 1fr));
+    gap: var(--space-4);
+  }
+}
+
+.tarjeta {
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-highlight);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-card);
+}
+
+/* Formularios: una sola columna, también en la notebook. */
+.columna-formulario {
+  width: 100%;
+  max-width: var(--layout-form-width);
+}
+
+/* Barra flotante: abajo y al centro, también en la notebook. */
+.barra-flotante {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--space-6) + env(safe-area-inset-bottom));
+  z-index: 10;
+  display: flex;
+  gap: 2px;
+  max-width: calc(100% - var(--space-6));
+  padding: 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-active);
+  box-shadow: var(--shadow-dock);
+  transform: translateX(-50%);
+}
+
+.barra-accion {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 6px var(--space-3) 6px 6px;
+  border-radius: var(--radius-full);
+  color: var(--color-text-inverse);
+  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.barra-accion:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.barra-accion:focus-visible {
+  outline-color: var(--color-bg-base);
+}
+
+.barra-icono {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-base);
+  color: var(--color-text-primary);
+}
+
+/* Celulares angostos (360 px): la barra entra igual. */
+@media (max-width: 374px) {
+  .barra-accion {
+    gap: 6px;
+    padding-right: 10px;
+    font-size: 13px;
+  }
+
+  .barra-icono {
+    width: 28px;
+    height: 28px;
+  }
+}

@@ -1,0 +1,77 @@
+/* Tokens de DESIGN.md (sección 9) con los ajustes de LemonHouse (sección 10),
+   que mandan cuando se contradicen. Los nombres siguen los de la guía. */
+:root {
+  /* Colores */
+  --color-bg-base: #f9d2e5;
+  --color-surface-card: #f2b8d8;
+  --color-surface-card-subtle: #f5c5df;
+  --color-surface-active: #0d0c11;
+  --color-surface-pill: #e8a2c7;
+  --color-text-primary: #110d13;
+  /* Ajuste: #7D556E no llega a 4,5 a 1 sobre las tarjetas. */
+  --color-text-secondary: #664359;
+  --color-text-inverse: #ffffff;
+  --color-border-dashed: rgba(125, 85, 110, 0.45);
+  --color-border-highlight: rgba(255, 255, 255, 0.35);
+  /* Ajuste: ganancia y pérdida, oscuros para pasar 4,5 a 1 sobre la tarjeta. */
+  --color-gain: #0f5c30;
+  --color-loss: #9a1b12;
+
+  /* Tipografía */
+  --font-family-display: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', sans-serif;
+  --font-family-body: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', -apple-system, sans-serif;
+
+  --font-size-display: 68px;
+  --font-size-balance: 48px;
+  --font-size-stat: 34px;
+  --font-size-subhead: 17px;
+  --font-size-body: 15px;
+  --font-size-caption: 13px;
+  --font-size-micro: 12px;
+  /* iOS agranda la pantalla al tocar un campo con letra de menos de 16 px. */
+  --font-size-input: 16px;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --letter-spacing-tightest: -0.04em;
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-normal: 0em;
+
+  /* Espacios */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  /* Formas */
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
+  --radius-xl: 34px;
+  --radius-full: 9999px;
+
+  /* Elevación */
+  --shadow-dock: 0px 14px 34px rgba(13, 12, 17, 0.28);
+
+  /* Pantallas grandes (sección 10). El corte de 768 px va escrito en cada
+     @media, porque una variable no se puede usar ahí. */
+  --layout-max-width: 1120px;
+  --layout-form-width: 560px;
+  --layout-card-min-width: 280px;
+  --layout-gutter: var(--space-5);
+  /* Lo que ocupa la barra flotante abajo, para que no tape el contenido. */
+  --layout-dock-space: 112px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --layout-gutter: var(--space-8);
+  }
+}

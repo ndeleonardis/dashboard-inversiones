@@ -1,7 +1,13 @@
+import { BrowserRouter } from 'react-router'
+import { Estructura } from './componentes/Estructura.tsx'
+
+// Las rutas, la sesión y las pantallas llegan desde T17.
 export default function App() {
   return (
-    <main>
-      <h1>LemonHouse</h1>
-    </main>
+    <BrowserRouter>
+      <Estructura>
+        <h1>Resumen</h1>
+      </Estructura>
+    </BrowserRouter>
   )
 }
