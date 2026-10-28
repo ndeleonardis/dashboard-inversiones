@@ -353,6 +353,7 @@ T15 y T17 necesitan los pasos de tu lado de la sección 9. Si esos pasos demoran
 
 **T29. Guía para levantar una copia y publicar.** `docs/levantar-una-copia.md`, `docs/nginx-ejemplo.conf` y `scripts/publicar.mjs`.
 - Paso a paso para un grupo nuevo: proyecto de Supabase, migraciones, cliente de Google, hook, invitaciones, `.env`, build y Nginx. Incluye cómo sacarle el acceso a alguien: borrar el email de su persona y su usuario en Supabase.
+- Una página de privacidad en la app (`/privacidad`). Google pide una página de inicio y una política de privacidad en un dominio propio para publicar la app de login. Sin publicarla, solo entran las cuentas cargadas como usuarios de prueba en Google.
 - El script sube `dist/` al destino que indica `.env`.
 - **Test.** `tests/repo/publicacion.test.ts`. El script toma el destino de `.env` y falla con un mensaje en español si falta. Toda variable que leen `src/` y `scripts/` está en `.env.example` (regla 6). La publicación real y C2 en el sitio publicado se prueban solo en el navegador.
 - **Depende de** T23, y de T24 a T28 si entran.
@@ -363,7 +364,7 @@ T15 y T17 necesitan los pasos de tu lado de la sección 9. Si esos pasos demoran
 |---|---|---|
 | C1 (P0) | T10, T17 | `acceso.test.ts` en la base y test de rutas en la interfaz |
 | C2 (P0) | T17 | Test de rutas con sesión falsa. **Solo navegador** con Google de verdad |
-| C3 (P0) | T11, T17 | `invitacion.test.ts` y test del error en la URL. **Solo navegador** con una cuenta de Google no invitada, revisando después en Supabase que no se creó ningún usuario |
+| C3 (P0) | T11, T17 | `invitacion.test.ts` y test del error en la URL. **Solo navegador** con una cuenta de Google no invitada, revisando después en Supabase que no se creó ningún usuario. En desarrollo, esa cuenta tiene que estar entre los usuarios de prueba de Google |
 | C4 (P0) | T17 | Test de salir y volver atrás. **Solo navegador** con el botón de atrás real |
 | C5 (P0) | T4, T19 | `personas-cuentas.test.ts` y test de pantalla |
 | C6 (P0) | T4, T19 | `personas-cuentas.test.ts` y test de pantalla |
@@ -422,7 +423,9 @@ T15 y T17 necesitan los pasos de tu lado de la sección 9. Si esos pasos demoran
 
 **Antes de T28.** Tener a mano los celulares donde se va a instalar. Si nadie usa iPhone, la parte de iPhone de T28 se saltea.
 
-**Antes de T29.** Crear el proyecto real y el subdominio con HTTPS en el servidor, y repetir los pasos de Google y del hook.
+**Antes de T29.** Crear el proyecto real y el subdominio con HTTPS en el servidor, y repetir los pasos de Google y del hook. Con la página de privacidad publicada, pasar la app de Google de "Testing" a publicada.
+
+**En desarrollo (decidido el 2026-10-28).** La app de Google queda en modo "Testing", porque para publicarla Google pide una página de inicio y una política de privacidad en un dominio propio, y todavía no hay sitio publicado. Solo entran las cuentas cargadas como usuarios de prueba en Google: la tuya y otra no invitada para probar C3.
 
 **Documentos actualizados al aprobar el plan.**
 - **Spec.** La fila "Operación en una moneda distinta a la del instrumento" pasó de "se avisa antes de guardar" a "no puede pasar", y su pregunta abierta quedó cerrada con la decisión 1. Se sumaron C32, C33 y el error del login en iPhone.
