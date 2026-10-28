@@ -28,6 +28,10 @@
   cursor: pointer;
 }
 
+a.boton {
+  text-decoration: none;
+}
+
 .boton:disabled {
   opacity: 0.6;
   cursor: progress;
@@ -129,6 +133,53 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
+}
+
+/* Marca dentro de una tarjeta, como "Entra a la app". */
+.etiqueta {
+  justify-self: start;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-active);
+  color: var(--color-text-inverse);
+  font-size: var(--font-size-micro);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Una lista vacía o algo que falta cargar antes. */
+.vacio {
+  padding: var(--space-5);
+  border: 1.5px dashed var(--color-border-dashed);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-secondary);
+}
+
+.nota {
+  max-width: var(--layout-form-width);
+  margin-top: var(--space-4);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+}
+
+.detalle .nota {
+  margin-top: 0;
+}
+
+.error-al-cargar {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-card);
+  color: var(--color-loss);
+  font-weight: var(--font-weight-semibold);
+}
+
+.borrar {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
 }
 
 /* Pantalla de entrar */

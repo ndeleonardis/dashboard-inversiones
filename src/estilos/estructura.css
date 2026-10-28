@@ -164,6 +164,68 @@
   background: var(--color-surface-card);
 }
 
+/* Una tarjeta que lleva al detalle. */
+.tarjeta-enlace {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+  height: 100%;
+  text-decoration: none;
+}
+
+.tarjeta-enlace:hover {
+  background: var(--color-surface-pill);
+}
+
+.tarjeta-titulo {
+  font-size: var(--font-size-subhead);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.01em;
+}
+
+.tarjeta-detalle {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+}
+
+/* Encabezado de cada pantalla */
+.encabezado {
+  display: grid;
+  gap: var(--space-2);
+  margin-block: var(--space-6) var(--space-5);
+}
+
+.encabezado h1 {
+  margin: 0;
+}
+
+.encabezado-fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.volver {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  justify-self: start;
+  min-height: 44px;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+}
+
+/* El detalle: el formulario, quién lo cargó y borrar, uno debajo del otro. */
+.detalle {
+  display: grid;
+  gap: var(--space-6);
+  max-width: var(--layout-form-width);
+}
+
 /* Formularios: una sola columna, también en la notebook. */
 .columna-formulario {
   width: 100%;

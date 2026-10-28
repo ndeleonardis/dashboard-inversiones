@@ -1,4 +1,4 @@
-// Las direcciones de cada pantalla. Las pantallas llegan en T17 a T23.
+// Las direcciones de cada pantalla.
 export const RUTAS = {
   entrar: '/entrar',
   resumen: '/',
@@ -9,6 +9,11 @@ export const RUTAS = {
   operaciones: '/operaciones',
   operacionNueva: '/operaciones/nueva',
   cuentas: '/cuentas',
+  cuentaNueva: '/cuentas/nueva',
   personas: '/personas',
+  personaNueva: '/personas/nueva',
   instrumentos: '/instrumentos',
 } as const
+
+export const rutaDePersona = (id: string) => `${RUTAS.personas}/${id}`
+export const rutaDeCuenta = (id: string) => `${RUTAS.cuentas}/${id}`
