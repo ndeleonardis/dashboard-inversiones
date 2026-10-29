@@ -30,7 +30,9 @@ type Listas<P extends Pedido> = { [K in keyof P]: FilasDe<P[K]> }
 const claveDe = (origen: Origen) => ['listar', origen]
 
 function comoCargado<D>(resultados: UseQueryResult[], datos: () => D): Cargado<D> {
-  if (resultados.some((resultado) => resultado.isError)) {
+  // Solo cuenta el error de la primera carga. Si falla una recarga, siguen los
+  // datos de antes, así un formulario abierto no pierde lo escrito.
+  if (resultados.some((resultado) => resultado.isLoadingError)) {
     return { estado: 'error', reintentar: () => resultados.forEach((resultado) => void resultado.refetch()) }
   }
   if (resultados.some((resultado) => resultado.isPending)) return { estado: 'cargando' }
