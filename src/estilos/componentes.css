@@ -349,6 +349,44 @@ a.boton {
   justify-self: start;
 }
 
+.entrar-privacidad {
+  justify-self: start;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Privacidad: texto para leer, en una columna angosta. */
+.privacidad {
+  display: grid;
+  gap: var(--space-4);
+  max-width: var(--layout-form-width);
+  margin-inline: auto;
+  padding: max(var(--space-4), env(safe-area-inset-top)) var(--layout-gutter) var(--space-10);
+  line-height: 1.5;
+}
+
+.privacidad h1 {
+  margin: 0;
+}
+
+.privacidad h2 {
+  margin-top: var(--space-4);
+  font-size: var(--font-size-subhead);
+}
+
+.privacidad ul {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding-left: var(--space-5);
+}
+
+.privacidad-fecha {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+}
+
 /* Mientras se revisa la sesión, ni la estructura ni datos. */
 .cargando {
   padding: var(--space-10) var(--layout-gutter);

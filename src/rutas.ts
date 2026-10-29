@@ -1,6 +1,7 @@
 // Las direcciones de cada pantalla.
 export const RUTAS = {
   entrar: '/entrar',
+  privacidad: '/privacidad',
   resumen: '/',
   gastos: '/gastos',
   gastoNuevo: '/gastos/nuevo',

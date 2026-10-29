@@ -1,7 +1,8 @@
-// La pantalla de entrar. Es lo único que ve alguien sin sesión (C1). Si Google
-// o el hook rechazaron el intento, dice por qué y con qué email se probó (C3).
+// La pantalla de entrar. Junto con la privacidad, es lo único que ve alguien
+// sin sesión (C1). Si Google o el hook rechazaron el intento, dice por qué y
+// con qué email se probó (C3).
 import { useState } from 'react'
-import { Navigate } from 'react-router'
+import { Link, Navigate } from 'react-router'
 import { useSesion } from '../acceso/Sesion.tsx'
 import { RUTAS } from '../rutas.ts'
 
@@ -34,6 +35,9 @@ export function Entrar() {
       >
         {yendo ? 'Abriendo Google…' : 'Entrar con Google'}
       </button>
+      <Link to={RUTAS.privacidad} className="entrar-privacidad">
+        Privacidad
+      </Link>
     </main>
   )
 }

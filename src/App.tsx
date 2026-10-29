@@ -16,6 +16,7 @@ import { EditarIngreso, ListaDeIngresos, NuevoIngreso } from './pantallas/ingres
 import { EditarInstrumento, ListaDeInstrumentos, NuevoInstrumento } from './pantallas/instrumentos/Instrumentos.tsx'
 import { EditarOperacion, ListaDeOperaciones, NuevaOperacion } from './pantallas/operaciones/Operaciones.tsx'
 import { EditarPersona, ListaDePersonas, NuevaPersona } from './pantallas/personas/Personas.tsx'
+import { Privacidad } from './pantallas/Privacidad.tsx'
 import { Resumen } from './pantallas/Resumen.tsx'
 import { RUTAS, rutaDeCategoria, rutaDeNuevaCategoria } from './rutas.ts'
 
@@ -44,6 +45,7 @@ export default function App({ autenticacion, repositorio, avisoInicial = null }:
           <BrowserRouter>
             <Routes>
               <Route path={RUTAS.entrar} element={<Entrar />} />
+              <Route path={RUTAS.privacidad} element={<Privacidad />} />
               <Route element={<RutaProtegida />}>
                 <Route element={<ConEstructura />}>
                   <Route index element={<Resumen />} />
