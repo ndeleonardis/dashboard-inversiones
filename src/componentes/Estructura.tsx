@@ -13,6 +13,7 @@ const SECCIONES = [
   { ruta: RUTAS.cuentas, nombre: 'Cuentas' },
   { ruta: RUTAS.personas, nombre: 'Personas' },
   { ruta: RUTAS.instrumentos, nombre: 'Instrumentos' },
+  { ruta: RUTAS.categorias, nombre: 'Categorías' },
 ]
 
 const ACCIONES = [

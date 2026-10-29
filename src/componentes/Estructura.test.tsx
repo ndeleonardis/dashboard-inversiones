@@ -43,6 +43,7 @@ describe('Estructura', () => {
       ['Cuentas', '/cuentas'],
       ['Personas', '/personas'],
       ['Instrumentos', '/instrumentos'],
+      ['Categorías', '/categorias'],
     ])
     expect(within(menu).getByRole('link', { name: 'Gastos' })).toHaveAttribute('aria-current', 'page')
     expect(within(menu).getByRole('link', { name: 'Resumen' })).not.toHaveAttribute('aria-current')

@@ -306,15 +306,15 @@
   font-size: var(--font-size-caption);
 }
 
-/* Resumen: el bloque del mes y el de inversiones, uno debajo del otro en el
-   celular y lado a lado desde 768 px (C33). */
-.resumen {
+/* Dos bloques, como los del resumen o las dos listas de categorías: uno debajo
+   del otro en el celular y lado a lado desde 768 px (C33). */
+.columnas {
   display: grid;
   gap: var(--space-8);
 }
 
 @media (min-width: 768px) {
-  .resumen {
+  .columnas {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: start;
   }

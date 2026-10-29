@@ -136,7 +136,7 @@ export function Resumen() {
   return (
     <>
       <Encabezado titulo="Resumen" />
-      <div className="resumen">
+      <div className="columnas">
         <BloqueDelMes />
         <BloqueDeInversiones />
       </div>

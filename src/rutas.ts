@@ -14,7 +14,13 @@ export const RUTAS = {
   personaNueva: '/personas/nueva',
   instrumentos: '/instrumentos',
   instrumentoNuevo: '/instrumentos/nuevo',
+  categorias: '/categorias',
 } as const
+
+/** Las categorías de gastos y las de ingresos tienen cada una sus direcciones. */
+export type ClaseDeCategoria = 'gastos' | 'ingresos'
+export const rutaDeNuevaCategoria = (clase: ClaseDeCategoria) => `${RUTAS.categorias}/${clase}/nueva`
+export const rutaDeCategoria = (clase: ClaseDeCategoria, id: string) => `${RUTAS.categorias}/${clase}/${id}`
 
 export const rutaDePersona = (id: string) => `${RUTAS.personas}/${id}`
 export const rutaDeCuenta = (id: string) => `${RUTAS.cuentas}/${id}`

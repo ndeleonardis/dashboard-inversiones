@@ -8,6 +8,7 @@ import { ProveedorDeSesion, useSesion } from './acceso/Sesion.tsx'
 import { Estructura } from './componentes/Estructura.tsx'
 import { ProveedorDeRepositorio } from './datos/contexto.tsx'
 import type { Repositorio } from './datos/repositorio.ts'
+import { EditarCategoria, ListaDeCategorias, NuevaCategoria } from './pantallas/categorias/Categorias.tsx'
 import { DetalleDeCuenta, ListaDeCuentas, NuevaCuenta } from './pantallas/cuentas/Cuentas.tsx'
 import { Entrar } from './pantallas/Entrar.tsx'
 import { EditarGasto, ListaDeGastos, NuevoGasto } from './pantallas/gastos/Gastos.tsx'
@@ -16,7 +17,7 @@ import { EditarInstrumento, ListaDeInstrumentos, NuevoInstrumento } from './pant
 import { EditarOperacion, ListaDeOperaciones, NuevaOperacion } from './pantallas/operaciones/Operaciones.tsx'
 import { EditarPersona, ListaDePersonas, NuevaPersona } from './pantallas/personas/Personas.tsx'
 import { Resumen } from './pantallas/Resumen.tsx'
-import { RUTAS } from './rutas.ts'
+import { RUTAS, rutaDeCategoria, rutaDeNuevaCategoria } from './rutas.ts'
 
 type PropsApp = {
   autenticacion: Autenticacion
@@ -64,6 +65,11 @@ export default function App({ autenticacion, repositorio, avisoInicial = null }:
                   <Route path={RUTAS.operaciones} element={<ListaDeOperaciones />} />
                   <Route path={RUTAS.operacionNueva} element={<NuevaOperacion />} />
                   <Route path={`${RUTAS.operaciones}/:id`} element={<EditarOperacion />} />
+                  <Route path={RUTAS.categorias} element={<ListaDeCategorias />} />
+                  <Route path={rutaDeNuevaCategoria('gastos')} element={<NuevaCategoria clase="gastos" />} />
+                  <Route path={rutaDeCategoria('gastos', ':id')} element={<EditarCategoria clase="gastos" />} />
+                  <Route path={rutaDeNuevaCategoria('ingresos')} element={<NuevaCategoria clase="ingresos" />} />
+                  <Route path={rutaDeCategoria('ingresos', ':id')} element={<EditarCategoria clase="ingresos" />} />
                   <Route path="*" element={<Navigate to={RUTAS.resumen} replace />} />
                 </Route>
               </Route>
