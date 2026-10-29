@@ -1,0 +1,17 @@
+{
+  "name": "LemonHouse",
+  "short_name": "LemonHouse",
+  "description": "Ingresos, gastos e inversiones, en pesos y en dólares.",
+  "lang": "es-AR",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F9D2E5",
+  "theme_color": "#0D0C11",
+  "icons": [
+    { "src": "/iconos/icono-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/iconos/icono-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/iconos/icono-adaptable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

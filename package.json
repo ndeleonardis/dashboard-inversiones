@@ -15,7 +15,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "verificar": "npm run typecheck && npm test && npm run build",
     "db:subir": "node scripts/supabase.mjs subir",
-    "db:tipos": "node scripts/supabase.mjs tipos"
+    "db:tipos": "node scripts/supabase.mjs tipos",
+    "iconos": "node scripts/iconos.mjs"
   },
   "dependencies": {
     "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
