@@ -226,6 +226,20 @@
   max-width: var(--layout-form-width);
 }
 
+/* Una parte del detalle, con su título y, si hace falta, una acción. */
+.seccion {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.seccion-titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
 /* Formularios: una sola columna, también en la notebook. */
 .columna-formulario {
   width: 100%;

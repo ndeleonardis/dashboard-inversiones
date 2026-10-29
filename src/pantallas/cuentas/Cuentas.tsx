@@ -1,6 +1,7 @@
-// Cuentas bancarias, comitentes y billeteras: lista, alta, edición y baja. Toda
-// cuenta tiene dueño, tipo y entidad (C6, regla 4), y no se borra si está en
-// uso (C7).
+// Cuentas bancarias, comitentes y billeteras: lista, alta, detalle con su
+// posición, edición y baja. Toda cuenta tiene dueño, tipo y entidad (C6,
+// regla 4), y no se borra si está en uso (C7).
+import { useId } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { Autoria } from '../../componentes/Autoria.tsx'
 import { Borrar } from '../../componentes/Borrar.tsx'
@@ -13,6 +14,7 @@ import { MENSAJE_NO_SE_ENCONTRO, MENSAJES_DE_COLUMNA } from '../../datos/errores
 import type { Fila } from '../../datos/repositorio.ts'
 import { compararTextos, nombreDeCuenta, porNombre } from '../../dominio/nombres.ts'
 import { RUTAS, rutaDeCuenta } from '../../rutas.ts'
+import { PosicionDeCuenta } from './PosicionDeCuenta.tsx'
 
 const volverALaLista = { a: RUTAS.cuentas, texto: 'Cuentas' }
 
@@ -114,18 +116,20 @@ export function NuevaCuenta() {
   )
 }
 
-export function EditarCuenta() {
+/** El detalle de una cuenta: su posición (C12), sus datos para editar y borrarla. */
+export function DetalleDeCuenta() {
   const { id = '' } = useParams()
   const cargado = useListas({ cuentas: 'cuenta', personas: 'persona', tipos: 'tipo_cuenta' })
   const { editar, borrar } = useCambios()
   const navegar = useNavigate()
+  const idDatos = useId()
+  const cuenta = cargado.estado === 'listo' ? cargado.datos.cuentas.find((c) => c.id === id) : undefined
 
   return (
     <>
-      <Encabezado titulo="Editar cuenta" volver={volverALaLista} />
+      <Encabezado titulo={cuenta ? nombreDeCuenta(cuenta) : 'Cuenta'} volver={volverALaLista} />
       <Carga cargado={cargado}>
-        {({ cuentas, personas, tipos }) => {
-          const cuenta = cuentas.find((c) => c.id === id)
+        {({ personas, tipos }) => {
           if (!cuenta) {
             return (
               <p role="alert" className="formulario-error">
@@ -135,23 +139,27 @@ export function EditarCuenta() {
           }
           return (
             <div className="detalle">
-              <Formulario
-                key={cuenta.id}
-                clave={`cuenta-${cuenta.id}`}
-                inicial={{
-                  persona_id: cuenta.persona_id,
-                  tipo_cuenta_id: cuenta.tipo_cuenta_id,
-                  entidad: cuenta.entidad,
-                  nombre: cuenta.nombre ?? '',
-                }}
-                validar={validar}
-                guardar={async (valores) => {
-                  await editar('cuenta', cuenta.id, datosDe(valores))
-                }}
-                alGuardar={() => navegar(RUTAS.cuentas)}
-              >
-                <CamposDeCuenta personas={personas} tipos={tipos} />
-              </Formulario>
+              <PosicionDeCuenta cuentaId={cuenta.id} />
+              <section className="seccion" aria-labelledby={idDatos}>
+                <h2 id={idDatos}>Datos de la cuenta</h2>
+                <Formulario
+                  key={cuenta.id}
+                  clave={`cuenta-${cuenta.id}`}
+                  inicial={{
+                    persona_id: cuenta.persona_id,
+                    tipo_cuenta_id: cuenta.tipo_cuenta_id,
+                    entidad: cuenta.entidad,
+                    nombre: cuenta.nombre ?? '',
+                  }}
+                  validar={validar}
+                  guardar={async (valores) => {
+                    await editar('cuenta', cuenta.id, datosDe(valores))
+                  }}
+                  alGuardar={() => navegar(RUTAS.cuentas)}
+                >
+                  <CamposDeCuenta personas={personas} tipos={tipos} />
+                </Formulario>
+              </section>
               <Autoria fila={cuenta} personas={personas} />
               <Borrar
                 pregunta={`¿Borrar la cuenta ${nombreDeCuenta(cuenta)}?`}

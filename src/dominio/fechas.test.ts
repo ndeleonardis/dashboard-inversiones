@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { esFutura, hoy, mesActual, mesAnterior, mesDe, mesSiguiente } from './fechas.ts'
+import { avisoDeFechaFutura, esFutura, hoy, mesActual, mesAnterior, mesDe, mesSiguiente } from './fechas.ts'
 
 // Reloj fijo: 26 de octubre de 2026 a las 23:30, hora local.
 const reloj = new Date(2026, 9, 26, 23, 30)
@@ -23,5 +23,10 @@ describe('fechas', () => {
     expect(esFutura('2026-10-27', reloj)).toBe(true)
     expect(esFutura('2026-10-26', reloj)).toBe(false)
     expect(esFutura('2026-01-01', reloj)).toBe(false)
+  })
+
+  it('una fecha futura da un aviso para confirmar, y hoy no', () => {
+    expect(avisoDeFechaFutura('2026-11-02', reloj)).toBe('La fecha 02/11/2026 es posterior a hoy.')
+    expect(avisoDeFechaFutura('2026-10-26', reloj)).toBeNull()
   })
 })

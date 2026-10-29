@@ -135,6 +135,78 @@ a.boton {
   gap: var(--space-2);
 }
 
+/* El total de una operación, antes de guardar. */
+.total-operacion {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-card);
+}
+
+.total-operacion-cifra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: var(--font-size-subhead);
+  font-weight: var(--font-weight-bold);
+}
+
+/* Tablas, como la posición de una cuenta. Los números a la derecha y alineados. */
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla th {
+  padding: 0 var(--space-2) var(--space-2);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  text-align: left;
+}
+
+.tabla td {
+  padding: var(--space-3) var(--space-2);
+  border-top: 1px solid var(--color-border-highlight);
+  vertical-align: top;
+}
+
+.tabla th:first-child,
+.tabla td:first-child {
+  padding-left: 0;
+}
+
+.tabla th:last-child,
+.tabla td:last-child {
+  padding-right: 0;
+}
+
+.tabla .numero {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tabla-titulo {
+  display: block;
+  font-weight: var(--font-weight-bold);
+}
+
+.tabla-detalle {
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+}
+
+.tabla-nota {
+  margin-top: var(--space-3);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+}
+
 /* Marca dentro de una tarjeta, como "Entra a la app". */
 .etiqueta {
   justify-self: start;

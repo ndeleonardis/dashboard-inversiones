@@ -1,6 +1,7 @@
 // Fechas como texto "AAAA-MM-DD", igual que las guarda la base. Siempre en
 // hora local: a las 23:30 de Buenos Aires todavía es hoy, aunque en UTC ya
 // sea mañana.
+import { formatearFecha } from './formato.ts'
 
 const dosDigitos = (n: number) => String(n).padStart(2, '0')
 
@@ -29,4 +30,9 @@ export const mesSiguiente = (mes: string) => moverMes(mes, 1)
 /** Si la fecha es posterior a hoy. La app pide confirmar antes de guardarla. */
 export function esFutura(fecha: string, reloj: Date = new Date()): boolean {
   return fecha > hoy(reloj)
+}
+
+/** El aviso para confirmar una fecha posterior a hoy, o null si no hace falta. */
+export function avisoDeFechaFutura(fecha: string, reloj: Date = new Date()): string | null {
+  return esFutura(fecha, reloj) ? `La fecha ${formatearFecha(fecha)} es posterior a hoy.` : null
 }

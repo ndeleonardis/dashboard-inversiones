@@ -29,6 +29,12 @@ export const TIPOS_DE_INSTRUMENTO: Fila<'tipo_instrumento'>[] = [
   { codigo: 'CRIPTO', nombre: 'Cripto', precio_cada: 1, ...deFabrica },
 ]
 
+/** Compra y venta, como las carga la migración. */
+export const TIPOS_DE_OPERACION: Fila<'tipo_operacion'>[] = [
+  { codigo: 'COMPRA', nombre: 'Compra', ...deFabrica },
+  { codigo: 'VENTA', nombre: 'Venta', ...deFabrica },
+]
+
 /** Ana entra a la app y Beto no. Dos tipos de cuenta y una cuenta de Ana. */
 export async function cargarEjemplo(repositorio: Repositorio) {
   const ana = await repositorio.crear('persona', { nombre: 'Ana', email: EMAIL_CONECTADO })
