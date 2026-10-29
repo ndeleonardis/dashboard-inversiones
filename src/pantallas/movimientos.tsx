@@ -69,7 +69,10 @@ export function CampoDeDescripcion() {
   return <Campo nombre="descripcion" etiqueta="Descripción (opcional)" autoComplete="off" />
 }
 
+/** Cómo se nombra un gasto sin persona, que es de todo el grupo (C16). */
+export const COMUNITARIO = 'Comunitario'
+
 /** El más nuevo primero. En un mismo día, el último cargado. */
-export function masNuevosPrimero<M extends Movimiento>(movimientos: M[]): M[] {
+export function masNuevosPrimero<M extends { fecha: string; creado_en: string }>(movimientos: M[]): M[] {
   return [...movimientos].sort((a, b) => b.fecha.localeCompare(a.fecha) || b.creado_en.localeCompare(a.creado_en))
 }

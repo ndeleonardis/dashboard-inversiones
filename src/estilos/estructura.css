@@ -325,6 +325,49 @@
   gap: var(--space-3);
 }
 
+.movimientos {
+  margin-top: var(--space-8);
+}
+
+/* Carrusel de personas (DESIGN.md, sección 7): la tarjeta elegida en negro.
+   En el celular se desliza de costado; desde 768 px se ven todas. */
+.carrusel {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-bottom: var(--space-1);
+  scrollbar-width: none;
+}
+
+.carrusel-tarjeta {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: flex-end;
+  min-width: 110px;
+  max-width: 180px;
+  min-height: 72px;
+  padding: var(--space-3);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-pill);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+  text-align: left;
+  cursor: pointer;
+}
+
+.carrusel-tarjeta[aria-pressed='true'] {
+  background: var(--color-surface-active);
+  color: var(--color-text-inverse);
+}
+
+@media (min-width: 768px) {
+  .carrusel {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+}
+
 /* Formularios: una sola columna, también en la notebook. */
 .columna-formulario {
   width: 100%;

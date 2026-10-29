@@ -62,11 +62,14 @@ export function useFila<T extends TablaConId>(tabla: T, id: string): Cargado<Fil
   return comoCargado([resultado], () => resultado.data ?? null)
 }
 
-/** Ingresos, gastos y lo que queda en el mes, una fila por moneda (C21). */
-export function useResumenMes(mes: string): Cargado<FilaResumenMes[]> {
+/** Ingresos, gastos y lo que queda en el mes, una fila por moneda (C21). Sin persona, del grupo (C25). */
+export function useResumenMes(mes: string, persona = ''): Cargado<FilaResumenMes[]> {
   const repositorio = useRepositorio()
   const primerDia = mesDe(mes)
-  const resultado = useQuery({ queryKey: ['resumenMes', primerDia], queryFn: () => repositorio.resumenMes(primerDia) })
+  const resultado = useQuery({
+    queryKey: ['resumenMes', primerDia, persona],
+    queryFn: () => (persona ? repositorio.resumenMes(primerDia, persona) : repositorio.resumenMes(primerDia)),
+  })
   return comoCargado([resultado], () => resultado.data ?? [])
 }
 

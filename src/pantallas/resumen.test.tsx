@@ -1,15 +1,17 @@
-import { screen, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import { abrirApp } from '../../tests/interfaz/abrir-app.tsx'
+import { abrirApp, cargarEjemplo } from '../../tests/interfaz/abrir-app.tsx'
 import { crearRepositorioFalso } from '../../tests/interfaz/repositorio-falso.ts'
 import type { Fila, FilaResumenMes } from '../datos/repositorio.ts'
 import { hoy, mesActual, mesAnterior } from '../dominio/fechas.ts'
 import { formatearMes } from '../dominio/formato.ts'
 import type { Moneda } from '../dominio/moneda.ts'
 
-const delMes = (moneda: Moneda, ingresos: number, gastos: number): FilaResumenMes => ({
+const delMes = (moneda: Moneda, ingresos: number, gastos: number, comunitarios = 0): FilaResumenMes => ({
   moneda,
   ingresos,
+  gastos_asignados: gastos - comunitarios,
+  gastos_comunitarios: comunitarios,
   gastos,
   queda: ingresos - gastos,
 })
@@ -158,5 +160,89 @@ describe('resumen', () => {
 
     await usuario.click(menu().getByRole('link', { name: 'Resumen' }))
     expect(await within(await bloque('El mes')).findByText('$ 250,00')).toBeInTheDocument()
+  })
+})
+
+describe('el mes de una persona (C25)', () => {
+  it('al elegir una persona se ven sus ingresos, sus gastos y los comunitarios del grupo', async () => {
+    const repositorio = crearRepositorioFalso(INVERSIONES)
+    const { ana } = await cargarEjemplo(repositorio)
+    const resumenMes = vi
+      .spyOn(repositorio, 'resumenMes')
+      .mockImplementation(async (_mes, persona) =>
+        persona === ana.id
+          ? [delMes('ARS', 1000, 400, 300), delMes('USD', 50, 10, 10)]
+          : [delMes('ARS', 3000, 600, 300), delMes('USD', 50, 10, 10)],
+      )
+    const { usuario } = abrirApp('/', repositorio)
+
+    const mes = await bloque('El mes')
+    const personas = await within(mes).findByRole('group', { name: 'Ver el mes de' })
+    expect(await within(personas).findByRole('button', { name: 'Todo el grupo' })).toHaveAttribute('aria-pressed', 'true')
+    expect(monto(await within(mes).findByRole('group', { name: 'Pesos' }), 'Gastos')).toBe('$ 600,00')
+
+    await usuario.click(within(personas).getByRole('button', { name: 'Ana' }))
+    expect(within(personas).getByRole('button', { name: 'Ana' })).toHaveAttribute('aria-pressed', 'true')
+    // Uno por moneda.
+    expect(await within(mes).findAllByText('Gastos propios')).toHaveLength(2)
+    const pesos = within(mes).getByRole('group', { name: 'Pesos' })
+    expect(monto(pesos, 'Ingresos')).toBe('$ 1.000,00')
+    expect(monto(pesos, 'Gastos propios')).toBe('$ 100,00')
+    expect(monto(pesos, 'Gastos comunitarios')).toBe('$ 300,00')
+    expect(monto(pesos, 'Queda para invertir')).toBe('$ 600,00')
+    expect(resumenMes).toHaveBeenLastCalledWith(mesActual(), ana.id)
+
+    // Cambiar de mes no suelta a la persona elegida.
+    await usuario.click(within(mes).getByRole('button', { name: 'Mes anterior' }))
+    await waitFor(() => expect(resumenMes).toHaveBeenLastCalledWith(mesAnterior(mesActual()), ana.id))
+    expect(within(personas).getByRole('button', { name: 'Ana' })).toHaveAttribute('aria-pressed', 'true')
+
+    await usuario.click(within(personas).getByRole('button', { name: 'Todo el grupo' }))
+    await waitFor(() => expect(resumenMes).toHaveBeenLastCalledWith(mesAnterior(mesActual())))
+  })
+})
+
+describe('últimos movimientos (C26)', () => {
+  const movimiento = (
+    clase: 'gasto' | 'ingreso',
+    fecha: string,
+    monto: number,
+    categoria: string,
+    persona: string,
+  ): Fila<'ultimos_movimientos'> => ({
+    id: crypto.randomUUID(),
+    clase,
+    fecha,
+    monto,
+    moneda: 'ARS',
+    categoria,
+    persona,
+    descripcion: '',
+    creado_en: `${fecha}T12:00:00Z`,
+  })
+
+  it('se ven los últimos gastos e ingresos, del más nuevo al más viejo', async () => {
+    const ultimos = [
+      movimiento('gasto', '2026-10-03', 45000, 'Combustible', 'Ana'),
+      movimiento('ingreso', '2026-10-05', 200000, 'Salario', 'Beto'),
+      movimiento('gasto', '2026-10-01', 85000.5, 'Comida', ''),
+    ]
+    const repositorio = crearRepositorioFalso({ resumenMes: SIN_MOVIMIENTOS, ...INVERSIONES, ultimos_movimientos: ultimos })
+    abrirApp('/', repositorio)
+
+    const seccion = await bloque('Últimos movimientos')
+    const tarjetas = await within(seccion).findAllByRole('link')
+    expect(tarjetas.map((t) => t.querySelector('.tarjeta-titulo')?.textContent)).toEqual(['Salario', 'Combustible', 'Comida'])
+    expect(tarjetas[0]).toHaveTextContent('Ingreso · 05/10/2026 · Beto')
+    expect(tarjetas[1]).toHaveTextContent('Gasto · 03/10/2026 · Ana')
+    expect(tarjetas[2]).toHaveTextContent('Gasto · 01/10/2026 · Comunitario')
+    expect(tarjetas[2]).toHaveTextContent('$ 85.000,50')
+    expect(tarjetas[0]).toHaveAttribute('href', `/ingresos/${ultimos[1]!.id}`)
+    expect(tarjetas[1]).toHaveAttribute('href', `/gastos/${ultimos[0]!.id}`)
+  })
+
+  it('sin movimientos lo dice', async () => {
+    abrirApp('/', crearRepositorioFalso({ resumenMes: SIN_MOVIMIENTOS, ...INVERSIONES }))
+    expect(await within(await bloque('Últimos movimientos')).findByText('Todavía no hay gastos ni ingresos cargados.')).toBeInTheDocument()
   })
 })

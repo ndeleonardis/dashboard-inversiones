@@ -101,6 +101,17 @@ describe('repositorio con Supabase', () => {
     ])
   })
 
+  it('el resumen del mes se pide para el grupo o para una persona (C25)', async () => {
+    const { repositorio, pedidos, enviados } = conRespuesta(200, [])
+    await repositorio.resumenMes('2026-10-01')
+    await repositorio.resumenMes('2026-10-01', ID)
+    expect(pedidos.map((p) => p.url)).toEqual([
+      expect.stringContaining('/rest/v1/rpc/resumen_mes'),
+      expect.stringContaining('/rest/v1/rpc/resumen_mes'),
+    ])
+    expect(enviados).toEqual([{ p_mes: '2026-10-01' }, { p_mes: '2026-10-01', p_persona: ID }])
+  })
+
   it('un error de la base llega entero, para que se traduzca a español', async () => {
     const { repositorio } = conRespuesta(409, {
       code: '23503',

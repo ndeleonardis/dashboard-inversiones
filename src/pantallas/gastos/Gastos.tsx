@@ -19,6 +19,7 @@ import { RUTAS, rutaDeGasto, rutaDelMes } from '../../rutas.ts'
 import {
   CampoDeDescripcion,
   CamposDeMonto,
+  COMUNITARIO,
   confirmarFecha,
   datosDeMovimiento,
   masNuevosPrimero,
@@ -28,7 +29,6 @@ import {
 } from '../movimientos.tsx'
 
 const volverALaLista = { a: RUTAS.gastos, texto: 'Gastos' }
-const COMUNITARIO = 'Comunitario'
 
 type ValoresDeGasto = ValoresDeMovimiento & { tipo_gasto_id: string; persona_id: string }
 

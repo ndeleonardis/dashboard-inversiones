@@ -692,6 +692,20 @@ export type Database = {
           },
         ]
       }
+      ultimos_movimientos: {
+        Row: {
+          categoria: string | null
+          clase: string | null
+          creado_en: string | null
+          descripcion: string | null
+          fecha: string | null
+          id: string | null
+          moneda: Database["public"]["Enums"]["moneda"] | null
+          monto: number | null
+          persona: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       agregar_autoria: { Args: { p_tabla: unknown }; Returns: undefined }
@@ -732,9 +746,11 @@ export type Database = {
         }
       }
       resumen_mes: {
-        Args: { p_mes: string }
+        Args: { p_mes: string; p_persona?: string }
         Returns: {
           gastos: number
+          gastos_asignados: number
+          gastos_comunitarios: number
           ingresos: number
           moneda: Database["public"]["Enums"]["moneda"]
           queda: number

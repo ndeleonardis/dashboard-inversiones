@@ -11,8 +11,17 @@ export function useMesDeLaRuta(): [string, (mes: string) => void] {
   const [busqueda, setBusqueda] = useSearchParams()
   const pedido = busqueda.get('mes') ?? ''
   const mes = MES_EN_LA_RUTA.test(pedido) ? `${pedido}-01` : mesActual()
-  // Sin sumar al historial: el botón de atrás no recorre los meses.
-  const cambiar = (nuevo: string) => setBusqueda({ mes: nuevo.slice(0, 7) }, { replace: true })
+  // Sin sumar al historial: el botón de atrás no recorre los meses. Lo demás
+  // que haya en la dirección, como la persona elegida, se queda.
+  const cambiar = (nuevo: string) =>
+    setBusqueda(
+      (actual) => {
+        const siguiente = new URLSearchParams(actual)
+        siguiente.set('mes', nuevo.slice(0, 7))
+        return siguiente
+      },
+      { replace: true },
+    )
   return [mes, cambiar]
 }
 

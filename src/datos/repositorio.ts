@@ -74,8 +74,12 @@ export interface Repositorio {
    * Sin id es uno nuevo. Devuelve el id.
    */
   guardarInstrumento(datos: DatosDeInstrumento, id?: string): Promise<string>
-  /** Ingresos, gastos y lo que queda, una fila por moneda (C21). El mes es cualquier día del mes. */
-  resumenMes(mes: string): Promise<FilaResumenMes[]>
+  /**
+   * Ingresos, gastos y lo que queda, una fila por moneda (C21). El mes es
+   * cualquier día del mes. Con una persona, sus ingresos, sus gastos y los
+   * comunitarios del grupo (C25).
+   */
+  resumenMes(mes: string, personaId?: string): Promise<FilaResumenMes[]>
   /** Si quien está conectado tiene su email cargado en una persona. */
   esMiembro(): Promise<boolean>
 }
@@ -140,8 +144,8 @@ export function crearRepositorioSupabase(cliente: Cliente): Repositorio {
       return data as string
     },
 
-    async resumenMes(mes) {
-      const { data, error } = await cliente.rpc('resumen_mes', { p_mes: mes })
+    async resumenMes(mes, personaId) {
+      const { data, error } = await cliente.rpc('resumen_mes', personaId ? { p_mes: mes, p_persona: personaId } : { p_mes: mes })
       if (error) throw error
       return data
     },
