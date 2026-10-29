@@ -53,7 +53,7 @@ describe('instrumentos', () => {
 
   it('pide tipo, ticker, nombre y moneda antes de enviar', async () => {
     const { repositorio } = await conEjemplo()
-    const crear = vi.spyOn(repositorio, 'crear')
+    const guardar = vi.spyOn(repositorio, 'guardarInstrumento')
     const { usuario } = abrirApp('/instrumentos/nuevo', repositorio)
 
     await usuario.click(await screen.findByRole('button', { name: 'Guardar' }))
@@ -62,12 +62,12 @@ describe('instrumentos', () => {
     expect(screen.getByLabelText('Ticker')).toHaveAccessibleDescription(/Poné el ticker/)
     expect(screen.getByLabelText('Nombre')).toHaveAccessibleDescription('Poné un nombre')
     expect(screen.getByLabelText('Moneda')).toHaveAccessibleDescription('Elegí la moneda')
-    expect(crear).not.toHaveBeenCalled()
+    expect(guardar).not.toHaveBeenCalled()
   })
 
   it('el mismo ticker en la misma moneda se rechaza en el campo del ticker (C8)', async () => {
     const { repositorio } = await conEjemplo()
-    vi.spyOn(repositorio, 'crear').mockRejectedValueOnce({
+    vi.spyOn(repositorio, 'guardarInstrumento').mockRejectedValueOnce({
       code: '23505',
       message: 'duplicate key value violates unique constraint "instrumento_ticker_moneda_unico"',
     })
@@ -85,7 +85,7 @@ describe('instrumentos', () => {
 
   it('al elegir ON aparece el vencimiento, y sin él el formulario no se envía (C9)', async () => {
     const { repositorio } = await conEjemplo()
-    const crear = vi.spyOn(repositorio, 'crear')
+    const guardar = vi.spyOn(repositorio, 'guardarInstrumento')
     const { usuario } = abrirApp('/instrumentos/nuevo', repositorio)
 
     expect(await screen.findByLabelText('Tipo')).toBeInTheDocument()
@@ -98,7 +98,7 @@ describe('instrumentos', () => {
     await usuario.click(screen.getByRole('button', { name: 'Guardar' }))
 
     expect(screen.getByLabelText('Vencimiento')).toHaveAccessibleDescription('Una ON necesita fecha de vencimiento')
-    expect(crear).not.toHaveBeenCalled()
+    expect(guardar).not.toHaveBeenCalled()
 
     await usuario.type(screen.getByLabelText('Vencimiento'), '2029-06-15')
     await usuario.click(screen.getByRole('button', { name: 'Guardar' }))
@@ -146,5 +146,94 @@ describe('instrumentos', () => {
 
     await usuario.click(menu().getByRole('link', { name: 'Instrumentos' }))
     expect(await screen.findByRole('link', { name: /ONX1D/ })).toBeInTheDocument()
+  })
+})
+
+const DATOS_PROPIOS = [
+  'Código CAFCI (opcional)',
+  'Ratio (opcional)',
+  'Subyacente (opcional)',
+  'Emisor (opcional)',
+  'Valor residual (opcional)',
+]
+const datosPropiosVisibles = () => DATOS_PROPIOS.filter((etiqueta) => screen.queryByLabelText(etiqueta))
+
+describe('datos propios de cada instrumento (C10)', () => {
+  it('los campos aparecen según el tipo', async () => {
+    const { repositorio } = await conEjemplo()
+    const { usuario } = abrirApp('/instrumentos/nuevo', repositorio)
+    const tipo = await screen.findByLabelText('Tipo')
+
+    expect(datosPropiosVisibles()).toEqual([])
+    await usuario.selectOptions(tipo, 'FCI')
+    expect(datosPropiosVisibles()).toEqual(['Código CAFCI (opcional)'])
+    await usuario.selectOptions(tipo, 'CEDEAR')
+    expect(datosPropiosVisibles()).toEqual(['Ratio (opcional)', 'Subyacente (opcional)'])
+    await usuario.selectOptions(tipo, 'ON')
+    expect(datosPropiosVisibles()).toEqual(['Emisor (opcional)', 'Valor residual (opcional)'])
+    await usuario.selectOptions(tipo, 'ACCION')
+    expect(datosPropiosVisibles()).toEqual([])
+  })
+
+  it('un CEDEAR se guarda con su ratio y su subyacente, y la lista los muestra', async () => {
+    const { repositorio } = await conEjemplo()
+    const { usuario } = abrirApp('/instrumentos/nuevo', repositorio)
+
+    await usuario.selectOptions(await screen.findByLabelText('Tipo'), 'CEDEAR')
+    await usuario.type(screen.getByLabelText('Ticker'), 'msft')
+    await usuario.type(screen.getByLabelText('Nombre'), 'Microsoft')
+    await usuario.selectOptions(screen.getByLabelText('Moneda'), 'Pesos')
+    await usuario.type(screen.getByLabelText('Ratio (opcional)'), '30')
+    await usuario.type(screen.getByLabelText('Subyacente (opcional)'), 'msft')
+    await usuario.click(screen.getByRole('button', { name: 'Guardar' }))
+
+    expect(await screen.findByRole('link', { name: /MSFT/ })).toHaveTextContent('Ratio 30 · Subyacente MSFT')
+    const [msft] = (await repositorio.listar('instrumento')).filter((i) => i.ticker === 'MSFT')
+    expect(await repositorio.listar('instrumento_cedear')).toEqual([
+      expect.objectContaining({ instrumento_id: msft!.id, ratio: 30, subyacente: 'MSFT' }),
+    ])
+  })
+
+  it('un ratio con punto decimal o un valor residual de más de 100 quedan marcados', async () => {
+    const { repositorio } = await conEjemplo()
+    const guardar = vi.spyOn(repositorio, 'guardarInstrumento')
+    const { usuario } = abrirApp('/instrumentos/nuevo', repositorio)
+
+    await usuario.selectOptions(await screen.findByLabelText('Tipo'), 'CEDEAR')
+    await usuario.type(screen.getByLabelText('Ratio (opcional)'), '0.5')
+    await usuario.click(screen.getByRole('button', { name: 'Guardar' }))
+    expect(screen.getByLabelText('Ratio (opcional)')).toHaveAccessibleDescription(/Usá coma para los decimales/)
+
+    await usuario.selectOptions(screen.getByLabelText('Tipo'), 'ON')
+    await usuario.type(screen.getByLabelText('Valor residual (opcional)'), '120')
+    await usuario.click(screen.getByRole('button', { name: 'Guardar' }))
+    expect(screen.getByLabelText('Valor residual (opcional)')).toHaveAccessibleDescription(
+      /El valor residual tiene que ser mayor que 0 y no pasar de 100/,
+    )
+    expect(guardar).not.toHaveBeenCalled()
+  })
+
+  it('al editar se ven los datos propios, y si cambia el tipo no queda el que ya no corresponde', async () => {
+    const { repositorio } = await conEjemplo()
+    const id = await repositorio.guardarInstrumento({
+      tipo: 'FCI',
+      ticker: 'FCIX',
+      nombre: 'FCI Ejemplo',
+      moneda: 'ARS',
+      vencimiento: null,
+      codigo_cafci: '1234',
+      ratio: null,
+      subyacente: null,
+      emisor: null,
+      valor_nominal_residual: null,
+    })
+    const { usuario } = abrirApp(`/instrumentos/${id}`, repositorio)
+
+    expect(await screen.findByLabelText('Código CAFCI (opcional)')).toHaveValue('1234')
+    await usuario.selectOptions(screen.getByLabelText('Tipo'), 'ETF')
+    await usuario.click(screen.getByRole('button', { name: 'Guardar' }))
+
+    expect(await screen.findByRole('link', { name: /FCIX/ })).toHaveTextContent('ETF · Pesos')
+    expect(await repositorio.listar('instrumento_fci')).toEqual([])
   })
 })

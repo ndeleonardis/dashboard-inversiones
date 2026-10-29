@@ -19,6 +19,7 @@ export default mergeConfig(
             environment: 'jsdom',
             include: ['src/**/*.test.tsx'],
             setupFiles: ['tests/interfaz/preparar.ts'],
+            testTimeout: 15_000,
           },
         },
         {

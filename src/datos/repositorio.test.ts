@@ -15,15 +15,17 @@ type Pedido = { metodo: string; url: string }
 // la API. Anota cada pedido para ver qué se le mandó.
 function conRespuesta(estado: number, cuerpo: unknown) {
   const pedidos: Pedido[] = []
+  const enviados: unknown[] = []
   const fetchFalso: typeof fetch = async (entrada, opciones) => {
     pedidos.push({ metodo: opciones?.method ?? 'GET', url: String(entrada) })
+    enviados.push(opciones?.body ? JSON.parse(String(opciones.body)) : null)
     return new Response(JSON.stringify(cuerpo), { status: estado, headers: { 'Content-Type': 'application/json' } })
   }
   const cliente = createClient<Database>('https://ejemplo.supabase.co', 'sb_publishable_prueba', {
     global: { fetch: fetchFalso },
     auth: { persistSession: false, autoRefreshToken: false },
   })
-  return { repositorio: crearRepositorioSupabase(cliente), pedidos }
+  return { repositorio: crearRepositorioSupabase(cliente), pedidos, enviados }
 }
 
 describe('repositorio con Supabase', () => {
@@ -68,6 +70,35 @@ describe('repositorio con Supabase', () => {
       message: 'invalid input syntax for type uuid: "no-existe"',
     })
     await expect(repositorio.obtener('gasto', 'no-existe')).resolves.toBeNull()
+  })
+
+  it('un instrumento se guarda con sus datos propios en una sola llamada, sin mandar lo vacío (C10)', async () => {
+    const { repositorio, pedidos, enviados } = conRespuesta(200, ID)
+    const datos = {
+      tipo: 'CEDEAR',
+      ticker: 'EJM',
+      nombre: 'Empresa Ejemplo',
+      moneda: 'ARS',
+      vencimiento: null,
+      codigo_cafci: null,
+      ratio: '20.5',
+      subyacente: 'EJM',
+      emisor: null,
+      valor_nominal_residual: null,
+    } as const
+    await expect(repositorio.guardarInstrumento(datos, ID)).resolves.toBe(ID)
+    expect(pedidos).toEqual([{ metodo: 'POST', url: expect.stringContaining('/rest/v1/rpc/guardar_instrumento') }])
+    expect(enviados).toEqual([
+      {
+        p_id: ID,
+        p_tipo: 'CEDEAR',
+        p_ticker: 'EJM',
+        p_nombre: 'Empresa Ejemplo',
+        p_moneda: 'ARS',
+        p_ratio: '20.5',
+        p_subyacente: 'EJM',
+      },
+    ])
   })
 
   it('un error de la base llega entero, para que se traduzca a español', async () => {

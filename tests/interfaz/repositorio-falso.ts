@@ -35,7 +35,14 @@ const POR_DEFECTO: { [T in TablaConId]?: Partial<Fila<T>> } = {
 }
 
 // Columnas numeric: la app las manda como texto y la API las devuelve como número.
-const NUMERICAS = new Set(['cantidad', 'precio_unitario', 'comision', 'monto'])
+const NUMERICAS = new Set(['cantidad', 'precio_unitario', 'comision', 'monto', 'ratio', 'valor_nominal_residual'])
+
+// Las tablas de detalle de cada tipo de instrumento, con sus columnas (C10).
+const DETALLES = {
+  instrumento_fci: { tipo: 'FCI', columnas: ['codigo_cafci'] },
+  instrumento_cedear: { tipo: 'CEDEAR', columnas: ['ratio', 'subyacente'] },
+  instrumento_on: { tipo: 'ON', columnas: ['emisor', 'valor_nominal_residual'] },
+} as const
 
 function comoLaBase(datos: object): FilaSuelta {
   return Object.fromEntries(
@@ -61,8 +68,9 @@ export function crearRepositorioFalso(datos: DatosFalsos = {}): Repositorio {
     return fila
   }
   let orden = filasDe('operacion').length
+  const autoria = () => ({ creado_por: email, creado_en: new Date().toISOString(), modificado_por: null, modificado_en: null })
 
-  return {
+  const repositorio: Repositorio = {
     async listar<T extends Origen>(origen: T) {
       return filasDe(origen).map((fila) => ({ ...fila })) as Fila<T>[]
     },
@@ -86,10 +94,7 @@ export function crearRepositorioFalso(datos: DatosFalsos = {}): Repositorio {
         ...comoLaBase(alta),
         id: crypto.randomUUID(),
         ...(tabla === 'operacion' ? { orden: ++orden } : {}),
-        creado_por: email,
-        creado_en: new Date().toISOString(),
-        modificado_por: null,
-        modificado_en: null,
+        ...autoria(),
       }
       filasDe(tabla).push(fila)
       return { ...fila } as Fila<T>
@@ -106,6 +111,29 @@ export function crearRepositorioFalso(datos: DatosFalsos = {}): Repositorio {
       filas.splice(filas.indexOf(buscar(tabla, id)), 1)
     },
 
+    // Como la función de la base: el instrumento y su detalle juntos. El
+    // detalle sin datos se borra. Que sea del tipo correcto lo controla la base.
+    async guardarInstrumento(datos, id) {
+      const { codigo_cafci, ratio, subyacente, emisor, valor_nominal_residual, ...instrumento } = datos
+      const valores: FilaSuelta = { codigo_cafci, ratio, subyacente, emisor, valor_nominal_residual }
+      const guardado = id
+        ? await repositorio.editar('instrumento', id, instrumento)
+        : await repositorio.crear('instrumento', instrumento)
+      for (const [tabla, { tipo, columnas }] of Object.entries(DETALLES)) {
+        const filas = filasDe(tabla as Origen)
+        const anterior = filas.find((fila) => fila.instrumento_id === guardado.id)
+        const campos = Object.fromEntries(columnas.map((columna) => [columna, valores[columna]]))
+        if (Object.values(campos).every((valor) => valor === null)) {
+          if (anterior) filas.splice(filas.indexOf(anterior), 1)
+        } else if (anterior) {
+          Object.assign(anterior, comoLaBase(campos), { modificado_por: email, modificado_en: new Date().toISOString() })
+        } else {
+          filas.push({ instrumento_id: guardado.id, tipo, ...comoLaBase(campos), ...autoria() })
+        }
+      }
+      return guardado.id
+    },
+
     async resumenMes() {
       return resumenMes.map((fila) => ({ ...fila }))
     },
@@ -114,4 +142,5 @@ export function crearRepositorioFalso(datos: DatosFalsos = {}): Repositorio {
       return esMiembro
     },
   }
+  return repositorio
 }

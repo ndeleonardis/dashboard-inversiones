@@ -12,7 +12,14 @@ const INTRUSO = 'intruso@example.com'
 
 // Las funciones que alguien con sesión puede ejecutar. Cualquier otra que
 // aparezca tiene que sumarse acá a propósito.
-const FUNCIONES_PARA_MIEMBROS = ['costo_promedio', 'email_de_la_sesion', 'es_miembro', 'resumen_mes', 'validar_posicion']
+const FUNCIONES_PARA_MIEMBROS = [
+  'costo_promedio',
+  'email_de_la_sesion',
+  'es_miembro',
+  'guardar_instrumento',
+  'resumen_mes',
+  'validar_posicion',
+]
 
 beforeAll(async () => {
   base = await crearBase()

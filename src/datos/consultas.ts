@@ -4,7 +4,16 @@
 import { useQueries, useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query'
 import { mesDe } from '../dominio/fechas.ts'
 import { useRepositorio } from './contexto.tsx'
-import type { Alta, Cambios, Fila, FilaResumenMes, Origen, TablaConId, TablaDelMes } from './repositorio.ts'
+import type {
+  Alta,
+  Cambios,
+  DatosDeInstrumento,
+  Fila,
+  FilaResumenMes,
+  Origen,
+  TablaConId,
+  TablaDelMes,
+} from './repositorio.ts'
 
 export type Cargado<D> = { estado: 'cargando' } | { estado: 'error'; reintentar: () => void } | { estado: 'listo'; datos: D }
 
@@ -79,6 +88,9 @@ export function useCambios() {
 
     editar: <T extends TablaConId>(tabla: T, id: string, cambios: Cambios<T>) =>
       yRefrescar(repositorio.editar(tabla, id, cambios)),
+
+    guardarInstrumento: (datos: DatosDeInstrumento, id?: string) =>
+      yRefrescar(repositorio.guardarInstrumento(datos, id)),
 
     async borrar(tabla: TablaConId, id: string) {
       try {

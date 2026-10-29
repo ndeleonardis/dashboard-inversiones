@@ -258,6 +258,126 @@ export type Database = {
           },
         ]
       }
+      instrumento_cedear: {
+        Row: {
+          creado_en: string
+          creado_por: string | null
+          instrumento_id: string
+          modificado_en: string | null
+          modificado_por: string | null
+          ratio: number | null
+          subyacente: string | null
+          tipo: string
+        }
+        Insert: {
+          creado_en?: string
+          creado_por?: string | null
+          instrumento_id: string
+          modificado_en?: string | null
+          modificado_por?: string | null
+          ratio?: number | null
+          subyacente?: string | null
+          tipo?: string
+        }
+        Update: {
+          creado_en?: string
+          creado_por?: string | null
+          instrumento_id?: string
+          modificado_en?: string | null
+          modificado_por?: string | null
+          ratio?: number | null
+          subyacente?: string | null
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "instrumento_cedear_instrumento_fk"
+            columns: ["instrumento_id", "tipo"]
+            isOneToOne: false
+            referencedRelation: "instrumento"
+            referencedColumns: ["id", "tipo"]
+          },
+        ]
+      }
+      instrumento_fci: {
+        Row: {
+          codigo_cafci: string
+          creado_en: string
+          creado_por: string | null
+          instrumento_id: string
+          modificado_en: string | null
+          modificado_por: string | null
+          tipo: string
+        }
+        Insert: {
+          codigo_cafci: string
+          creado_en?: string
+          creado_por?: string | null
+          instrumento_id: string
+          modificado_en?: string | null
+          modificado_por?: string | null
+          tipo?: string
+        }
+        Update: {
+          codigo_cafci?: string
+          creado_en?: string
+          creado_por?: string | null
+          instrumento_id?: string
+          modificado_en?: string | null
+          modificado_por?: string | null
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "instrumento_fci_instrumento_fk"
+            columns: ["instrumento_id", "tipo"]
+            isOneToOne: false
+            referencedRelation: "instrumento"
+            referencedColumns: ["id", "tipo"]
+          },
+        ]
+      }
+      instrumento_on: {
+        Row: {
+          creado_en: string
+          creado_por: string | null
+          emisor: string | null
+          instrumento_id: string
+          modificado_en: string | null
+          modificado_por: string | null
+          tipo: string
+          valor_nominal_residual: number | null
+        }
+        Insert: {
+          creado_en?: string
+          creado_por?: string | null
+          emisor?: string | null
+          instrumento_id: string
+          modificado_en?: string | null
+          modificado_por?: string | null
+          tipo?: string
+          valor_nominal_residual?: number | null
+        }
+        Update: {
+          creado_en?: string
+          creado_por?: string | null
+          emisor?: string | null
+          instrumento_id?: string
+          modificado_en?: string | null
+          modificado_por?: string | null
+          tipo?: string
+          valor_nominal_residual?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "instrumento_on_instrumento_fk"
+            columns: ["instrumento_id", "tipo"]
+            isOneToOne: false
+            referencedRelation: "instrumento"
+            referencedColumns: ["id", "tipo"]
+          },
+        ]
+      }
       operacion: {
         Row: {
           cantidad: number
@@ -578,6 +698,22 @@ export type Database = {
       antes_de_crear_usuario: { Args: { event: Json }; Returns: Json }
       email_de_la_sesion: { Args: never; Returns: string }
       es_miembro: { Args: never; Returns: boolean }
+      guardar_instrumento: {
+        Args: {
+          p_codigo_cafci?: string
+          p_emisor?: string
+          p_id?: string
+          p_moneda: Database["public"]["Enums"]["moneda"]
+          p_nombre: string
+          p_ratio?: number
+          p_subyacente?: string
+          p_ticker: string
+          p_tipo: string
+          p_valor_nominal_residual?: number
+          p_vencimiento?: string
+        }
+        Returns: string
+      }
       paso_costo_promedio: {
         Args: {
           p_cantidad: number

@@ -43,6 +43,22 @@ export const MENSAJES_DE_RESTRICCION: Record<string, ErrorParaMostrar> = {
   instrumento_vencimiento_solo_on: enCampo('Solo las ON llevan vencimiento', 'vencimiento'),
   instrumento_ticker_moneda_unico: enCampo('Ya existe ese ticker en esa moneda', 'ticker'),
   instrumento_id_moneda_unico: sinCampo(MENSAJE_GENERICO),
+  instrumento_id_tipo_unico: sinCampo(MENSAJE_GENERICO),
+  instrumento_fci_tipo_fci: enCampo('El código CAFCI es solo para un FCI', 'codigo_cafci'),
+  instrumento_fci_codigo_cafci_no_vacio: enCampo('Poné el código CAFCI', 'codigo_cafci'),
+  instrumento_cedear_tipo_cedear: enCampo('El ratio y el subyacente son solo para un CEDEAR', 'ratio'),
+  instrumento_cedear_con_datos: enCampo('Poné el ratio o el subyacente', 'ratio'),
+  instrumento_cedear_ratio_positivo: enCampo('El ratio tiene que ser mayor que cero', 'ratio'),
+  instrumento_cedear_ratio_decimales: enCampo('Usá hasta 8 decimales', 'ratio'),
+  instrumento_cedear_subyacente_no_vacio: enCampo('Poné el subyacente', 'subyacente'),
+  instrumento_on_tipo_on: enCampo('El emisor y el valor residual son solo para una ON', 'emisor'),
+  instrumento_on_con_datos: enCampo('Poné el emisor o el valor residual', 'emisor'),
+  instrumento_on_emisor_no_vacio: enCampo('Poné el emisor', 'emisor'),
+  instrumento_on_valor_residual_valido: enCampo(
+    'El valor residual tiene que ser mayor que 0 y no pasar de 100',
+    'valor_nominal_residual',
+  ),
+  instrumento_on_valor_residual_decimales: enCampo('Usá hasta 8 decimales', 'valor_nominal_residual'),
   tipo_operacion_codigo_valido: sinCampo('El código del tipo de operación no es válido'),
   tipo_operacion_nombre_no_vacio: enCampo('Poné un nombre', 'nombre'),
   operacion_cantidad_positiva: enCampo('La cantidad tiene que ser mayor que cero', 'cantidad'),
@@ -81,6 +97,18 @@ export const CLAVES_FORANEAS: Record<string, MensajesDeClaveForanea> = {
   instrumento_tipo_fk: {
     enUso: 'No se puede borrar: hay instrumentos de este tipo',
     alGuardar: enCampo('El tipo de instrumento elegido no existe', 'tipo'),
+  },
+  instrumento_fci_instrumento_fk: {
+    enUso: 'No se puede cambiar el tipo: el instrumento tiene datos de FCI cargados',
+    alGuardar: enCampo('El código CAFCI es solo para un FCI', 'codigo_cafci'),
+  },
+  instrumento_cedear_instrumento_fk: {
+    enUso: 'No se puede cambiar el tipo: el instrumento tiene datos de CEDEAR cargados',
+    alGuardar: enCampo('El ratio y el subyacente son solo para un CEDEAR', 'ratio'),
+  },
+  instrumento_on_instrumento_fk: {
+    enUso: 'No se puede cambiar el tipo: el instrumento tiene datos de ON cargados',
+    alGuardar: enCampo('El emisor y el valor residual son solo para una ON', 'emisor'),
   },
   operacion_cuenta_fk: {
     enUso: 'No se puede borrar: esta cuenta tiene operaciones cargadas',
@@ -138,6 +166,7 @@ export const MENSAJES_DE_COLUMNA: Record<string, string> = {
   monto: 'Poné el monto',
   tipo_gasto_id: 'Elegí la categoría',
   tipo_ingreso_id: 'Elegí la categoría',
+  codigo_cafci: 'Poné el código CAFCI',
 }
 
 type ErrorDeLaBase = { code?: string; message?: string; details?: string | null }

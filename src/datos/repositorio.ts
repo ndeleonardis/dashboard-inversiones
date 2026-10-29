@@ -43,6 +43,20 @@ export type Cambios<T extends TablaConId> = ConNumerosComoTexto<Omit<Esquema['Ta
 
 export type FilaResumenMes = Esquema['Functions']['resumen_mes']['Returns'][number]
 
+/** Un instrumento con sus datos propios (C10). Los de otro tipo van en null. */
+export type DatosDeInstrumento = {
+  tipo: string
+  ticker: string
+  nombre: string
+  moneda: Esquema['Enums']['moneda']
+  vencimiento: string | null
+  codigo_cafci: string | null
+  ratio: string | null
+  subyacente: string | null
+  emisor: string | null
+  valor_nominal_residual: string | null
+}
+
 export interface Repositorio {
   /** Todas las filas de una tabla o una vista. */
   listar<T extends Origen>(origen: T): Promise<Fila<T>[]>
@@ -55,6 +69,11 @@ export interface Repositorio {
   editar<T extends TablaConId>(tabla: T, id: string, cambios: Cambios<T>): Promise<Fila<T>>
   /** Si la fila ya no existe, falla con "No se encontró" en lugar de pasar por buena. */
   borrar(tabla: TablaConId, id: string): Promise<void>
+  /**
+   * Guarda un instrumento y sus datos propios en una sola transacción (C10).
+   * Sin id es uno nuevo. Devuelve el id.
+   */
+  guardarInstrumento(datos: DatosDeInstrumento, id?: string): Promise<string>
   /** Ingresos, gastos y lo que queda, una fila por moneda (C21). El mes es cualquier día del mes. */
   resumenMes(mes: string): Promise<FilaResumenMes[]>
   /** Si quien está conectado tiene su email cargado en una persona. */
@@ -108,6 +127,17 @@ export function crearRepositorioSupabase(cliente: Cliente): Repositorio {
       const { data, error } = await sinTipos.from(tabla).delete().eq('id', id).select('id')
       if (error) throw error
       if (data.length === 0) throw new ErrorDeLaApp(MENSAJE_NO_SE_ENCONTRO)
+    },
+
+    async guardarInstrumento(datos, id) {
+      // Lo que va en null no se manda, y la base lo toma como vacío. Los
+      // números van como texto exacto, igual que en las tablas.
+      const argumentos = Object.fromEntries(
+        Object.entries({ ...datos, id }).flatMap(([campo, valor]) => (valor == null ? [] : [[`p_${campo}`, valor]])),
+      )
+      const { data, error } = await sinTipos.rpc('guardar_instrumento', argumentos)
+      if (error) throw error
+      return data as string
     },
 
     async resumenMes(mes) {
