@@ -323,7 +323,7 @@ export function ListaDeOperaciones() {
                         <span className="tarjeta-titulo">{`${tipo(operacion)} · ${ticker(operacion)}`}</span>
                         <span>
                           {formatearCantidad(operacion.cantidad)} a{' '}
-                          <Monto valor={operacion.precio_unitario} moneda={operacion.moneda} />
+                          <Monto valor={operacion.precio_unitario} moneda={operacion.moneda} precio />
                         </span>
                         <span className="tarjeta-detalle">{formatearFecha(operacion.fecha)}</span>
                         <span className="tarjeta-detalle">{cuenta(operacion)}</span>

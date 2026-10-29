@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatearCantidad, formatearFecha, formatearMes, formatearMomento, formatearMonto } from './formato.ts'
+import { formatearCantidad, formatearFecha, formatearMes, formatearMomento, formatearMonto, formatearPrecio } from './formato.ts'
 import { MONEDAS } from './moneda.ts'
 
 // Intl separa el símbolo del número con un espacio duro (U+00A0).
@@ -25,6 +25,18 @@ describe('montos (C24)', () => {
 
   it('un monto negativo lleva el signo', () => {
     expect(sinEspacioDuro(formatearMonto(-1234, 'ARS'))).toBe('-$ 1.234,00')
+  })
+})
+
+describe('precios unitarios', () => {
+  it('muestran los decimales que tienen, hasta 8, sin redondear a centavos', () => {
+    expect(sinEspacioDuro(formatearPrecio('0.00012345', 'USD'))).toBe('US$ 0,00012345')
+    expect(sinEspacioDuro(formatearPrecio('12.345678', 'ARS'))).toBe('$ 12,345678')
+  })
+
+  it('con menos de 2 decimales salen como un monto', () => {
+    expect(sinEspacioDuro(formatearPrecio('1500', 'ARS'))).toBe('$ 1.500,00')
+    expect(sinEspacioDuro(formatearPrecio('102.5', 'USD'))).toBe('US$ 102,50')
   })
 })
 

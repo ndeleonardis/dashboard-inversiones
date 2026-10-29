@@ -19,6 +19,16 @@ export function formatearMonto(valor: Numero, moneda: Moneda): string {
   return formatosDeMonto[moneda].format(comoNumero(valor))
 }
 
+const formatosDePrecio: Record<Moneda, Intl.NumberFormat> = {
+  ARS: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 2, maximumFractionDigits: 8 }),
+  USD: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 8 }),
+}
+
+/** Un precio unitario con su moneda. Como la base, admite hasta 8 decimales: "US$ 0,00012345". */
+export function formatearPrecio(valor: Numero, moneda: Moneda): string {
+  return formatosDePrecio[moneda].format(comoNumero(valor))
+}
+
 const formatoDeCantidad = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 8 })
 
 /** Una cantidad de un instrumento, con hasta 8 decimales y sin ceros de más. */

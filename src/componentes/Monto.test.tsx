@@ -17,6 +17,11 @@ describe('Monto (C24)', () => {
     expect(texto(container)).toBe('US$ 25.291,50')
   })
 
+  it('un precio unitario muestra sus decimales, también los de menos de un centavo', () => {
+    const { container } = render(<Monto valor="0.00012345" moneda="USD" precio />)
+    expect(texto(container)).toBe('US$ 0,00012345')
+  })
+
   it('toda moneda de la app se muestra con su símbolo', () => {
     for (const moneda of MONEDAS) {
       const { container, unmount } = render(<Monto valor={10} moneda={moneda} />)
