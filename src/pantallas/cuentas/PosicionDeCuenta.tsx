@@ -8,7 +8,7 @@ import { Monto } from '../../componentes/Monto.tsx'
 import { useListas } from '../../datos/consultas.ts'
 import { formatearCantidad } from '../../dominio/formato.ts'
 import { compararTextos } from '../../dominio/nombres.ts'
-import { rutaDeNuevaOperacion } from '../../rutas.ts'
+import { rutaDeNuevaOperacion, rutaDeOperacionesFiltradas } from '../../rutas.ts'
 
 export function PosicionDeCuenta({ cuentaId }: { cuentaId: string }) {
   const cargado = useListas({ posiciones: 'posicion', instrumentos: 'instrumento' })
@@ -47,7 +47,13 @@ export function PosicionDeCuenta({ cuentaId }: { cuentaId: string }) {
                   {filas.map((fila) => (
                     <tr key={fila.instrumento_id}>
                       <td>
-                        <span className="tabla-titulo">{fila.instrumento?.ticker}</span>
+                        <Link
+                          to={rutaDeOperacionesFiltradas({ cuenta: cuentaId, instrumento: fila.instrumento_id })}
+                          className="tabla-titulo"
+                          aria-label={`Ver las operaciones de ${fila.instrumento?.ticker ?? ''}`}
+                        >
+                          {fila.instrumento?.ticker}
+                        </Link>
                         <span className="tabla-detalle">{fila.instrumento?.nombre}</span>
                       </td>
                       <td className="numero">{formatearCantidad(fila.cantidad)}</td>

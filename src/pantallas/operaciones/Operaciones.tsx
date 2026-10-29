@@ -1,12 +1,13 @@
-// Compras y ventas: lista, alta, edición y baja. Toda operación sale de una
-// cuenta (regla 4) y va en la moneda de su instrumento (decisión 1 del plan):
-// la moneda no se elige, se ve apenas se elige el instrumento, junto con el
-// total. Si una venta deja la cuenta en negativo, la base la rechaza y la
-// pantalla dice cuánto había (C14).
+// Compras y ventas: lista con filtros (C15), alta, edición y baja. Toda
+// operación sale de una cuenta (regla 4) y va en la moneda de su instrumento
+// (decisión 1 del plan): la moneda no se elige, se ve apenas se elige el
+// instrumento, junto con el total. Si una venta deja la cuenta en negativo, la
+// base la rechaza y la pantalla dice cuánto había (C14).
+import { useId } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router'
 import { Autoria } from '../../componentes/Autoria.tsx'
 import { Borrar } from '../../componentes/Borrar.tsx'
-import { Campo } from '../../componentes/Campo.tsx'
+import { Campo, type Opcion } from '../../componentes/Campo.tsx'
 import { Carga } from '../../componentes/Carga.tsx'
 import { Encabezado } from '../../componentes/Encabezado.tsx'
 import { Formulario, useFormulario, type Errores, type Valores } from '../../componentes/Formulario.tsx'
@@ -200,6 +201,43 @@ function CamposDeOperacion({ cuentas, personas, instrumentos, tiposDeInstrumento
   )
 }
 
+type CampoDeFiltro = 'persona' | 'cuenta' | 'instrumento'
+
+/** Los filtros de la lista (C15). Van en la dirección, así volver de una operación no los pierde. */
+function useFiltros() {
+  const [busqueda, setBusqueda] = useSearchParams()
+  const filtro = {
+    persona: busqueda.get('persona') ?? '',
+    cuenta: busqueda.get('cuenta') ?? '',
+    instrumento: busqueda.get('instrumento') ?? '',
+  }
+  const cambiar = (cambios: Partial<Record<CampoDeFiltro, string>>) =>
+    setBusqueda(
+      Object.fromEntries(Object.entries({ ...filtro, ...cambios }).filter(([, valor]) => valor)),
+      { replace: true },
+    )
+  return { filtro, cambiar, conFiltros: Object.values(filtro).some(Boolean) }
+}
+
+type PropsFiltro = { etiqueta: string; valor: string; todas: string; opciones: Opcion[]; alCambiar: (valor: string) => void }
+
+function Filtro({ etiqueta, valor, todas, opciones, alCambiar }: PropsFiltro) {
+  const id = useId()
+  return (
+    <div className="campo">
+      <label htmlFor={id}>{etiqueta}</label>
+      <select id={id} value={valor} onChange={(evento) => alCambiar(evento.target.value)}>
+        <option value="">{todas}</option>
+        {opciones.map((opcion) => (
+          <option key={opcion.valor} value={opcion.valor}>
+            {opcion.texto}
+          </option>
+        ))}
+      </select>
+    </div>
+  )
+}
+
 export function ListaDeOperaciones() {
   const cargado = useListas({
     operaciones: 'operacion',
@@ -208,6 +246,7 @@ export function ListaDeOperaciones() {
     instrumentos: 'instrumento',
     tipos: 'tipo_operacion',
   })
+  const { filtro, cambiar, conFiltros } = useFiltros()
 
   return (
     <>
@@ -217,28 +256,83 @@ export function ListaDeOperaciones() {
           if (operaciones.length === 0) return <p className="vacio">Todavía no hay operaciones cargadas.</p>
           const tipo = (o: Fila<'operacion'>) => tipos.find((t) => t.codigo === o.tipo)?.nombre ?? o.tipo
           const ticker = (o: Fila<'operacion'>) => instrumentos.find((i) => i.id === o.instrumento_id)?.ticker ?? ''
+          const cuentaDe = (o: Fila<'operacion'>) => cuentas.find((c) => c.id === o.cuenta_id)
           const cuenta = (o: Fila<'operacion'>) => {
-            const encontrada = cuentas.find((c) => c.id === o.cuenta_id)
+            const encontrada = cuentaDe(o)
             return encontrada ? nombreDeCuentaConDueno(encontrada, personas) : ''
           }
+          // Con una persona elegida, solo se ofrecen sus cuentas.
+          const cuentasParaElegir = filtro.persona ? cuentas.filter((c) => c.persona_id === filtro.persona) : cuentas
+          const visibles = operaciones.filter(
+            (o) =>
+              (!filtro.persona || cuentaDe(o)?.persona_id === filtro.persona) &&
+              (!filtro.cuenta || o.cuenta_id === filtro.cuenta) &&
+              (!filtro.instrumento || o.instrumento_id === filtro.instrumento),
+          )
           // La más nueva primero. En un mismo día, la última cargada.
-          const ordenadas = [...operaciones].sort((a, b) => b.fecha.localeCompare(a.fecha) || b.orden - a.orden)
+          const ordenadas = visibles.sort((a, b) => b.fecha.localeCompare(a.fecha) || b.orden - a.orden)
           return (
-            <ul className="grilla">
-              {ordenadas.map((operacion) => (
-                <li key={operacion.id}>
-                  <Link to={rutaDeOperacion(operacion.id)} className="tarjeta tarjeta-enlace">
-                    <span className="tarjeta-titulo">{`${tipo(operacion)} · ${ticker(operacion)}`}</span>
-                    <span>
-                      {formatearCantidad(operacion.cantidad)} a{' '}
-                      <Monto valor={operacion.precio_unitario} moneda={operacion.moneda} />
-                    </span>
-                    <span className="tarjeta-detalle">{formatearFecha(operacion.fecha)}</span>
-                    <span className="tarjeta-detalle">{cuenta(operacion)}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <>
+              <div className="filtros" role="group" aria-label="Filtros">
+                <Filtro
+                  etiqueta="Persona"
+                  valor={filtro.persona}
+                  todas="Todas"
+                  opciones={porNombre(personas).map((p) => ({ valor: p.id, texto: p.nombre }))}
+                  alCambiar={(persona) => {
+                    // La cuenta elegida se suelta si no es de la persona nueva.
+                    const sigue = cuentas.some((c) => c.id === filtro.cuenta && (!persona || c.persona_id === persona))
+                    cambiar({ persona, cuenta: sigue ? filtro.cuenta : '' })
+                  }}
+                />
+                <Filtro
+                  etiqueta="Cuenta"
+                  valor={filtro.cuenta}
+                  todas="Todas"
+                  opciones={cuentasParaElegir
+                    .map((c) => ({ valor: c.id, texto: nombreDeCuentaConDueno(c, personas) }))
+                    .sort((a, b) => compararTextos(a.texto, b.texto))}
+                  alCambiar={(cuenta) => cambiar({ cuenta })}
+                />
+                <Filtro
+                  etiqueta="Instrumento"
+                  valor={filtro.instrumento}
+                  todas="Todos"
+                  opciones={[...instrumentos]
+                    .sort((a, b) => compararTextos(a.ticker, b.ticker))
+                    .map((i) => ({ valor: i.id, texto: `${i.ticker} · ${NOMBRE_DE_MONEDA[i.moneda]}` }))}
+                  alCambiar={(instrumento) => cambiar({ instrumento })}
+                />
+                {conFiltros && (
+                  <button
+                    type="button"
+                    className="boton boton-secundario"
+                    onClick={() => cambiar({ persona: '', cuenta: '', instrumento: '' })}
+                  >
+                    Sacar los filtros
+                  </button>
+                )}
+              </div>
+              {ordenadas.length === 0 ? (
+                <p className="vacio">No hay operaciones con estos filtros.</p>
+              ) : (
+                <ul className="grilla">
+                  {ordenadas.map((operacion) => (
+                    <li key={operacion.id}>
+                      <Link to={rutaDeOperacion(operacion.id)} className="tarjeta tarjeta-enlace">
+                        <span className="tarjeta-titulo">{`${tipo(operacion)} · ${ticker(operacion)}`}</span>
+                        <span>
+                          {formatearCantidad(operacion.cantidad)} a{' '}
+                          <Monto valor={operacion.precio_unitario} moneda={operacion.moneda} />
+                        </span>
+                        <span className="tarjeta-detalle">{formatearFecha(operacion.fecha)}</span>
+                        <span className="tarjeta-detalle">{cuenta(operacion)}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
           )
         }}
       </Carga>

@@ -193,6 +193,24 @@
   font-weight: var(--font-weight-semibold);
 }
 
+/* Filtros de una lista: uno debajo del otro en el celular, en fila desde 768 px. */
+.filtros {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.filtros > .boton {
+  justify-self: start;
+}
+
+@media (min-width: 768px) {
+  .filtros {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    align-items: end;
+  }
+}
+
 /* Selector de mes, arriba de las listas de a un mes y del resumen. */
 .selector-mes {
   display: flex;

@@ -324,3 +324,80 @@ describe('operaciones', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('No se encontró. Puede que alguien lo haya borrado')
   })
 })
+
+describe('filtros de operaciones (C15)', () => {
+  /** Ana compró AAPL y AAPLD en su cuenta. Beto compró AAPL y la ON en la suya. */
+  async function conVariasOperaciones() {
+    const ejemplo = await conEjemplo()
+    const { repositorio, beto, billetera, cuenta, aapl, aapld, on } = ejemplo
+    const deBeto = await repositorio.crear('cuenta', { persona_id: beto.id, tipo_cuenta_id: billetera.id, entidad: 'Billetera Dos' })
+    const compra = (cuentaId: string, instrumento: Fila<'instrumento'>, fecha: string) =>
+      repositorio.crear('operacion', {
+        cuenta_id: cuentaId,
+        instrumento_id: instrumento.id,
+        tipo: 'COMPRA',
+        fecha,
+        cantidad: '1',
+        precio_unitario: '10',
+        moneda: instrumento.moneda,
+      })
+    await compra(cuenta.id, aapl, '2026-03-01')
+    await compra(cuenta.id, aapld, '2026-03-02')
+    await compra(deBeto.id, aapl, '2026-03-03')
+    await compra(deBeto.id, on, '2026-03-04')
+    return { ...ejemplo, deBeto }
+  }
+
+  const titulos = () => tarjetas().map((tarjeta) => tarjeta.querySelector('.tarjeta-titulo')?.textContent)
+
+  it('filtrar por persona, por cuenta o por instrumento deja solo esas operaciones', async () => {
+    const { repositorio, beto, cuenta, aapl, on } = await conVariasOperaciones()
+    const { usuario } = abrirApp('/operaciones', repositorio)
+
+    await screen.findByRole('link', { name: /^Compra · ONX1D/ })
+    expect(titulos()).toEqual(['Compra · ONX1D', 'Compra · AAPL', 'Compra · AAPLD', 'Compra · AAPL'])
+
+    await usuario.selectOptions(screen.getByLabelText('Persona'), beto.id)
+    expect(titulos()).toEqual(['Compra · ONX1D', 'Compra · AAPL'])
+    // Con una persona elegida, solo se ofrecen sus cuentas.
+    expect(within(screen.getByLabelText('Cuenta')).getAllByRole('option').map((o) => o.textContent)).toEqual([
+      'Todas',
+      'Billetera Dos (de Beto)',
+    ])
+
+    await usuario.selectOptions(screen.getByLabelText('Instrumento'), aapl.id)
+    expect(titulos()).toEqual(['Compra · AAPL'])
+    expect(tarjetas()[0]).toHaveTextContent('Billetera Dos (de Beto)')
+
+    await usuario.click(screen.getByRole('button', { name: 'Sacar los filtros' }))
+    expect(titulos()).toHaveLength(4)
+
+    await usuario.selectOptions(screen.getByLabelText('Cuenta'), cuenta.id)
+    expect(titulos()).toEqual(['Compra · AAPLD', 'Compra · AAPL'])
+
+    await usuario.selectOptions(screen.getByLabelText('Instrumento'), on.id)
+    expect(screen.getByText('No hay operaciones con estos filtros.')).toBeInTheDocument()
+  })
+
+  it('los filtros quedan en la dirección', async () => {
+    const { repositorio, deBeto } = await conVariasOperaciones()
+    abrirApp(`/operaciones?cuenta=${deBeto.id}`, repositorio)
+
+    await screen.findByRole('link', { name: /^Compra · ONX1D/ })
+    expect(titulos()).toEqual(['Compra · ONX1D', 'Compra · AAPL'])
+    expect(screen.getByLabelText('Cuenta')).toHaveValue(deBeto.id)
+  })
+
+  it('desde la posición de una cuenta se ven las operaciones de cada instrumento', async () => {
+    const { repositorio, cuenta, aapl } = await conVariasOperaciones()
+    conPosicion(repositorio, async () => [
+      { cuenta_id: cuenta.id, persona_id: cuenta.persona_id, instrumento_id: aapl.id, moneda: 'ARS', cantidad: 1, costo: 10 },
+    ])
+    const { usuario } = abrirApp(`/cuentas/${cuenta.id}`, repositorio)
+
+    await usuario.click(await screen.findByRole('link', { name: 'Ver las operaciones de AAPL' }))
+    await screen.findByRole('link', { name: /^Compra · AAPL/ })
+    expect(titulos()).toEqual(['Compra · AAPL'])
+    expect(tarjetas()[0]).toHaveTextContent('Banco Uno · Caja de ahorro (de Ana)')
+  })
+})
