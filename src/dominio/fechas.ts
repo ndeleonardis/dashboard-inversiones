@@ -1,9 +1,7 @@
 // Fechas como texto "AAAA-MM-DD", igual que las guarda la base. Siempre en
 // hora local: a las 23:30 de Buenos Aires todavía es hoy, aunque en UTC ya
 // sea mañana.
-import { formatearFecha } from './formato.ts'
-
-const dosDigitos = (n: number) => String(n).padStart(2, '0')
+import { dosDigitos, formatearFecha } from './formato.ts'
 
 export function hoy(reloj: Date = new Date()): string {
   return `${reloj.getFullYear()}-${dosDigitos(reloj.getMonth() + 1)}-${dosDigitos(reloj.getDate())}`

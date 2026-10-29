@@ -21,12 +21,13 @@ import {
   MENSAJES_DE_COLUMNA,
 } from '../../datos/errores.ts'
 import type { Fila } from '../../datos/repositorio.ts'
-import { avisoDeFechaFutura, hoy } from '../../dominio/fechas.ts'
+import { hoy } from '../../dominio/fechas.ts'
 import { formatearCantidad, formatearFecha } from '../../dominio/formato.ts'
 import { NOMBRE_DE_MONEDA } from '../../dominio/moneda.ts'
 import { compararTextos, nombreDeCuentaConDueno, porNombre } from '../../dominio/nombres.ts'
 import { leerNumero, type NumeroLeido, type ReglasDeNumero } from '../../dominio/numeros.ts'
 import { RUTAS, rutaDeOperacion } from '../../rutas.ts'
+import { confirmarFecha } from '../movimientos.tsx'
 
 // Los códigos fijos de tipo_operacion. La posición de la base los usa.
 const COMPRA = 'COMPRA'
@@ -389,7 +390,7 @@ export function NuevaOperacion() {
                 comision: '',
               }}
               validar={validar}
-              confirmar={({ fecha }) => avisoDeFechaFutura(fecha)}
+              confirmar={confirmarFecha()}
               guardar={async (valores) => {
                 await crear('operacion', datosDe(valores, instrumentos))
               }}
@@ -443,8 +444,7 @@ export function EditarOperacion() {
                       comision: operacion.comision ? formatearCantidad(operacion.comision) : '',
                     }}
                     validar={validar}
-                    // Una fecha futura ya confirmada no se vuelve a preguntar.
-                    confirmar={({ fecha }) => (fecha === operacion.fecha ? null : avisoDeFechaFutura(fecha))}
+                    confirmar={confirmarFecha(operacion.fecha)}
                     guardar={async (valores) => {
                       await editar('operacion', operacion.id, datosDe(valores, catalogos.instrumentos))
                     }}

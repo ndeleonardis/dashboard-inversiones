@@ -36,7 +36,8 @@ export function formatearCantidad(valor: Numero): string {
   return formatoDeCantidad.format(comoNumero(valor))
 }
 
-const dosDigitos = (n: number) => String(n).padStart(2, '0')
+/** Un número de 1 o 2 cifras con dos dígitos: 3 → "03". */
+export const dosDigitos = (n: number) => String(n).padStart(2, '0')
 
 /** "2026-03-01" → "01/03/2026", sin pasar por la zona horaria. */
 export function formatearFecha(fecha: string): string {
