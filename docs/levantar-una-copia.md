@@ -25,6 +25,7 @@ npm install
 
 1. En [supabase.com](https://supabase.com), creá un proyecto nuevo. Elegí la región más cercana (para Argentina, São Paulo).
 2. Elegí una contraseña para la base y guardala. La vas a necesitar en el paso 3.
+   - En Security, dejá tildados "Enable Data API" y "Automatically expose new tables", y destildado "Enable automatic RLS". La app usa la Data API. Los permisos y el RLS de cada tabla los ponen las migraciones, y los tests los prueban con estas opciones.
 3. Anotá tres datos del proyecto:
    - **El ref.** Es lo que va después de `/project/` en la dirección del panel.
    - **La URL.** Es `https://TU-PROYECTO.supabase.co`.
