@@ -348,6 +348,7 @@ T15 y T17 necesitan los pasos de tu lado de la sección 9. Si esos pasos demoran
   - `src/acceso/ventana-ios.test.tsx`. Con la app instalada en iPhone, el login abre la ventana en el mismo toque, la sesión llega cuando la ventana avisa, y si la ventana se bloquea sale el aviso.
   - **Solo navegador.** Instalar en un celular de verdad y entrar con Google.
 - **Decidido el 2026-10-29.** El primer grupo no usa iPhone: sus celulares son Samsung (Android), y en la Mac usa Safari como página. Se hace solo lo que sirve para Android: manifest, íconos y las etiquetas de `index.html`, con `tests/repo/manifest.test.ts`. La ventana de login de iPhone, las etiquetas propias del iPhone y `ventana-ios.test.tsx` no se hacen. La prueba en el navegador es instalar en un Samsung y entrar con Google.
+- **Implementado el 2026-10-29.** El manifest usa `display: standalone`: abre sin la barra del navegador y con la barra del sistema, como decidió Noelia al verificar. Los íconos salen de un mismo dibujo con `scripts/iconos.mjs` (`npm run iconos`), que arma los PNG sin dependencias.
 - **Depende de** T17 y T18.
 
 ### Fase 4. Publicación
@@ -357,6 +358,7 @@ T15 y T17 necesitan los pasos de tu lado de la sección 9. Si esos pasos demoran
 - Una página de privacidad en la app (`/privacidad`). Google pide una página de inicio y una política de privacidad en un dominio propio para publicar la app de login. Sin publicarla, solo entran las cuentas cargadas como usuarios de prueba en Google.
 - El script sube `dist/` al destino que indica `.env`.
 - **Test.** `tests/repo/publicacion.test.ts`. El script toma el destino de `.env` y falla con un mensaje en español si falta. Toda variable que leen `src/` y `scripts/` está en `.env.example` (regla 6). La publicación real y C2 en el sitio publicado se prueban solo en el navegador.
+- **Implementado el 2026-10-29.** Para subir la base del proyecto real, `scripts/supabase.mjs` suma `npm run db:subir:produccion`, que lee `.env.production` y no carga las semillas. `publicacion.test.ts` lo exige. El ejemplo de Nginx suma una política de seguridad (CSP) que solo deja hablar con el proyecto de Supabase, y la privacidad tiene su test de pantalla en `src/pantallas/privacidad.test.tsx`.
 - **Depende de** T23, y de T24 a T28 si entran.
 
 ## 8. Cobertura

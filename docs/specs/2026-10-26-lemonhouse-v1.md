@@ -5,6 +5,8 @@
 > Actualizada el 2026-10-26, al aprobar el plan. Suma C32 (instalable en el celular) y C33 (notebook), y resuelve la moneda de la operación.
 >
 > Actualizada el 2026-10-29, durante la implementación. Detalla los datos propios del CEDEAR y de la ON (C10), los filtros de operaciones (C15) y la cuenta del mes de una persona (C25). Suma el límite de la lista de operaciones y deja el iPhone fuera de la v1, porque el primer grupo usa celulares Samsung y una Mac.
+>
+> Actualizada el 2026-10-29, al verificar la v1. La página de privacidad se ve sin entrar (C1), y la app instalada abre en su propia ventana, sin la barra del navegador (C32).
 
 ## 1. Overview
 
@@ -37,6 +39,7 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 - Registro de quién cargó cada cosa y cuándo.
 - Carga inicial de las tenencias actuales a mano, como una compra por tenencia.
 - Instalar la app en el celular desde el navegador, y usarla también desde la notebook.
+- Una página de privacidad pública, que Google pide para publicar el login.
 
 ### Queda fuera
 
@@ -61,6 +64,7 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 ### Acceso
 
 - **C1 (P0).** DADO alguien sin sesión, CUANDO abre cualquier pantalla, ENTONCES ve el login y no ve ningún dato.
+  - La página de privacidad se puede leer sin sesión, y el login la enlaza. No nombra a ningún grupo.
 - **C2 (P0).** DADO una persona cuyo email fue invitado, CUANDO entra con su cuenta de Google, ENTONCES llega al resumen.
 - **C3 (P0).** DADO una cuenta de Google cuyo email no fue invitado, CUANDO intenta entrar, ENTONCES no entra, ve "Este email no tiene acceso a LemonHouse. Pedile acceso a quien administra la app".
 - **C4 (P0).** DADO un usuario con sesión, CUANDO sale, ENTONCES vuelve al login y no puede ver datos con el botón de atrás.
@@ -117,7 +121,8 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 
 ### Celular y notebook
 
-- **C32 (P1).** DADO un celular, CUANDO se abre LemonHouse en el navegador, ENTONCES se puede instalar en la pantalla de inicio, se abre a pantalla completa con su ícono y se entra con Google sin salir de la app.
+- **C32 (P1).** DADO un celular, CUANDO se abre LemonHouse en el navegador, ENTONCES se puede instalar en la pantalla de inicio, se abre en su propia ventana con su ícono, sin la barra del navegador, y se entra con Google sin salir de la app.
+  - La barra del sistema, con la hora y la batería, sigue visible, como en cualquier app.
   - En la v1 vale para celulares Android, que es lo que usa el primer grupo (Samsung). El iPhone queda fuera (sección 5). En la Mac, LemonHouse se usa desde Safari como página, con la vista de notebook (C33).
 - **C33 (P1).** DADO una notebook, CUANDO se abre LemonHouse, ENTONCES las pantallas aprovechan el ancho (el resumen muestra sus dos bloques lado a lado y las listas se acomodan en grilla) y está todo lo que hay en el celular.
 
