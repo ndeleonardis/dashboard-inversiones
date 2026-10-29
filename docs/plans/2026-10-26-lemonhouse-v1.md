@@ -443,4 +443,8 @@ T15 y T17 necesitan los pasos de tu lado de la sección 9. Si esos pasos demoran
 - **Backup.** El PRD pide un backup diario cifrado de la base real. Eso no está en la spec de la v1, y no conviene depender de los backups del plan Free. Conviene armarlo como un cambio aparte antes de dejar el Excel.
 - **Supabase Free pausa los proyectos** después de una semana sin uso. Si pasa, se reactiva desde el panel.
 - **Dos ventas a la vez** se evitan con un bloqueo en la base. PGlite trabaja con una sola conexión, así que este caso no se puede testear y queda revisado en el código.
+- **Pendiente de la revisión de código (2026-10-29).** Quedan para un cambio aparte tres cosas de poco impacto en un grupo chico:
+  - Si la sesión se cierra mientras alguien escribe (por ejemplo, porque Supabase no pudo renovarla), la app vuelve a entrar y lo escrito se pierde. El borrador se guarda solo cuando el guardado mismo dice que la sesión venció.
+  - Cada guardado espera a que se vuelvan a pedir todas las consultas abiertas antes de volver a la lista.
+  - El detalle de una cuenta pide la posición de todas las cuentas y filtra en el navegador.
 - **Para la v2.** La CAFCI da el valor de un FCI cada 1.000 cuotapartes, y en la v1 se carga por cuotaparte, así que la v2 tiene que convertirlo. Las rentas y los dividendos necesitan su regla de costo antes de poder cargarse.
