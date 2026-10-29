@@ -31,6 +31,11 @@ describe('borrar algo en uso (C7)', () => {
     ).toBe('No se puede cambiar la moneda: el instrumento tiene operaciones cargadas')
   })
 
+  it('al cambiar el tipo de un instrumento con operaciones, lo marca en el tipo', () => {
+    const mensaje = 'No se puede cambiar el tipo: el instrumento tiene operaciones cargadas'
+    expect(traducirError({ code: 'LH005', message: mensaje })).toEqual({ mensaje, campo: 'tipo' })
+  })
+
   it('si lo elegido ya no existe al guardar, lo dice en su campo', () => {
     expect(
       traducirError({

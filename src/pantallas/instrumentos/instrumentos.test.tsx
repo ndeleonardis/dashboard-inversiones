@@ -83,6 +83,19 @@ describe('instrumentos', () => {
     expect(screen.getByLabelText('Ticker')).toHaveAttribute('aria-invalid', 'true')
   })
 
+  it('cambiar el tipo de uno con operaciones se rechaza en el campo del tipo', async () => {
+    const { repositorio, cedear } = await conEjemplo()
+    const mensaje = 'No se puede cambiar el tipo: el instrumento tiene operaciones cargadas'
+    vi.spyOn(repositorio, 'guardarInstrumento').mockRejectedValueOnce({ code: 'LH005', message: mensaje })
+    const { usuario } = abrirApp(`/instrumentos/${cedear.id}`, repositorio)
+
+    await usuario.selectOptions(await screen.findByLabelText('Tipo'), 'ACCION')
+    await usuario.click(screen.getByRole('button', { name: 'Guardar' }))
+
+    expect(await screen.findByText(mensaje)).toBeInTheDocument()
+    expect(screen.getByLabelText('Tipo')).toHaveAttribute('aria-invalid', 'true')
+  })
+
   it('al elegir ON aparece el vencimiento, y sin él el formulario no se envía (C9)', async () => {
     const { repositorio } = await conEjemplo()
     const guardar = vi.spyOn(repositorio, 'guardarInstrumento')

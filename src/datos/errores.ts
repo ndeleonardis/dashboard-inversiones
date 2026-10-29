@@ -204,6 +204,8 @@ export function traducirError(error: unknown): ErrorParaMostrar {
   switch (code) {
     case 'LH001':
       return ventaSinRespaldo(details)
+    case 'LH005':
+      return enCampo(message, 'tipo')
     case '23503':
     case '23001': {
       const mensajes = restriccion ? CLAVES_FORANEAS[restriccion] : undefined

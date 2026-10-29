@@ -237,6 +237,35 @@ describe('moneda de la operación (decisión 1)', () => {
     expect(error.code).toBe('23503')
     expect(error.message).toContain('operacion_moneda_instrumento_fk')
   })
+
+  it('cambiar el tipo de un instrumento con operaciones se rechaza, como la moneda', async () => {
+    const e = await escenario()
+    await operar(e, 'COMPRA', '2026-01-10', 1)
+    const directo = await errorDe(base.admin.consultar(`update instrumento set tipo = 'ACCION' where id = $1`, [e.instrumento]))
+    expect(directo.code).toBe('LH005')
+    expect(directo.message).toBe('No se puede cambiar el tipo: el instrumento tiene operaciones cargadas')
+
+    // A ON el costo de cada operación quedaría dividido por 100, porque cotiza cada 100.
+    const aOn = await errorDe(
+      base.admin.consultar(
+        `select public.guardar_instrumento(p_tipo => 'ON', p_ticker => $1, p_nombre => 'Ejemplo', p_moneda => 'ARS',
+                                           p_id => $2, p_vencimiento => '2030-01-01')`,
+        [e.ticker, e.instrumento],
+      ),
+    )
+    expect(aOn.code).toBe('LH005')
+    const [instrumento] = await base.admin.consultar<{ tipo: string }>('select tipo from instrumento where id = $1', [e.instrumento])
+    expect(instrumento!.tipo).toBe('CEDEAR')
+  })
+
+  it('sin operaciones, el tipo se puede corregir', async () => {
+    const e = await escenario()
+    const [instrumento] = await base.admin.consultar<{ tipo: string }>(
+      `update instrumento set tipo = 'ACCION' where id = $1 returning tipo`,
+      [e.instrumento],
+    )
+    expect(instrumento!.tipo).toBe('ACCION')
+  })
 })
 
 describe('borrar algo con operaciones (C7)', () => {

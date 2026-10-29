@@ -138,6 +138,7 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 |---|---|
 | Moneda distinta de pesos o dólares | No se acepta. Solo hay dos opciones |
 | Operación en una moneda distinta a la del instrumento | No puede pasar. La moneda de la operación sale del instrumento y se ve apenas se lo elige, así un error de especie (AAPL contra AAPLD) se nota antes de guardar |
+| Cambiar el tipo de un instrumento con operaciones | No se guarda, igual que la moneda, porque cambiaría el costo de todas sus operaciones (una ON cotiza cada 100). Para corregirlo se borran las operaciones o se crea otro instrumento. Decidido el 2026-10-29, en la revisión de código |
 | Monto, cantidad o precio en cero o negativo | No se guarda y se marca el campo |
 | Fecha futura en una operación, gasto o ingreso | Se avisa y se pide confirmar |
 | Venta mayor que la posición | No se guarda (C14) |
