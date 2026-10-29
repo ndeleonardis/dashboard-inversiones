@@ -12,7 +12,7 @@ import { Carga } from '../../componentes/Carga.tsx'
 import { Encabezado } from '../../componentes/Encabezado.tsx'
 import { Formulario, useFormulario, type Errores, type Valores } from '../../componentes/Formulario.tsx'
 import { Monto } from '../../componentes/Monto.tsx'
-import { useCambios, useListas } from '../../datos/consultas.ts'
+import { useCambios, useFila, useListas } from '../../datos/consultas.ts'
 import {
   CLAVES_FORANEAS,
   ErrorDeLaApp,
@@ -406,7 +406,9 @@ export function NuevaOperacion() {
 
 export function EditarOperacion() {
   const { id = '' } = useParams()
-  const cargado = useListas({ operaciones: 'operacion', ...CATALOGOS })
+  // Por su id, y no buscándola en la lista, que trae hasta 1.000 operaciones.
+  const cargadaOperacion = useFila('operacion', id)
+  const cargado = useListas(CATALOGOS)
   const { editar, borrar } = useCambios()
   const navegar = useNavigate()
 
@@ -414,50 +416,53 @@ export function EditarOperacion() {
     <>
       <Encabezado titulo="Editar operación" volver={volverALaLista} />
       <Carga cargado={cargado}>
-        {({ operaciones, ...catalogos }) => {
-          const operacion = operaciones.find((o) => o.id === id)
-          if (!operacion) {
-            return (
-              <p role="alert" className="formulario-error">
-                {MENSAJE_NO_SE_ENCONTRO}
-              </p>
-            )
-          }
-          const ticker = catalogos.instrumentos.find((i) => i.id === operacion.instrumento_id)?.ticker ?? ''
-          return (
-            <div className="detalle">
-              <Formulario
-                key={operacion.id}
-                clave={`operacion-${operacion.id}`}
-                inicial={{
-                  tipo: operacion.tipo,
-                  cuenta_id: operacion.cuenta_id,
-                  instrumento_id: operacion.instrumento_id,
-                  fecha: operacion.fecha,
-                  // En formato argentino, que es lo que lee el formulario.
-                  cantidad: formatearCantidad(operacion.cantidad),
-                  precio_unitario: formatearCantidad(operacion.precio_unitario),
-                  comision: operacion.comision ? formatearCantidad(operacion.comision) : '',
-                }}
-                validar={validar}
-                // Una fecha futura ya confirmada no se vuelve a preguntar.
-                confirmar={({ fecha }) => (fecha === operacion.fecha ? null : avisoDeFechaFutura(fecha))}
-                guardar={async (valores) => {
-                  await editar('operacion', operacion.id, datosDe(valores, catalogos.instrumentos))
-                }}
-                alGuardar={() => navegar(RUTAS.operaciones)}
-              >
-                <CamposDeOperacion {...catalogos} />
-              </Formulario>
-              <Autoria fila={operacion} personas={catalogos.personas} />
-              <Borrar
-                pregunta={`¿Borrar la operación de ${ticker} del ${formatearFecha(operacion.fecha)}?`}
-                borrar={() => borrar('operacion', operacion.id)}
-                alBorrar={() => navegar(RUTAS.operaciones)}
-              />
-            </div>
-          )
-        }}
+        {(catalogos) => (
+          <Carga cargado={cargadaOperacion}>
+            {(operacion) => {
+              if (!operacion) {
+                return (
+                  <p role="alert" className="formulario-error">
+                    {MENSAJE_NO_SE_ENCONTRO}
+                  </p>
+                )
+              }
+              const ticker = catalogos.instrumentos.find((i) => i.id === operacion.instrumento_id)?.ticker ?? ''
+              return (
+                <div className="detalle">
+                  <Formulario
+                    key={operacion.id}
+                    clave={`operacion-${operacion.id}`}
+                    inicial={{
+                      tipo: operacion.tipo,
+                      cuenta_id: operacion.cuenta_id,
+                      instrumento_id: operacion.instrumento_id,
+                      fecha: operacion.fecha,
+                      // En formato argentino, que es lo que lee el formulario.
+                      cantidad: formatearCantidad(operacion.cantidad),
+                      precio_unitario: formatearCantidad(operacion.precio_unitario),
+                      comision: operacion.comision ? formatearCantidad(operacion.comision) : '',
+                    }}
+                    validar={validar}
+                    // Una fecha futura ya confirmada no se vuelve a preguntar.
+                    confirmar={({ fecha }) => (fecha === operacion.fecha ? null : avisoDeFechaFutura(fecha))}
+                    guardar={async (valores) => {
+                      await editar('operacion', operacion.id, datosDe(valores, catalogos.instrumentos))
+                    }}
+                    alGuardar={() => navegar(RUTAS.operaciones)}
+                  >
+                    <CamposDeOperacion {...catalogos} />
+                  </Formulario>
+                  <Autoria fila={operacion} personas={catalogos.personas} />
+                  <Borrar
+                    pregunta={`¿Borrar la operación de ${ticker} del ${formatearFecha(operacion.fecha)}?`}
+                    borrar={() => borrar('operacion', operacion.id)}
+                    alBorrar={() => navegar(RUTAS.operaciones)}
+                  />
+                </div>
+              )
+            }}
+          </Carga>
+        )}
       </Carga>
     </>
   )

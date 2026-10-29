@@ -323,6 +323,18 @@ describe('operaciones', () => {
     abrirApp('/operaciones/no-existe')
     expect(await screen.findByRole('alert')).toHaveTextContent('No se encontró. Puede que alguien lo haya borrado')
   })
+
+  it('el detalle la busca por su id, aunque la lista no la traiga', async () => {
+    // La base devuelve hasta 1.000 filas por pedido: pasado eso, la lista puede no incluirla.
+    const { repositorio, compra } = await conUnaCompra()
+    const listar = repositorio.listar.bind(repositorio)
+    vi.spyOn(repositorio, 'listar').mockImplementation(((origen: Origen) =>
+      origen === 'operacion' ? Promise.resolve([]) : listar(origen)) as Repositorio['listar'])
+    abrirApp(`/operaciones/${compra.id}`, repositorio)
+
+    expect(await screen.findByLabelText('Cantidad')).toHaveValue('10')
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
 })
 
 describe('filtros de operaciones (C15)', () => {
