@@ -10,6 +10,8 @@ import { ProveedorDeRepositorio } from './datos/contexto.tsx'
 import type { Repositorio } from './datos/repositorio.ts'
 import { DetalleDeCuenta, ListaDeCuentas, NuevaCuenta } from './pantallas/cuentas/Cuentas.tsx'
 import { Entrar } from './pantallas/Entrar.tsx'
+import { EditarGasto, ListaDeGastos, NuevoGasto } from './pantallas/gastos/Gastos.tsx'
+import { EditarIngreso, ListaDeIngresos, NuevoIngreso } from './pantallas/ingresos/Ingresos.tsx'
 import { EditarInstrumento, ListaDeInstrumentos, NuevoInstrumento } from './pantallas/instrumentos/Instrumentos.tsx'
 import { EditarOperacion, ListaDeOperaciones, NuevaOperacion } from './pantallas/operaciones/Operaciones.tsx'
 import { EditarPersona, ListaDePersonas, NuevaPersona } from './pantallas/personas/Personas.tsx'
@@ -43,6 +45,12 @@ export default function App({ autenticacion, repositorio, avisoInicial = null }:
               <Route element={<RutaProtegida />}>
                 <Route element={<ConEstructura />}>
                   <Route index element={<h1>Resumen</h1>} />
+                  <Route path={RUTAS.gastos} element={<ListaDeGastos />} />
+                  <Route path={RUTAS.gastoNuevo} element={<NuevoGasto />} />
+                  <Route path={`${RUTAS.gastos}/:id`} element={<EditarGasto />} />
+                  <Route path={RUTAS.ingresos} element={<ListaDeIngresos />} />
+                  <Route path={RUTAS.ingresoNuevo} element={<NuevoIngreso />} />
+                  <Route path={`${RUTAS.ingresos}/:id`} element={<EditarIngreso />} />
                   <Route path={RUTAS.personas} element={<ListaDePersonas />} />
                   <Route path={RUTAS.personaNueva} element={<NuevaPersona />} />
                   <Route path={`${RUTAS.personas}/:id`} element={<EditarPersona />} />
@@ -55,7 +63,7 @@ export default function App({ autenticacion, repositorio, avisoInicial = null }:
                   <Route path={RUTAS.operaciones} element={<ListaDeOperaciones />} />
                   <Route path={RUTAS.operacionNueva} element={<NuevaOperacion />} />
                   <Route path={`${RUTAS.operaciones}/:id`} element={<EditarOperacion />} />
-                  {/* Las demás pantallas llegan en T22 y T23. */}
+                  {/* El resumen llega en T23. */}
                   <Route path="*" element={<Navigate to={RUTAS.resumen} replace />} />
                 </Route>
               </Route>

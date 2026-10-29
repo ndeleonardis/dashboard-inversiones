@@ -12,7 +12,7 @@ import { useCambios, useListas } from '../../datos/consultas.ts'
 import { MENSAJE_NO_SE_ENCONTRO, MENSAJES_DE_COLUMNA, MENSAJES_DE_RESTRICCION } from '../../datos/errores.ts'
 import type { Fila } from '../../datos/repositorio.ts'
 import { formatearFecha } from '../../dominio/formato.ts'
-import { MONEDAS, NOMBRE_DE_MONEDA, type Moneda } from '../../dominio/moneda.ts'
+import { NOMBRE_DE_MONEDA, OPCIONES_DE_MONEDA, type Moneda } from '../../dominio/moneda.ts'
 import { compararTextos, porNombre } from '../../dominio/nombres.ts'
 import { RUTAS, rutaDeInstrumento } from '../../rutas.ts'
 
@@ -20,7 +20,6 @@ import { RUTAS, rutaDeInstrumento } from '../../rutas.ts'
 const ON = 'ON'
 
 const volverALaLista = { a: RUTAS.instrumentos, texto: 'Instrumentos' }
-const OPCIONES_DE_MONEDA = MONEDAS.map((moneda) => ({ valor: moneda, texto: NOMBRE_DE_MONEDA[moneda] }))
 
 type ValoresDeInstrumento = { tipo: string; ticker: string; nombre: string; moneda: string; vencimiento: string }
 

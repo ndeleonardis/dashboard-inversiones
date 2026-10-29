@@ -48,6 +48,28 @@ describe('repositorio con Supabase', () => {
     await expect(repositorio.editar('persona', ID, { nombre: 'Ana' })).resolves.toEqual(guardada)
   })
 
+  it('los gastos de un mes se piden con la fecha entre el primer día del mes y el del siguiente', async () => {
+    const { repositorio, pedidos } = conRespuesta(200, [])
+    await repositorio.listarDelMes('gasto', '2026-12-15')
+    expect(pedidos).toEqual([{ metodo: 'GET', url: expect.stringContaining('/rest/v1/gasto?select=*&fecha=gte.2026-12-01&fecha=lt.2027-01-01') }])
+  })
+
+  it('una fila se pide por su id, y si no está vuelve vacía', async () => {
+    const { repositorio, pedidos } = conRespuesta(200, [])
+    await expect(repositorio.obtener('gasto', ID)).resolves.toBeNull()
+    expect(pedidos).toEqual([{ metodo: 'GET', url: expect.stringContaining(`/rest/v1/gasto?select=*&id=eq.${ID}`) }])
+  })
+
+  it('un id que ni siquiera tiene forma de id también vuelve vacío', async () => {
+    const { repositorio } = conRespuesta(400, {
+      code: '22P02',
+      details: null,
+      hint: null,
+      message: 'invalid input syntax for type uuid: "no-existe"',
+    })
+    await expect(repositorio.obtener('gasto', 'no-existe')).resolves.toBeNull()
+  })
+
   it('un error de la base llega entero, para que se traduzca a español', async () => {
     const { repositorio } = conRespuesta(409, {
       code: '23503',
@@ -84,6 +106,18 @@ describe('repositorio falso', () => {
     const repositorio = crearRepositorioFalso()
     const gasto = await repositorio.crear('gasto', { tipo_gasto_id: ID, fecha: '2026-10-01', monto: '1234.56', moneda: 'ARS' })
     expect(gasto).toMatchObject({ monto: 1234.56, persona_id: null, descripcion: null })
+  })
+
+  it('lista los gastos de un mes y busca una fila por su id, igual que con Supabase', async () => {
+    const repositorio = crearRepositorioFalso()
+    const datos = { tipo_gasto_id: ID, monto: '10', moneda: 'ARS' } as const
+    await repositorio.crear('gasto', { ...datos, fecha: '2026-09-30' })
+    const octubre = await repositorio.crear('gasto', { ...datos, fecha: '2026-10-01' })
+    await repositorio.crear('gasto', { ...datos, fecha: '2026-11-01' })
+
+    expect(await repositorio.listarDelMes('gasto', '2026-10-20')).toEqual([octubre])
+    expect(await repositorio.obtener('gasto', octubre.id)).toEqual(octubre)
+    expect(await repositorio.obtener('gasto', ID)).toBeNull()
   })
 
   it('lo que devuelve es una copia: cambiarla no cambia lo guardado', async () => {

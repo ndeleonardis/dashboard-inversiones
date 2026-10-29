@@ -23,7 +23,7 @@ import type { Fila } from '../../datos/repositorio.ts'
 import { avisoDeFechaFutura, hoy } from '../../dominio/fechas.ts'
 import { formatearCantidad, formatearFecha } from '../../dominio/formato.ts'
 import { NOMBRE_DE_MONEDA } from '../../dominio/moneda.ts'
-import { compararTextos, nombreDeCuenta, porNombre } from '../../dominio/nombres.ts'
+import { compararTextos, nombreDeCuentaConDueno, porNombre } from '../../dominio/nombres.ts'
 import { leerNumero, type NumeroLeido, type ReglasDeNumero } from '../../dominio/numeros.ts'
 import { RUTAS, rutaDeOperacion } from '../../rutas.ts'
 
@@ -117,12 +117,6 @@ function datosDe(valores: ValoresDeOperacion, instrumentos: Fila<'instrumento'>[
   }
 }
 
-/** "Banco Uno · Caja de ahorro (de Ana)": dos personas pueden tener cuenta en la misma entidad. */
-function cuentaConDueno(cuenta: Fila<'cuenta'>, personas: Fila<'persona'>[]): string {
-  const dueno = personas.find((p) => p.id === cuenta.persona_id)?.nombre ?? ''
-  return `${nombreDeCuenta(cuenta)} (de ${dueno})`
-}
-
 /** Lo que se paga en una compra o se cobra en una venta, antes de guardar. */
 function Total({ instrumento, precioCada }: { instrumento?: Fila<'instrumento'>; precioCada: number }) {
   const { valores } = useFormulario()
@@ -159,7 +153,7 @@ function CamposDeOperacion({ cuentas, personas, instrumentos, tiposDeInstrumento
   const enNominales = precioCada !== 1
 
   const opcionesDeCuenta = cuentas
-    .map((cuenta) => ({ valor: cuenta.id, texto: cuentaConDueno(cuenta, personas) }))
+    .map((cuenta) => ({ valor: cuenta.id, texto: nombreDeCuentaConDueno(cuenta, personas) }))
     .sort((a, b) => compararTextos(a.texto, b.texto))
   const opcionesDeInstrumento = [...instrumentos]
     .sort((a, b) => compararTextos(a.ticker, b.ticker))
@@ -225,10 +219,10 @@ export function ListaDeOperaciones() {
           const ticker = (o: Fila<'operacion'>) => instrumentos.find((i) => i.id === o.instrumento_id)?.ticker ?? ''
           const cuenta = (o: Fila<'operacion'>) => {
             const encontrada = cuentas.find((c) => c.id === o.cuenta_id)
-            return encontrada ? cuentaConDueno(encontrada, personas) : ''
+            return encontrada ? nombreDeCuentaConDueno(encontrada, personas) : ''
           }
           // La más nueva primero. En un mismo día, la última cargada.
-          const ordenadas = [...operaciones].sort((a, b) => compararTextos(b.fecha, a.fecha) || b.orden - a.orden)
+          const ordenadas = [...operaciones].sort((a, b) => b.fecha.localeCompare(a.fecha) || b.orden - a.orden)
           return (
             <ul className="grilla">
               {ordenadas.map((operacion) => (

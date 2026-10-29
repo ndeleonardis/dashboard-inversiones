@@ -11,3 +11,12 @@ export function porNombre<T extends { nombre: string }>(filas: T[]): T[] {
 export function nombreDeCuenta(cuenta: { entidad: string; nombre: string | null }): string {
   return cuenta.nombre ? `${cuenta.entidad} · ${cuenta.nombre}` : cuenta.entidad
 }
+
+/** "Entidad · Nombre (de Ana)": dos personas pueden tener cuenta en la misma entidad. */
+export function nombreDeCuentaConDueno(
+  cuenta: { entidad: string; nombre: string | null; persona_id: string },
+  personas: { id: string; nombre: string }[],
+): string {
+  const dueno = personas.find((persona) => persona.id === cuenta.persona_id)?.nombre ?? ''
+  return `${nombreDeCuenta(cuenta)} (de ${dueno})`
+}

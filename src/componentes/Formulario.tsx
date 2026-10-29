@@ -73,7 +73,8 @@ type PropsFormulario<V extends Valores> = {
   /** Un aviso para confirmar antes de guardar, como una fecha futura, o null. */
   confirmar?: (valores: V) => string | null
   guardar: (valores: V) => Promise<void>
-  alGuardar?: () => void
+  /** Recibe lo que se guardó, por ejemplo para volver a la lista del mes de esa fecha. */
+  alGuardar?: (valores: V) => void
   textoBoton?: string
   children: ReactNode
 }
@@ -142,7 +143,7 @@ export function Formulario<V extends Valores>({
     }
     escribirBorrador(clave, null)
     setEstado('guardado')
-    alGuardar?.()
+    alGuardar?.(valores)
   }
 
   function enviar(evento: FormEvent<HTMLFormElement>) {

@@ -188,6 +188,45 @@
   font-size: var(--font-size-caption);
 }
 
+.tarjeta-monto {
+  font-size: var(--font-size-subhead);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Selector de mes, arriba de las listas de a un mes y del resumen. */
+.selector-mes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.selector-mes-nombre {
+  min-width: 10ch;
+  font-size: var(--font-size-subhead);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+}
+
+.selector-mes-actual {
+  min-height: 44px;
+  padding-inline: var(--space-4);
+}
+
+.boton-redondo {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-pill);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
 /* Encabezado de cada pantalla */
 .encabezado {
   display: grid;

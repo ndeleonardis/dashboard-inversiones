@@ -11,7 +11,9 @@ import type {
   Origen,
   Repositorio,
   TablaConId,
+  TablaDelMes,
 } from '../../src/datos/repositorio.ts'
+import { mesDe, mesSiguiente } from '../../src/dominio/fechas.ts'
 
 export type DatosFalsos = { [T in Origen]?: Fila<T>[] } & {
   resumenMes?: FilaResumenMes[]
@@ -63,6 +65,19 @@ export function crearRepositorioFalso(datos: DatosFalsos = {}): Repositorio {
   return {
     async listar<T extends Origen>(origen: T) {
       return filasDe(origen).map((fila) => ({ ...fila })) as Fila<T>[]
+    },
+
+    async listarDelMes<T extends TablaDelMes>(tabla: T, mes: string) {
+      const desde = mesDe(mes)
+      const hasta = mesSiguiente(desde)
+      return filasDe(tabla)
+        .filter((fila) => String(fila.fecha) >= desde && String(fila.fecha) < hasta)
+        .map((fila) => ({ ...fila })) as Fila<T>[]
+    },
+
+    async obtener<T extends TablaConId>(tabla: T, id: string) {
+      const fila = filasDe(tabla).find((f) => f.id === id)
+      return fila ? ({ ...fila } as Fila<T>) : null
     },
 
     async crear<T extends TablaConId>(tabla: T, alta: Alta<T>) {

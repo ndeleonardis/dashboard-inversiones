@@ -2,9 +2,13 @@
 // archivo habla con Supabase. La de tests/interfaz/ guarda en memoria, para
 // probar las pantallas sin red ni base.
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { mesDe, mesSiguiente } from '../dominio/fechas.ts'
 import type { Cliente } from './cliente.ts'
 import { ErrorDeLaApp, MENSAJE_NO_SE_ENCONTRO } from './errores.ts'
 import type { Database } from './tipos-base.ts'
+
+// El código de Postgres para un texto que no tiene forma de uuid.
+const ID_INVALIDO = '22P02'
 
 type Esquema = Database['public']
 export type Tabla = keyof Esquema['Tables']
@@ -24,6 +28,9 @@ export type Fila<T extends Origen> = T extends Tabla
 /** Las tablas que se editan y se borran por id. Los tipos de instrumento y de operación tienen código. */
 export type TablaConId = { [T in Tabla]: Fila<T> extends { id: string } ? T : never }[Tabla]
 
+/** Las tablas que crecen todos los meses. Se leen de a un mes, porque la API corta en 1.000 filas. */
+export type TablaDelMes = 'gasto' | 'ingreso'
+
 // Lo completa la base: el id, el orden de carga y la autoría (C27).
 type DeLaBase = 'id' | 'orden' | 'creado_por' | 'creado_en' | 'modificado_por' | 'modificado_en'
 
@@ -39,6 +46,10 @@ export type FilaResumenMes = Esquema['Functions']['resumen_mes']['Returns'][numb
 export interface Repositorio {
   /** Todas las filas de una tabla o una vista. */
   listar<T extends Origen>(origen: T): Promise<Fila<T>[]>
+  /** Las filas de un mes. El mes es cualquier día del mes. */
+  listarDelMes<T extends TablaDelMes>(tabla: T, mes: string): Promise<Fila<T>[]>
+  /** Una fila por su id, o null si no existe. */
+  obtener<T extends TablaConId>(tabla: T, id: string): Promise<Fila<T> | null>
   crear<T extends TablaConId>(tabla: T, datos: Alta<T>): Promise<Fila<T>>
   /** Si la fila ya no existe, falla con "No se encontró" en lugar de pasar por buena. */
   editar<T extends TablaConId>(tabla: T, id: string, cambios: Cambios<T>): Promise<Fila<T>>
@@ -56,12 +67,27 @@ export function crearRepositorioSupabase(cliente: Cliente): Repositorio {
   const sinTipos = cliente as unknown as SupabaseClient
 
   return {
-    // Trae todo. La API corta en 1.000 filas, así que las listas que crecen
-    // (gastos, ingresos, operaciones) van a necesitar un filtro.
+    // Trae todo. La API corta en 1.000 filas: gastos e ingresos se leen de a
+    // un mes, y las operaciones van a necesitar un filtro cuando crezcan.
     async listar<T extends Origen>(origen: T) {
       const { data, error } = await sinTipos.from(origen).select('*')
       if (error) throw error
       return data as Fila<T>[]
+    },
+
+    async listarDelMes<T extends TablaDelMes>(tabla: T, mes: string) {
+      const desde = mesDe(mes)
+      const { data, error } = await sinTipos.from(tabla).select('*').gte('fecha', desde).lt('fecha', mesSiguiente(desde))
+      if (error) throw error
+      return data as Fila<T>[]
+    },
+
+    async obtener<T extends TablaConId>(tabla: T, id: string) {
+      const { data, error } = await sinTipos.from(tabla).select('*').eq('id', id).maybeSingle()
+      // Un id mal escrito en la dirección es una fila que no existe.
+      if (error?.code === ID_INVALIDO) return null
+      if (error) throw error
+      return data as Fila<T> | null
     },
 
     async crear<T extends TablaConId>(tabla: T, datos: Alta<T>) {
