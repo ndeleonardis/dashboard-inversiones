@@ -113,6 +113,7 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
   - Lo que queda para invertir son sus ingresos, menos sus gastos propios, menos todos los gastos comunitarios del grupo. La app no divide los gastos comunitarios entre personas (dividir gastos queda fuera del producto), así que cada persona los ve enteros.
   - Ejemplo: Ana cobra $ 1.000 y gasta $ 100, y el grupo tiene $ 300 de gastos comunitarios. A Ana le quedan $ 600.
 - **C26 (P1).** DADO el resumen, CUANDO se miran los últimos movimientos, ENTONCES se ven los últimos gastos e ingresos cargados.
+  - Van en el orden en que se cargaron, del último al primero, aunque sean de otro mes. Así se puede revisar lo que cargó la otra persona. Decidido el 2026-10-29, en la revisión de código.
 
 ### Trazabilidad y datos
 

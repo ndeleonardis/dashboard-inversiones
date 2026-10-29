@@ -141,4 +141,13 @@ describe('últimos movimientos (C26)', () => {
   it('alguien sin invitación no ve nada', async () => {
     expect(await ultimos(base.conSesion('intruso@example.com'))).toEqual([])
   })
+
+  // Va al final porque suma un gasto y deja afuera a los más viejos.
+  it('lo último que se cargó va primero, aunque sea de otro mes', async () => {
+    await new Promise((listo) => setTimeout(listo, 5)) // para que se cargue después, aunque el reloj vaya de a 1 ms
+    await gasto('2026-07-15', 999, 'ARS')
+    const filas = await ultimos()
+    expect(filas[0]).toMatchObject({ fecha: '2026-07-15', monto: '999' })
+    expect(filas).toHaveLength(10)
+  })
 })

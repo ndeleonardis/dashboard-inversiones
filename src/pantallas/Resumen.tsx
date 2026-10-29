@@ -15,7 +15,7 @@ import { formatearFecha } from '../dominio/formato.ts'
 import { MONEDAS, NOMBRE_DE_MONEDA, type Moneda } from '../dominio/moneda.ts'
 import { porNombre } from '../dominio/nombres.ts'
 import { rutaDeGasto, rutaDeIngreso } from '../rutas.ts'
-import { COMUNITARIO, masNuevosPrimero } from './movimientos.tsx'
+import { COMUNITARIO, ultimosCargadosPrimero } from './movimientos.tsx'
 
 /** Pesos primero y dólares después, siempre en el mismo orden. */
 function porMoneda<F extends { moneda: Moneda }>(filas: F[]): F[] {
@@ -202,7 +202,7 @@ function BloqueDeMovimientos() {
             <p className="vacio">Todavía no hay gastos ni ingresos cargados.</p>
           ) : (
             <ul className="grilla">
-              {masNuevosPrimero(movimientos).map((movimiento) => {
+              {ultimosCargadosPrimero(movimientos).map((movimiento) => {
                 const esIngreso = movimiento.clase === 'ingreso'
                 return (
                   <li key={`${movimiento.clase}-${movimiento.id}`}>

@@ -209,6 +209,7 @@ describe('últimos movimientos (C26)', () => {
     monto: number,
     categoria: string,
     persona: string,
+    creadoEn = `${fecha}T12:00:00Z`,
   ): Fila<'ultimos_movimientos'> => ({
     id: crypto.randomUUID(),
     clase,
@@ -218,7 +219,20 @@ describe('últimos movimientos (C26)', () => {
     categoria,
     persona,
     descripcion: '',
-    creado_en: `${fecha}T12:00:00Z`,
+    creado_en: creadoEn,
+  })
+
+  it('lo último que se cargó va primero, aunque sea de otro mes', async () => {
+    const ultimos = [
+      movimiento('gasto', '2026-10-03', 45000, 'Combustible', 'Ana', '2026-10-03T12:00:00Z'),
+      movimiento('gasto', '2026-07-15', 1200, 'Luz de julio', '', '2026-10-04T09:00:00Z'),
+    ]
+    const repositorio = crearRepositorioFalso({ resumenMes: SIN_MOVIMIENTOS, ...INVERSIONES, ultimos_movimientos: ultimos })
+    abrirApp('/', repositorio)
+
+    const seccion = await bloque('Últimos movimientos')
+    const tarjetas = await within(seccion).findAllByRole('link')
+    expect(tarjetas.map((t) => t.querySelector('.tarjeta-titulo')?.textContent)).toEqual(['Luz de julio', 'Combustible'])
   })
 
   it('se ven los últimos gastos e ingresos, del más nuevo al más viejo', async () => {

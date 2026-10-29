@@ -72,7 +72,14 @@ export function CampoDeDescripcion() {
 /** Cómo se nombra un gasto sin persona, que es de todo el grupo (C16). */
 export const COMUNITARIO = 'Comunitario'
 
+type ConFechas = { fecha: string; creado_en: string }
+
 /** El más nuevo primero. En un mismo día, el último cargado. */
-export function masNuevosPrimero<M extends { fecha: string; creado_en: string }>(movimientos: M[]): M[] {
+export function masNuevosPrimero<M extends ConFechas>(movimientos: M[]): M[] {
   return [...movimientos].sort((a, b) => b.fecha.localeCompare(a.fecha) || b.creado_en.localeCompare(a.creado_en))
+}
+
+/** El último cargado primero, aunque sea de otro mes (C26). */
+export function ultimosCargadosPrimero<M extends ConFechas>(movimientos: M[]): M[] {
+  return [...movimientos].sort((a, b) => b.creado_en.localeCompare(a.creado_en) || b.fecha.localeCompare(a.fecha))
 }
