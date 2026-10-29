@@ -15,6 +15,7 @@ import { EditarIngreso, ListaDeIngresos, NuevoIngreso } from './pantallas/ingres
 import { EditarInstrumento, ListaDeInstrumentos, NuevoInstrumento } from './pantallas/instrumentos/Instrumentos.tsx'
 import { EditarOperacion, ListaDeOperaciones, NuevaOperacion } from './pantallas/operaciones/Operaciones.tsx'
 import { EditarPersona, ListaDePersonas, NuevaPersona } from './pantallas/personas/Personas.tsx'
+import { Resumen } from './pantallas/Resumen.tsx'
 import { RUTAS } from './rutas.ts'
 
 type PropsApp = {
@@ -44,7 +45,7 @@ export default function App({ autenticacion, repositorio, avisoInicial = null }:
               <Route path={RUTAS.entrar} element={<Entrar />} />
               <Route element={<RutaProtegida />}>
                 <Route element={<ConEstructura />}>
-                  <Route index element={<h1>Resumen</h1>} />
+                  <Route index element={<Resumen />} />
                   <Route path={RUTAS.gastos} element={<ListaDeGastos />} />
                   <Route path={RUTAS.gastoNuevo} element={<NuevoGasto />} />
                   <Route path={`${RUTAS.gastos}/:id`} element={<EditarGasto />} />
@@ -63,7 +64,6 @@ export default function App({ autenticacion, repositorio, avisoInicial = null }:
                   <Route path={RUTAS.operaciones} element={<ListaDeOperaciones />} />
                   <Route path={RUTAS.operacionNueva} element={<NuevaOperacion />} />
                   <Route path={`${RUTAS.operaciones}/:id`} element={<EditarOperacion />} />
-                  {/* El resumen llega en T23. */}
                   <Route path="*" element={<Navigate to={RUTAS.resumen} replace />} />
                 </Route>
               </Route>
