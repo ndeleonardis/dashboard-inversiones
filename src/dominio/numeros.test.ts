@@ -20,6 +20,13 @@ describe('leer números en formato argentino', () => {
     expect(monto('12.50')).toEqual({ ok: false, error: 'Usá coma para los decimales' })
   })
 
+  it('un grupo de miles no empieza con cero: 0.500 es un decimal con punto, no 500', () => {
+    const cantidad = (texto: string) => leerNumero(texto, { decimales: 8 })
+    for (const texto of ['0.500', '0.050', '00.500']) {
+      expect(cantidad(texto), texto).toEqual({ ok: false, error: 'Usá coma para los decimales' })
+    }
+  })
+
   it('rechaza lo que no se entiende', () => {
     for (const texto of ['abc', '1,234.56', '12,3,4', '1.23.4', '1.2345,6', ',5', '5,']) {
       expect(monto(texto), texto).toEqual({ ok: false, error: 'No se entiende el número' })

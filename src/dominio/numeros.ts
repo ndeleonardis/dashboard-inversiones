@@ -13,7 +13,8 @@ export type ReglasDeNumero = {
 
 const NO_SE_ENTIENDE: NumeroLeido = { ok: false, error: 'No se entiende el número' }
 const SOLO_DIGITOS = /^\d+$/
-const CON_PUNTO_DE_MILES = /^\d{1,3}(\.\d{3})+$/
+// Un número con miles no empieza con cero: "0.500" es un decimal con punto.
+const CON_PUNTO_DE_MILES = /^[1-9]\d{0,2}(\.\d{3})+$/
 const CON_PUNTO_DECIMAL = /^\d*\.\d+$/
 
 export function leerNumero(texto: string, { decimales, admiteCero = false }: ReglasDeNumero): NumeroLeido {
