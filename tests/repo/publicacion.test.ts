@@ -43,7 +43,7 @@ describe('publicar', () => {
     expect(error).toContain('Faltan en .env.production: VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY.')
   })
 
-  it.each(['/var/www/lemonhouse', 'servidor:/', 'servidor:lemonhouse', 'C:/sitio', 'deploy@servidor'])(
+  it.each(['/var/www/lemonhouse', 'servidor:/', 'servidor:lemonhouse', 'C:/sitio', 'deploy@servidor', 'servidor:/var/www;rm'])(
     'un destino sin servidor y carpeta (%s) se rechaza',
     (destino) => {
       const { estado, error } = publicarCon(`${CONFIGURACION}PUBLICAR_DESTINO=${destino}\n`)
@@ -51,6 +51,18 @@ describe('publicar', () => {
       expect(error).toContain('PUBLICAR_DESTINO tiene que ser como usuario@servidor:/var/www/lemonhouse')
     },
   )
+
+  it('sube assets/ primero e index.html al final, con otro nombre, y lo cambia de un solo golpe', async () => {
+    // La ruta va en una variable para que TypeScript no busque los tipos del .mjs.
+    const ruta = '../../scripts/publicar.mjs'
+    const { pasosDeSubida } = (await import(ruta)) as { pasosDeSubida: (destino: string, archivos: string[]) => string[][] }
+    expect(pasosDeSubida('deploy@servidor:/var/www/lemonhouse', ['assets', 'iconos', 'index.html', 'manifest.webmanifest'])).toEqual([
+      ['scp', '-r', 'dist/assets', 'deploy@servidor:/var/www/lemonhouse/'],
+      ['scp', '-r', 'dist/iconos', 'dist/manifest.webmanifest', 'deploy@servidor:/var/www/lemonhouse/'],
+      ['scp', 'dist/index.html', 'deploy@servidor:/var/www/lemonhouse/index.html.nuevo'],
+      ['ssh', 'deploy@servidor', 'mv /var/www/lemonhouse/index.html.nuevo /var/www/lemonhouse/index.html'],
+    ])
+  })
 })
 
 describe('subir las migraciones', () => {

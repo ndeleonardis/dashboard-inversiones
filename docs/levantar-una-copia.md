@@ -126,7 +126,7 @@ npm run verificar
 npm run publicar
 ```
 
-`verificar` corre los tests, el chequeo de tipos y el build. `publicar` arma el sitio con `.env.production` y lo sube con `scp` al destino de `PUBLICAR_DESTINO`. Si el servidor pide la contraseña en cada paso, configurá una clave SSH.
+`verificar` corre los tests, el chequeo de tipos y el build. `publicar` arma el sitio con `.env.production` y lo sube con `scp` al destino de `PUBLICAR_DESTINO`. `index.html` va al final, con otro nombre, y se renombra en el servidor con `ssh`: si la conexión se corta, el sitio sigue con la versión anterior. Si el servidor pide la contraseña en cada paso, configurá una clave SSH.
 
 **Para publicar una versión nueva**, primero subí la base si hay migraciones nuevas, con `npm run db:subir:produccion`. Después corré `verificar` y `publicar`. Los archivos viejos de `assets/` quedan en el servidor y no molestan.
 
