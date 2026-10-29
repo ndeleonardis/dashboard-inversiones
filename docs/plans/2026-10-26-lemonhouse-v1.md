@@ -347,6 +347,7 @@ T15 y T17 necesitan los pasos de tu lado de la sección 9. Si esos pasos demoran
   - `tests/repo/manifest.test.ts`. El manifest tiene nombre, inicio, modo pantalla completa, los colores de `DESIGN.md` y los íconos de 192 y 512 px, con uno adaptable. `index.html` lo enlaza junto con el ícono para iPhone.
   - `src/acceso/ventana-ios.test.tsx`. Con la app instalada en iPhone, el login abre la ventana en el mismo toque, la sesión llega cuando la ventana avisa, y si la ventana se bloquea sale el aviso.
   - **Solo navegador.** Instalar en un celular de verdad y entrar con Google.
+- **Decidido el 2026-10-29.** El primer grupo no usa iPhone: sus celulares son Samsung (Android), y en la Mac usa Safari como página. Se hace solo lo que sirve para Android: manifest, íconos y las etiquetas de `index.html`, con `tests/repo/manifest.test.ts`. La ventana de login de iPhone, las etiquetas propias del iPhone y `ventana-ios.test.tsx` no se hacen. La prueba en el navegador es instalar en un Samsung y entrar con Google.
 - **Depende de** T17 y T18.
 
 ### Fase 4. Publicación
@@ -390,7 +391,7 @@ T15 y T17 necesitan los pasos de tu lado de la sección 9. Si esos pasos demoran
 | C26 (P1) | T27 | Test de base y test de pantalla |
 | C27 (P0) | T9, T18 | `autoria.test.ts` y test de `Autoria` |
 | C28 (P0) | T2, T13, T29 | Guardas del repo y `semillas.test.ts`. **Solo navegador**: seguir la guía en un proyecto nuevo |
-| C32 (P1) | T28 | `manifest.test.ts` y `ventana-ios.test.tsx`. **Solo navegador**: instalar en un celular de verdad y entrar con Google |
+| C32 (P1) | T28 | `manifest.test.ts`. **Solo navegador**: instalar en un Samsung y entrar con Google. Sin iPhone (decidido el 2026-10-29) |
 | C33 (P1) | T18, T19 a T23 | **Solo navegador**. Cada pantalla en 390 px y 1.280 px, con el resumen en dos bloques lado a lado y las listas en grilla |
 | C29 (P2) | Ninguna | No se construye. Los precios van a ser una tabla aparte con fecha y fuente, y la vista `posicion` no tiene ningún valor actual (test de la regla 5 en T7) |
 | C30 (P2) | Ninguna | No se construye. `tipo_operacion` es una tabla, y el trigger y el costo rechazan con error un tipo sin regla. Sumar uno obliga a escribir su regla |
@@ -411,7 +412,8 @@ T15 y T17 necesitan los pasos de tu lado de la sección 9. Si esos pasos demoran
 | Google no responde o se cancela | T17 | Test del error en la URL. **Solo navegador** cancelando en Google |
 | Error al guardar | T16, T18 | Test de mensajes y del formulario que conserva lo escrito |
 | Dos personas editan a la vez | T9 | `autoria.test.ts` |
-| Login de iPhone que deja la sesión en Safari | T28 | `ventana-ios.test.tsx`. **Solo navegador** en un iPhone con la app instalada |
+| Login de iPhone que deja la sesión en Safari | Ninguna | Queda fuera de la v1: el primer grupo no usa iPhone (decidido el 2026-10-29) |
+| Lista de operaciones con más de 1.000 | Ninguna | Límite aceptado en la spec. Se resuelve con un cambio cuando se acerque |
 
 ## 9. Lo que hace falta de tu lado
 
@@ -421,7 +423,7 @@ T15 y T17 necesitan los pasos de tu lado de la sección 9. Si esos pasos demoran
 3. Cargar en `.env` la URL del proyecto, la key publicable, la contraseña de la base y un token personal de Supabase para la CLI.
 4. Después de T11, activar el hook en el panel de Supabase y cargar tu email en una persona del proyecto de desarrollo. Tu email queda solo en esa base, nunca en el repo.
 
-**Antes de T28.** Tener a mano los celulares donde se va a instalar. Si nadie usa iPhone, la parte de iPhone de T28 se saltea.
+**Antes de T28.** Tener a mano los celulares donde se va a instalar. Si nadie usa iPhone, la parte de iPhone de T28 se saltea. Así quedó el 2026-10-29: se instala en celulares Samsung.
 
 **Antes de T29.** Crear el proyecto real y el subdominio con HTTPS en el servidor, y repetir los pasos de Google y del hook. Con la página de privacidad publicada, pasar la app de Google de "Testing" a publicada.
 

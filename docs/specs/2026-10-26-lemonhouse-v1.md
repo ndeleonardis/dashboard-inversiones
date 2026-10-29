@@ -3,6 +3,8 @@
 > Producto nuevo. Fecha 2026-10-26. Contexto permanente en `PRD.md`, modelo de datos propuesto en `docs/modelo-de-datos.md`. Esta spec dice qué hace la v1, no cómo se construye.
 >
 > Actualizada el 2026-10-26, al aprobar el plan. Suma C32 (instalable en el celular) y C33 (notebook), y resuelve la moneda de la operación.
+>
+> Actualizada el 2026-10-29, durante la implementación. Detalla los datos propios del CEDEAR y de la ON (C10), los filtros de operaciones (C15) y la cuenta del mes de una persona (C25). Suma el límite de la lista de operaciones y deja el iPhone fuera de la v1, porque el primer grupo usa celulares Samsung y una Mac.
 
 ## 1. Overview
 
@@ -52,6 +54,7 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 | Equivalencias entre pesos y dólares | Prematuro. Exige elegir un dólar y una fecha, y la v1 no tiene cotizaciones |
 | App en las tiendas (App Store y Play Store) | Muy complejo. Pide cuentas de desarrollador pagas y una revisión en cada actualización, y la app instalable desde el navegador resuelve lo mismo |
 | Usar la app sin conexión | Poco impacto. Los datos viven en la base, así que sin conexión no hay nada actualizado que mostrar |
+| Instalar la app en un iPhone y entrar con Google desde ahí | Poco impacto. El primer grupo usa celulares Samsung (Android) y una Mac, donde LemonHouse se usa desde Safari como página. Si otro grupo lo necesita, se suma como cambio |
 
 ## 6. Comportamiento esperado
 
@@ -73,6 +76,9 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 - **C8 (P0).** DADO un usuario, CUANDO da de alta un instrumento, ENTONCES indica tipo (acción, CEDEAR, ON, ETF, FCI, cripto), ticker con su sufijo, nombre y moneda (pesos o dólares). AAPL y AAPLD son dos instrumentos distintos.
 - **C9 (P0).** DADO una ON, CUANDO se intenta guardar sin fecha de vencimiento, ENTONCES no se guarda y se pide la fecha.
 - **C10 (P1).** DADO un FCI o un CEDEAR, CUANDO se carga, ENTONCES se pueden indicar sus datos propios (código CAFCI del FCI, ratio y subyacente del CEDEAR, emisor y valor nominal de la ON).
+  - Los datos propios son opcionales, y solo se guardan los del tipo del instrumento. Si se le cambia el tipo, los del tipo anterior se borran.
+  - El ratio del CEDEAR es cuántos CEDEAR equivalen a una acción del subyacente. Por ejemplo, 20 si 20 CEDEAR son una acción. Tiene que ser mayor que cero, con hasta 8 decimales.
+  - El valor nominal de la ON es el residual: el porcentaje del valor nominal original que queda después de las amortizaciones. Vale 100 si todavía no amortizó, y tiene que ser mayor que 0 y no pasar de 100.
 
 ### Operaciones y posición
 
@@ -81,6 +87,8 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 - **C13 (P0).** DADO una operación cargada, CUANDO se edita o se borra, ENTONCES la posición y el resumen reflejan el cambio sin ningún paso extra.
 - **C14 (P0).** DADO una posición de 10 unidades, CUANDO se carga una venta de 15, ENTONCES la app no la guarda y avisa que la cuenta solo tiene 10.
 - **C15 (P1).** DADO una lista de operaciones, CUANDO se filtra por persona, cuenta o instrumento, ENTONCES se ven solo esas.
+  - Los tres filtros se combinan. Con una persona elegida, solo se ofrecen sus cuentas.
+  - Desde la posición de una cuenta, cada instrumento lleva a sus operaciones en esa cuenta.
 
 ### Gastos e ingresos
 
@@ -97,6 +105,9 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 - **C23 (P0).** DADO operaciones cargadas, CUANDO se abre el resumen, ENTONCES el bloque de inversiones muestra el total invertido a costo de compra de cada persona y del grupo, por separado en pesos y en dólares.
 - **C24 (P0).** DADO cualquier pantalla con montos, CUANDO se muestran, ENTONCES llevan su moneda visible (`$ 25.291,50` o `US$ 25.291,50`) y ningún total suma pesos con dólares.
 - **C25 (P1).** DADO el bloque del mes, CUANDO se elige una persona, ENTONCES se ven sus ingresos y los gastos asignados a ella, además de los comunitarios del grupo.
+  - Los gastos de la persona y los comunitarios se muestran por separado, como "Gastos propios" y "Gastos comunitarios", en cada moneda.
+  - Lo que queda para invertir son sus ingresos, menos sus gastos propios, menos todos los gastos comunitarios del grupo. La app no divide los gastos comunitarios entre personas (dividir gastos queda fuera del producto), así que cada persona los ve enteros.
+  - Ejemplo: Ana cobra $ 1.000 y gasta $ 100, y el grupo tiene $ 300 de gastos comunitarios. A Ana le quedan $ 600.
 - **C26 (P1).** DADO el resumen, CUANDO se miran los últimos movimientos, ENTONCES se ven los últimos gastos e ingresos cargados.
 
 ### Trazabilidad y datos
@@ -107,6 +118,7 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 ### Celular y notebook
 
 - **C32 (P1).** DADO un celular, CUANDO se abre LemonHouse en el navegador, ENTONCES se puede instalar en la pantalla de inicio, se abre a pantalla completa con su ícono y se entra con Google sin salir de la app.
+  - En la v1 vale para celulares Android, que es lo que usa el primer grupo (Samsung). El iPhone queda fuera (sección 5). En la Mac, LemonHouse se usa desde Safari como página, con la vista de notebook (C33).
 - **C33 (P1).** DADO una notebook, CUANDO se abre LemonHouse, ENTONCES las pantallas aprovechan el ancho (el resumen muestra sus dos bloques lado a lado y las listas se acomodan en grilla) y está todo lo que hay en el celular.
 
 ### Futuro (P2, no se construye)
@@ -132,7 +144,8 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 | Google no responde o la persona cancela el login | Vuelve al login con "No se pudo entrar con Google. Probá de nuevo." |
 | Error al guardar (sin conexión, sesión vencida) | Se muestra el error, no se pierde lo escrito y no se da por guardado |
 | Dos personas editan lo mismo a la vez | Gana la última edición y queda registrado quién la hizo |
-| En un iPhone, el login con Google deja la sesión en Safari y no en la app instalada | El login se abre en una ventana que iOS mantiene dentro de la app. Si iOS la bloquea, se avisa y la app no se queda esperando |
+| En un iPhone, el login con Google deja la sesión en Safari y no en la app instalada | Queda fuera de la v1, porque el primer grupo no usa iPhone (sección 5). Si hiciera falta, el login se abriría en una ventana que iOS mantiene dentro de la app |
+| La lista de operaciones pasa de 1.000 | La base devuelve hasta 1.000 filas por pedido, y la lista lee todas las operaciones para filtrarlas. Al ritmo de carga de un grupo chico faltan años para llegar. Cuando se acerque, se suma un cambio para leerlas por partes. Las posiciones y el resumen no tienen este límite, porque los calcula la base |
 
 ## 8. Preguntas abiertas
 
