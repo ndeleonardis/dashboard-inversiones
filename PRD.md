@@ -92,7 +92,7 @@ Los precios van en una versión aparte porque dependen de fuentes externas, y el
 - Base PostgreSQL en Supabase, con el login de Supabase.
 - En la copia de Sergio y Noelia, backup diario cifrado de la base desde un servidor propio.
 - Precios de FCI y dólar desde la FastAPI de datos-financieros-ar, que es privada.
-- En la copia de Sergio y Noelia, la app se sirve como sitio estático desde Nginx en el servidor propio de Oracle, en un subdominio de `rumbosagrado.com` con HTTPS.
+- En la copia de Sergio y Noelia, la app se sirve como sitio estático desde Nginx en el servidor propio de Oracle, en un subdominio de un dominio propio, con HTTPS.
 - La app llega a la FastAPI por una ruta `/api` que publica el mismo Nginx. La FastAPI valida el token de Supabase de quien consulta, así que no queda abierta a cualquiera.
 - El framework de la app se elige en el primer `design-plan`.
 - Diseño visual en `DESIGN.md`. Modelo de datos en `docs/modelo-de-datos.md`.
