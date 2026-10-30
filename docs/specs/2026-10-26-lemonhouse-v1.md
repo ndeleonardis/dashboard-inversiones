@@ -8,7 +8,7 @@
 >
 > Actualizada el 2026-10-29, al verificar la v1. La página de privacidad se ve sin entrar (C1), y la app instalada abre en su propia ventana, sin la barra del navegador (C32).
 >
-> Cerrada el 2026-10-30 con el tag `v1.0`. La copia real se levantó siguiendo `docs/levantar-una-copia.md`, que se corrigió en cada paso que no coincidía con los paneles (C28). En el sitio publicado, Noelia y Sergio entraron y llegaron al resumen (C2), y una cuenta no invitada vio el rechazo sin que se creara su usuario (C3). La app se instaló en un Samsung con Chrome (C32). Samsung Internet no la instala, probablemente porque la app no tiene service worker, que el plan descartó a propósito.
+> Cerrada el 2026-10-30 con el tag `v1.0`. La copia real se levantó siguiendo `docs/levantar-una-copia.md`, que se corrigió en cada paso que no coincidía con los paneles (C28). En el sitio publicado, Noelia y Sergio entraron y llegaron al resumen (C2), y una cuenta no invitada vio el rechazo sin que se creara su usuario (C3). La app se instaló en un Samsung con Chrome, y desde ella se entró con Google sin pasar a una pestaña de Chrome (C32). Samsung Internet no la instala, probablemente porque la app no tiene service worker, que el plan descartó a propósito.
 
 ## 1. Overview
 
