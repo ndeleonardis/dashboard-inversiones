@@ -62,20 +62,23 @@ Al proyecto real van solo las migraciones. Los datos de ejemplo del repositorio 
 
 ### En Google Cloud
 
-1. En [console.cloud.google.com](https://console.cloud.google.com), creá un proyecto, por ejemplo LemonHouse.
-2. Entrá a Google Auth Platform y completá cada sección.
-   - **Branding.** Nombre de la app LemonHouse y tu email de asistencia. Página principal `https://lemonhouse.example.com` y política de privacidad `https://lemonhouse.example.com/privacidad`. En los dominios autorizados, el dominio de tu sitio (`example.com`) y el de Supabase (`TU-PROYECTO.supabase.co`).
-   - **Audience.** Externo. Mientras esté en "Testing", solo entran las cuentas que cargues como usuarios de prueba.
-   - **Data Access.** Los permisos `openid`, `.../auth/userinfo.email` y `.../auth/userinfo.profile`. No hace falta ninguno más.
-   - **Clients.** Creá un cliente de tipo "Aplicación web". En los orígenes autorizados de JavaScript va `https://lemonhouse.example.com`. En los URIs de redireccionamiento autorizados va `https://TU-PROYECTO.supabase.co/auth/v1/callback`.
-3. Copiá el ID y el secreto del cliente. Los vas a pegar en Supabase y en ningún otro lado.
+1. En [console.cloud.google.com](https://console.cloud.google.com), creá un proyecto. Si ya tenés otro para desarrollar, ponele un nombre que los distinga, como "LemonHouse PRD". El nombre lo ves solo vos y se cambia en IAM & Admin, Settings. Para saber en cuál proyecto estás, fijate el ID en la dirección, después de `project=`.
+2. Entrá a Google Auth Platform y apretá "Get started". El asistente pide el nombre de la app (LemonHouse), tu email de asistencia, el público y un email de contacto. El público es External, porque con una cuenta de Gmail no existe Internal.
+3. Completá cada sección del menú de la izquierda. Cada una se guarda con Save.
+   - **Branding.** Dejá el logo vacío, porque con logo Google exige verificar la app antes de publicarla. Página principal `https://lemonhouse.example.com` y política de privacidad `https://lemonhouse.example.com/privacidad`. En los dominios autorizados, el dominio de tu sitio sin el subdominio (`example.com`) y el de Supabase (`TU-PROYECTO.supabase.co`).
+   - **Data Access.** En "Add or remove scopes", tildá `openid`, `.../auth/userinfo.email` y `.../auth/userinfo.profile`. No hace falta ninguno más. Update cierra el panel pero no guarda, así que después apretá Save abajo de la página. Los tres tienen que quedar en "Your non-sensitive scopes".
+   - **Audience.** Queda en "Testing" y External. En Test users, cargá la cuenta de Google de cada persona del grupo. Mientras esté en "Testing", solo entran esas cuentas.
+   - **Clients.** Creá un cliente de tipo "Web application". En los orígenes autorizados de JavaScript va `https://lemonhouse.example.com`, sin barra al final. En los URIs de redireccionamiento autorizados va `https://TU-PROYECTO.supabase.co/auth/v1/callback`.
+4. Antes de apretar Create en Clients, abrí Supabase en otra pestaña, en el lugar del paso siguiente. Google muestra el secreto del cliente **una sola vez**. Copialo con el botón de copiar y pegalo directo en Supabase, sin descargar el archivo. El ID del cliente queda siempre a la vista.
+   - **Si el secreto se pierde**, en la pantalla del cliente apretá "Add secret" y usá el nuevo. Después deshabilitá el viejo con Disable y borralo.
 
 ### En Supabase
 
-1. En Authentication, Sign In / Providers, activá Google y pegá el ID y el secreto del cliente.
-2. En la misma pantalla, apagá Email. En LemonHouse se entra solo con Google.
-3. Dejá prendido "Allow new users to sign up". Quién entra lo decide el hook del paso 6, no esta opción.
-4. En Authentication, URL Configuration, poné `https://lemonhouse.example.com` como Site URL y sumalo a las Redirect URLs.
+1. En Authentication, Sign In / Providers, entrá a Google, prendé "Enable Sign in with Google" y pegá el ID y el secreto del cliente. "Callback URL (for OAuth)" tiene que ser igual al URI de redireccionamiento del cliente de Google.
+   - **Ojo con el autocompletado del navegador.** Si guardaste una contraseña para supabase.com, el navegador puede llenar Client IDs con el usuario y el secreto con esa contraseña. Antes de guardar, revisá el ID y, con Reveal, que el secreto empiece con `GOCSPX-`. Si el navegador ofrece guardar la contraseña, elegí "Nunca".
+2. En la lista de proveedores, entrá a Email y apagá "Enable Email provider". En LemonHouse se entra solo con Google.
+3. Arriba, en User Signups, dejá prendido "Allow new users to sign up". Quién entra lo decide el hook del paso 6, no esta opción.
+4. En Authentication, URL Configuration, poné `https://lemonhouse.example.com` como Site URL y sumalo a las Redirect URLs, sin barra al final. Que no quede `localhost` en ninguno de los dos.
 
 ## 6. Activar el hook de invitación
 
