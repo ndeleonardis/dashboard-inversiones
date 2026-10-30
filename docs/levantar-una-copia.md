@@ -43,7 +43,7 @@ Copiá `.env.example` con el nombre `.env.production` y completá cada variable.
 | `SUPABASE_PROJECT_ID` | El ref del proyecto |
 | `SUPABASE_DB_PASSWORD` | La contraseña de la base |
 | `SUPABASE_ACCESS_TOKEN` | El token personal de la CLI |
-| `PUBLICAR_DESTINO` | El servidor y la carpeta del sitio, como `usuario@servidor:/var/www/lemonhouse` |
+| `PUBLICAR_DESTINO` | El servidor y la carpeta del sitio, como `usuario@servidor:/var/www/lemonhouse`. Si entrás con un alias de SSH (paso 8), `alias:/var/www/lemonhouse` |
 
 `.env.production` no se versiona, porque `.gitignore` lo deja afuera. No lo compartas ni lo pegues en ningún chat.
 
@@ -96,22 +96,34 @@ La invitación es el email de una persona. Desde la app no se puede escribir, a 
 
 ## 8. Preparar el servidor
 
-Estos comandos son para un servidor Debian o Ubuntu.
+Estos comandos son para un servidor Debian o Ubuntu. Salvo el alias, se corren en el servidor, después de entrar con `ssh servidor`. Antes de pegar cada uno, fijate que el prompt sea el del servidor y no el de tu computadora.
 
-1. **La carpeta del sitio**, a nombre del usuario con el que vas a publicar:
+1. **El acceso por SSH.** `npm run publicar` llama a `scp` y `ssh` sin opciones, así que no sabe qué clave usar. Si entrás al servidor con `ssh -i <clave> usuario@servidor`, armá un alias en `~/.ssh/config` (en Windows, `C:\Users\<tu usuario>\.ssh\config`):
+
+   ```
+   Host servidor
+       HostName <IP del servidor>
+       User <usuario>
+       IdentityFile <ruta de la clave>
+       IdentitiesOnly yes
+   ```
+
+   Probalo con `ssh servidor`. En `.env.production` va `PUBLICAR_DESTINO=servidor:/var/www/lemonhouse`.
+
+2. **La carpeta del sitio**, a nombre del usuario con el que vas a publicar:
 
    ```
    sudo mkdir -p /var/www/lemonhouse
    sudo chown $USER /var/www/lemonhouse
    ```
 
-2. **El certificado HTTPS.** Si el subdominio todavía no tiene uno, sacalo con Certbot:
+3. **El certificado HTTPS.** Si el subdominio todavía no tiene uno, sacalo con Certbot:
 
    ```
    sudo certbot certonly --nginx -d lemonhouse.example.com
    ```
 
-3. **La configuración de Nginx.** Copiá `docs/nginx-ejemplo.conf` al servidor como `/etc/nginx/sites-available/lemonhouse`. Cambiá `lemonhouse.example.com` y `TU-PROYECTO` por los tuyos, y activala:
+4. **La configuración de Nginx.** Copiá `docs/nginx-ejemplo.conf` al servidor como `/etc/nginx/sites-available/lemonhouse`. Cambiá `lemonhouse.example.com` y `TU-PROYECTO` por los tuyos, y activala:
 
    ```
    sudo ln -s /etc/nginx/sites-available/lemonhouse /etc/nginx/sites-enabled/
@@ -130,7 +142,7 @@ npm run verificar
 npm run publicar
 ```
 
-`verificar` corre los tests, el chequeo de tipos y el build. `publicar` arma el sitio con `.env.production` y lo sube con `scp` al destino de `PUBLICAR_DESTINO`. `index.html` va al final, con otro nombre, y se renombra en el servidor con `ssh`: si la conexión se corta, el sitio sigue con la versión anterior. Si el servidor pide la contraseña en cada paso, configurá una clave SSH.
+`verificar` corre los tests, el chequeo de tipos y el build. `publicar` arma el sitio con `.env.production` y lo sube con `scp` al destino de `PUBLICAR_DESTINO`. `index.html` va al final, con otro nombre, y se renombra en el servidor con `ssh`: si la conexión se corta, el sitio sigue con la versión anterior. Si el servidor pide la contraseña en cada paso, o no encuentra la clave, revisá el alias del paso 8.
 
 **Para publicar una versión nueva**, primero subí la base si hay migraciones nuevas, con `npm run db:subir:produccion`. Después corré `verificar` y `publicar`. Los archivos viejos de `assets/` quedan en el servidor y no molestan.
 
