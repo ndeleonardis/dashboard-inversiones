@@ -67,7 +67,7 @@ Al proyecto real van solo las migraciones. Los datos de ejemplo del repositorio 
 3. Completá cada sección del menú de la izquierda. Cada una se guarda con Save.
    - **Branding.** Dejá el logo vacío, porque con logo Google exige verificar la app antes de publicarla. Página principal `https://lemonhouse.example.com` y política de privacidad `https://lemonhouse.example.com/privacidad`. En los dominios autorizados, el dominio de tu sitio sin el subdominio (`example.com`) y el de Supabase (`TU-PROYECTO.supabase.co`).
    - **Data Access.** En "Add or remove scopes", tildá `openid`, `.../auth/userinfo.email` y `.../auth/userinfo.profile`. No hace falta ninguno más. Update cierra el panel pero no guarda, así que después apretá Save abajo de la página. Los tres tienen que quedar en "Your non-sensitive scopes".
-   - **Audience.** Queda en "Testing" y External. En Test users, cargá la cuenta de Google de cada persona del grupo. Mientras esté en "Testing", solo entran esas cuentas.
+   - **Audience.** Queda en "Testing" y External. En Test users, cargá la cuenta de Google de cada persona del grupo. Google dice que en "Testing" solo entran esas cuentas, pero con los permisos básicos que pide LemonHouse no siempre lo aplica. Quién entra lo decide la invitación de los pasos 6 y 7, no esta lista (en el paso 10 está el porqué).
    - **Clients.** Creá un cliente de tipo "Web application". En los orígenes autorizados de JavaScript va `https://lemonhouse.example.com`, sin barra al final. En los URIs de redireccionamiento autorizados va `https://TU-PROYECTO.supabase.co/auth/v1/callback`.
 4. Antes de apretar Create en Clients, abrí Supabase en otra pestaña, en el lugar del paso siguiente. Google muestra el secreto del cliente **una sola vez**. Copialo con el botón de copiar y pegalo directo en Supabase, sin descargar el archivo. El ID del cliente queda siempre a la vista.
    - **Si el secreto se pierde**, en la pantalla del cliente apretá "Add secret" y usá el nuevo. Después deshabilitá el viejo con Disable y borralo.
@@ -150,12 +150,14 @@ npm run publicar
 
 1. Abrí `https://lemonhouse.example.com`. Tiene que verse la pantalla de entrar, con el enlace a la privacidad.
 2. Entrá con una cuenta invitada. Tenés que llegar al resumen.
-3. Probá con una cuenta de Google no invitada. Mientras la app de Google esté en "Testing", esa cuenta tiene que estar entre los usuarios de prueba. Tiene que aparecer "Este email no tiene acceso a LemonHouse", y en Authentication, Users no tiene que aparecer ningún usuario nuevo.
+3. Probá con una cuenta de Google no invitada. No hace falta cargarla como usuario de prueba. Tiene que aparecer "Este email no tiene acceso a LemonHouse", y en Authentication, Users no tiene que aparecer ningún usuario nuevo.
+   - **Por qué alcanza con la invitación.** Pensalo como un edificio con dos porteros. El de la puerta de calle es Google, que en "Testing" dice que solo deja pasar a los usuarios de prueba. El de la puerta del departamento es LemonHouse, con el hook del paso 6, que deja pasar solo a los emails invitados. En la prueba de esta guía, el portero de la calle dejó pasar una cuenta que no estaba en su lista, y la frenó el del departamento. Los datos los protege el del departamento, así que la lista de Google no es lo que cuida a LemonHouse.
+   - **Si Google muestra su propio error de acceso bloqueado**, es porque el portero de la calle sí pidió la lista. Cargá esa cuenta en Test users y probá de nuevo.
 4. En un celular Android, abrí el sitio en Chrome y elegí "Instalar app" en el menú. En Samsung Internet, el menú tiene una opción para agregar la página a la pantalla de inicio. La app instalada abre sin la barra del navegador y se entra con Google sin salir de ella.
 
 ## 11. Publicar la app de Google
 
-Mientras la app de Google esté en "Testing", solo entran las cuentas cargadas como usuarios de prueba. Con el sitio y la página de privacidad ya publicados, pasala a producción en Google Auth Platform, Audience, "Publish app".
+Google dice que, mientras la app esté en "Testing", solo entran las cuentas cargadas como usuarios de prueba, aunque con permisos básicos no siempre lo aplica (paso 10). Con el sitio y la página de privacidad ya publicados, pasala a producción en Google Auth Platform, Audience, "Publish app". Así, para que una persona nueva entre alcanza con invitarla como en el paso 7, sin depender de que Google aplique o no su lista.
 
 LemonHouse pide solo el email y el perfil, que para Google son permisos básicos. Si Google pide verificar la marca, lo hace desde su Centro de verificación con la página principal y la de privacidad de la sección Branding.
 
