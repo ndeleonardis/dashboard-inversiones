@@ -1,9 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, expectTypeOf, it } from 'vitest'
 import { crearRepositorioFalso } from '../../tests/interfaz/repositorio-falso.ts'
 import { MONEDAS } from '../dominio/moneda.ts'
 import { ErrorDeLaApp, traducirError } from './errores.ts'
-import { crearRepositorioSupabase } from './repositorio.ts'
+import { crearRepositorioSupabase, type Fila } from './repositorio.ts'
 import { Constants, type Database } from './tipos-base.ts'
 
 const ID = '0b6c1f4e-7a52-4c3e-9d1a-2f8e5b7c9a10'
@@ -173,5 +173,17 @@ describe('repositorio falso', () => {
 describe('tipos generados de la base', () => {
   it('la moneda de la base es la misma que la de la app (regla 2)', () => {
     expect(Constants.public.Enums.moneda).toEqual(MONEDAS)
+  })
+
+  // Lo comprueba el chequeo de tipos (npm run verificar). Si el valor perdiera
+  // el null, una pantalla podría mostrar "$ 0" donde falta el precio.
+  it('el valor actual puede faltar, y el costo no (regla 5)', () => {
+    expectTypeOf<Fila<'posicion'>['valor']>().toEqualTypeOf<number | null>()
+    expectTypeOf<Fila<'posicion'>['fecha_valor']>().toEqualTypeOf<string | null>()
+    expectTypeOf<Fila<'posicion'>['rendimiento']>().toEqualTypeOf<number | null>()
+    expectTypeOf<Fila<'invertido_por_persona'>['valor']>().toEqualTypeOf<number | null>()
+    expectTypeOf<Fila<'invertido_grupo'>['rendimiento_pct']>().toEqualTypeOf<number | null>()
+    expectTypeOf<Fila<'posicion'>['costo']>().toEqualTypeOf<number>()
+    expectTypeOf<Fila<'invertido_grupo'>['instrumentos_sin_precio']>().toEqualTypeOf<number>()
   })
 })

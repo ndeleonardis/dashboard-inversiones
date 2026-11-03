@@ -23,7 +23,19 @@ const invertido = (persona_id: string, nombre: string, moneda: Moneda, costo: nu
   moneda,
   costo,
   tiene_inversiones: costo > 0,
+  ...sinPrecio(costo),
 })
+
+// Lo invertido todavía sin ningún precio: el valor falta y no hay rendimiento.
+// Sin inversiones, el valor es 0 (cambio valor-actual).
+function sinPrecio(costo: number) {
+  return {
+    valor: costo > 0 ? null : 0,
+    instrumentos_sin_precio: costo > 0 ? 1 : 0,
+    rendimiento: null,
+    rendimiento_pct: null,
+  }
+}
 
 // Ana invirtió en las dos monedas y Beto nunca invirtió.
 const INVERSIONES = {
@@ -34,8 +46,8 @@ const INVERSIONES = {
     invertido('beto', 'Beto', 'USD', 0),
   ],
   invertido_grupo: [
-    { moneda: 'ARS', costo: 247702.5 },
-    { moneda: 'USD', costo: 301 },
+    { moneda: 'ARS', costo: 247702.5, ...sinPrecio(247702.5) },
+    { moneda: 'USD', costo: 301, ...sinPrecio(301) },
   ] satisfies Fila<'invertido_grupo'>[],
 }
 

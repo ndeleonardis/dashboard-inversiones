@@ -17,7 +17,10 @@ export type Origen = Tabla | Vista
 
 // Los tipos generados marcan como opcional toda columna de una vista. Las
 // nuestras no tienen nulos: cada columna sale de un not null o de un coalesce.
-type SinNulos<T> = { [K in keyof T]: NonNullable<T[K]> }
+// La excepción son las del valor actual, que sin precio vienen null y nunca 0
+// (regla 5). Mantenerles el null obliga a cada pantalla a decir "Sin precio".
+export type ColumnasSinPrecio = 'fecha_valor' | 'valor' | 'rendimiento' | 'rendimiento_pct'
+type SinNulos<T> = { [K in keyof T]: K extends ColumnasSinPrecio ? T[K] : NonNullable<T[K]> }
 
 export type Fila<T extends Origen> = T extends Tabla
   ? Esquema['Tables'][T]['Row']

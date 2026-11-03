@@ -488,6 +488,59 @@ export type Database = {
         }
         Relationships: []
       }
+      precio: {
+        Row: {
+          cada: number
+          capturado_en: string
+          creado_en: string
+          creado_por: string | null
+          fecha: string
+          fuente: string
+          id: string
+          instrumento_id: string
+          modificado_en: string | null
+          modificado_por: string | null
+          moneda: Database["public"]["Enums"]["moneda"]
+          valor: number
+        }
+        Insert: {
+          cada: number
+          capturado_en?: string
+          creado_en?: string
+          creado_por?: string | null
+          fecha: string
+          fuente: string
+          id?: string
+          instrumento_id: string
+          modificado_en?: string | null
+          modificado_por?: string | null
+          moneda: Database["public"]["Enums"]["moneda"]
+          valor: number
+        }
+        Update: {
+          cada?: number
+          capturado_en?: string
+          creado_en?: string
+          creado_por?: string | null
+          fecha?: string
+          fuente?: string
+          id?: string
+          instrumento_id?: string
+          modificado_en?: string | null
+          modificado_por?: string | null
+          moneda?: Database["public"]["Enums"]["moneda"]
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "precio_moneda_instrumento_fk"
+            columns: ["instrumento_id", "moneda"]
+            isOneToOne: false
+            referencedRelation: "instrumento"
+            referencedColumns: ["id", "moneda"]
+          },
+        ]
+      }
       tipo_cuenta: {
         Row: {
           creado_en: string
@@ -631,17 +684,25 @@ export type Database = {
       invertido_grupo: {
         Row: {
           costo: number | null
+          instrumentos_sin_precio: number | null
           moneda: Database["public"]["Enums"]["moneda"] | null
+          rendimiento: number | null
+          rendimiento_pct: number | null
+          valor: number | null
         }
         Relationships: []
       }
       invertido_por_persona: {
         Row: {
           costo: number | null
+          instrumentos_sin_precio: number | null
           moneda: Database["public"]["Enums"]["moneda"] | null
           nombre: string | null
           persona_id: string | null
+          rendimiento: number | null
+          rendimiento_pct: number | null
           tiene_inversiones: boolean | null
+          valor: number | null
         }
         Relationships: []
       }
@@ -650,9 +711,14 @@ export type Database = {
           cantidad: number | null
           costo: number | null
           cuenta_id: string | null
+          fecha_valor: string | null
           instrumento_id: string | null
           moneda: Database["public"]["Enums"]["moneda"] | null
           persona_id: string | null
+          rendimiento: number | null
+          rendimiento_pct: number | null
+          sin_codigo_cafci: boolean | null
+          valor: number | null
         }
         Relationships: [
           {
@@ -727,6 +793,17 @@ export type Database = {
           p_vencimiento?: string
         }
         Returns: string
+      }
+      guardar_precios: { Args: { p_precios: Json }; Returns: number }
+      instrumentos_a_cotizar: {
+        Args: never
+        Returns: {
+          codigo_cafci: string
+          id: string
+          moneda: Database["public"]["Enums"]["moneda"]
+          ticker: string
+          tipo: string
+        }[]
       }
       paso_costo_promedio: {
         Args: {

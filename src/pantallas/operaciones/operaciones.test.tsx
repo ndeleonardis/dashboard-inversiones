@@ -39,6 +39,9 @@ async function conUnaCompra() {
   return { ...ejemplo, compra }
 }
 
+// Las columnas del valor actual de una posición sin precio (cambio valor-actual).
+const SIN_PRECIO = { fecha_valor: null, valor: null, rendimiento: null, rendimiento_pct: null, sin_codigo_cafci: false }
+
 // La vista posicion la calcula la base (T7). En estos tests la arma cada test.
 function conPosicion(repositorio: Repositorio, calcular: () => Promise<Fila<'posicion'>[]>) {
   const listar = repositorio.listar.bind(repositorio)
@@ -242,6 +245,7 @@ describe('operaciones', () => {
       moneda: instrumento.moneda,
       cantidad,
       costo,
+      ...SIN_PRECIO,
     })
     conPosicion(repositorio, async () => [fila(cuenta, aapl, 15, 2250), fila(cuenta, aapld, 20, 311), fila(otra, on, 1000, 1027)])
     const { usuario } = abrirApp(`/cuentas/${cuenta.id}`, repositorio)
@@ -276,6 +280,7 @@ describe('operaciones', () => {
         moneda: operacion.moneda,
         cantidad: operacion.cantidad,
         costo: operacion.cantidad * operacion.precio_unitario + operacion.comision,
+        ...SIN_PRECIO,
       })),
     )
     const { usuario } = abrirApp('/cuentas', repositorio)
@@ -403,7 +408,15 @@ describe('filtros de operaciones (C15)', () => {
   it('desde la posición de una cuenta se ven las operaciones de cada instrumento', async () => {
     const { repositorio, cuenta, aapl } = await conVariasOperaciones()
     conPosicion(repositorio, async () => [
-      { cuenta_id: cuenta.id, persona_id: cuenta.persona_id, instrumento_id: aapl.id, moneda: 'ARS', cantidad: 1, costo: 10 },
+      {
+        cuenta_id: cuenta.id,
+        persona_id: cuenta.persona_id,
+        instrumento_id: aapl.id,
+        moneda: 'ARS',
+        cantidad: 1,
+        costo: 10,
+        ...SIN_PRECIO,
+      },
     ])
     const { usuario } = abrirApp(`/cuentas/${cuenta.id}`, repositorio)
 
