@@ -50,6 +50,23 @@ export function formatearPorcentaje(fraccion: Numero): string {
   return formatoDePorcentaje.format(comoNumero(fraccion))
 }
 
+const formatoDePeso = new Intl.NumberFormat('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const formatoDeVariacionDePeso = new Intl.NumberFormat('es-AR', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+  signDisplay: 'exceptZero',
+})
+
+/** Un peso de Pesaje, en kilogramos con dos decimales: "57,30 kg" (C55). */
+export function formatearPeso(valor: Numero): string {
+  return `${formatoDePeso.format(comoNumero(valor))} kg`
+}
+
+/** Cuánto cambió un peso, con su signo salvo el cero: "+0,30 kg" o "-0,15 kg" (C56). */
+export function formatearVariacionDePeso(valor: Numero): string {
+  return `${formatoDeVariacionDePeso.format(comoNumero(valor))} kg`
+}
+
 const formatoDeCantidad = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 8 })
 
 /** Una cantidad de un instrumento, con hasta 8 decimales y sin ceros de más. */
