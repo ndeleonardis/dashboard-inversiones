@@ -4,7 +4,7 @@
 >
 > Pesaje no es parte del propósito financiero de LemonHouse. Es un módulo opcional que cada copia prende si lo quiere, y no toca nada de lo financiero. La decisión de cómo se prende está en `decision-interruptor.md`, en esta misma carpeta.
 >
-> Aprobada el 2026-11-03.
+> Aprobada el 2026-11-03. Ajustada el 2026-11-03 al verificar: en cuatro diferencias entre el código y la spec mandó el código (C50, C54, C56 y la tabla de errores).
 
 ## 1. Overview
 
@@ -68,16 +68,16 @@ Hoy el pesaje se anota en un papel. Ver cómo viene cada uno obliga a buscar las
 
 ### Carga
 
-- **C50 (P0) AGREGA.** DADO la lista con sus integrantes activos, CUANDO se carga un pesaje, ENTONCES se elige la fecha (por defecto hoy) y aparece un renglón por cada integrante activo, con su peso y sus observaciones. Los renglones sin peso no se guardan. Se guarda si hay al menos un peso.
+- **C50 (P0) AGREGA.** DADO la lista con sus integrantes activos, CUANDO se carga un pesaje, ENTONCES se elige la fecha (por defecto hoy) y aparece un renglón por cada integrante activo, con su peso y sus observaciones. Los renglones sin peso no se guardan. Se guarda si hay al menos un peso. Un renglón con observaciones y sin peso no se guarda y pide el peso, para que la observación no se pierda sin aviso. Si la lista no tiene a nadie activo, se avisa y se ofrece agregar a alguien.
 - **C51 (P0) AGREGA.** DADO un peso, CUANDO se carga, ENTONCES se expresa en kilogramos con hasta dos decimales (57,30 kg o 4,35 kg). Si es cero, negativo o mayor que 300 kg, no se guarda y se dice en qué renglón está el error.
 - **C52 (P0) AGREGA.** DADO alguien que ya tiene un peso en una fecha, CUANDO se carga otro peso suyo en la misma fecha, ENTONCES no se guarda, se avisa que ya tiene un pesaje ese día y se ofrece editar el existente.
 - **C53 (P0) AGREGA.** DADO una carga, CUANDO se elige una fecha futura, ENTONCES no se guarda y se avisa.
-- **C54 (P0) AGREGA.** DADO un peso cargado, CUANDO se edita la fecha, el peso o las observaciones, o se lo borra, ENTONCES la tabla, la variación y el gráfico reflejan el cambio sin ningún paso extra.
+- **C54 (P0) AGREGA.** DADO un peso cargado, CUANDO se edita la fecha, el peso o las observaciones, o se lo borra, ENTONCES la tabla, la variación y el gráfico reflejan el cambio sin ningún paso extra. Quién se pesó no se edita: si el peso quedó en el renglón equivocado, se borra y se carga de nuevo.
 
 ### Tabla, variación y gráfico
 
 - **C55 (P0) AGREGA.** DADO pesajes cargados, CUANDO se abre Pesaje, ENTONCES se ve una tabla con fecha, quién, peso (57,30 kg) y observaciones, con lo más reciente primero.
-- **C56 (P1) AGREGA.** DADO un peso con un pesaje anterior de la misma persona o mascota, CUANDO se muestra, ENTONCES se ve la variación contra ese pesaje anterior, con signo (+0,30 kg, −0,15 kg). Si es el primero, dice "Primer pesaje".
+- **C56 (P1) AGREGA.** DADO un peso con un pesaje anterior de la misma persona o mascota, CUANDO se muestra, ENTONCES se ve la variación contra ese pesaje anterior, con signo (+0,30 kg, -0,15 kg, con el guion común, igual que en el rendimiento financiero). Si es el primero, dice "Primer pesaje".
 - **C62 (P1) AGREGA.** DADO una variación, CUANDO se muestra, ENTONCES su color sale del objetivo actual de quien se pesó. Con "Bajar", bajar es verde y subir es rojo. Con "Subir", al revés. Con "Sin objetivo", o si el peso no cambió, va en neutro. El color va siempre junto al signo y a una flecha, para que se entienda sin distinguir colores. Si cambia el objetivo, todas sus variaciones, también las viejas, se muestran según el objetivo nuevo.
 - **C57 (P1) AGREGA.** DADO la tabla, CUANDO se filtra por quién se pesó, ENTONCES se ven solo sus pesajes, y la variación sigue siendo contra su pesaje anterior.
 - **C58 (P1) AGREGA.** DADO alguien con pesajes, CUANDO se mira su gráfico de evolución, ENTONCES se ve su peso a lo largo del tiempo, con la escala ajustada a su peso, para que la variación de una mascota de 4 kg se note tanto como la de una persona de 60 kg. Las semanas sin pesaje no se dibujan como cero. El gráfico muestra el objetivo como una etiqueta ("Objetivo: bajar"), sin colorear la línea.
@@ -95,7 +95,7 @@ Hoy el pesaje se anota en un papel. Ver cómo viene cada uno obliga a buscar las
 | Se escribe en gramos por error (4350 para un gato) | Supera los 300 kg y no se guarda (C51) |
 | Alguien no se pesó esa semana | Su renglón queda vacío y no se guarda nada para él (C50). En el gráfico no aparece como cero (C58) |
 | Se carga dos veces el mismo día | No se guarda el segundo y se ofrece editar el primero (C52) |
-| Se carga el peso en el renglón equivocado | Se edita ese peso (C54) |
+| Se carga el peso en el renglón equivocado | Se borra ese peso y se carga en el renglón correcto (C54) |
 | Una mascota ya no está | Se la desactiva y su historial se conserva (C48) |
 | Cambia el objetivo de alguien (deja de crecer, llega a un peso sano) | Se cambia desde la lista (C61) y sus variaciones se recolorean con el objetivo nuevo (C62) |
 | Alguien sin objetivo sube o baja | La variación va en neutro. La app no decide por su cuenta qué es bueno (C62) |
