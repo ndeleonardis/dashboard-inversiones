@@ -53,10 +53,10 @@ erDiagram
 | `instrumento_cedear` | Detalle de un CEDEAR | ratio, subyacente |
 | `tipo_operacion` | Catálogo de operaciones | nombre (COMPRA, VENTA, y después renta, dividendo, amortización) |
 | `operacion` | Cada compra o venta | cuenta, instrumento, tipo, fecha, cantidad, precio unitario, moneda (la del instrumento), comisión |
-| `posicion` (vista) | Lo que se tiene hoy | se calcula de `operacion` por cuenta e instrumento |
+| `posicion` (vista) | Lo que se tiene hoy | se calcula de `operacion` por cuenta e instrumento, con el valor del último `precio` (vacío si no hay) |
 | `tipo_gasto` y `gasto` | Salidas de plata | persona (opcional, vacía es comunitario), tipo, fecha, monto, moneda, descripción |
 | `tipo_ingreso` e `ingreso` | Entradas de plata | persona, cuenta (opcional), tipo, fecha, monto, moneda, descripción |
-| `precio` (v2) | Valor de un instrumento en un momento | instrumento, fecha y hora, precio, moneda, fuente |
+| `precio` (v2) | Valor de mercado de un instrumento en una fecha | instrumento, fecha, valor, cada cuántas unidades (`cada`), moneda (la del instrumento), fuente, hora de captura. Una fila por instrumento y fecha: si la fuente corrige el valor, se reemplaza. La escribe solo el proceso externo, con el rol `carga_precios` |
 
 Todas las tablas llevan fecha de alta y quién cargó la fila.
 
@@ -70,12 +70,14 @@ Las reglas del PRD no se confían a la interfaz. La base las impide.
 - **Ninguna venta deja la posición en negativo**, ni al cargarla ni al editar o borrar una compra anterior.
 - **Una ON no existe sin vencimiento.** Al vencer deja de cotizar, y sin la fecha su último precio quedaría congelado como si siguiera vigente.
 - **Un gasto sin persona es comunitario.** Es el valor por defecto y no hace falta elegir nada al cargarlo.
+- **Sin precio no es cero.** Una posición sin precio tiene el valor vacío, y un total con alguna sin precio cuenta cuántas faltan y no tiene rendimiento.
+- **Un precio deja de valer si cambia la clave con que se pidió.** Al cambiar el código CAFCI, el ticker o la moneda de un instrumento, sus precios se borran, y el proceso externo trae los nuevos.
 
 ## Trampas de dominio
 
 - **El ticker define la moneda.** AAPL cotiza en pesos, AAPLD en dólar MEP y AAPLC en dólar cable. Las ONs siguen el mismo patrón (O en pesos, D en MEP, C en cable).
 - **Las ONs cotizan cada 100 de valor nominal.** El valor de una posición sería cantidad × precio / 100. Es la convención que se ve en los datos y la que adopta la v1. Si hiciera falta corregirla, es un dato de `tipo_instrumento`, no código.
-- **El valor de un FCI que da la CAFCI es por mil cuotapartes.** El valor de una posición es cantidad × valor / 1000. En la v1 el valor se carga por cuotaparte, y la conversión desde el valor de la CAFCI llega con los precios de la v2.
+- **El valor de un FCI que da la CAFCI es por mil cuotapartes.** El valor de una posición es cantidad × valor / 1000. Las operaciones se cargan por cuotaparte, así que `tipo_instrumento.precio_cada` del FCI vale 1. Por eso el "cada mil" de la CAFCI va en cada precio (`precio.cada`), tal como lo publica la fuente, y no en el tipo de instrumento.
 
 ## Cómo se escala a cuentas compartidas
 

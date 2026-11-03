@@ -162,6 +162,34 @@ Google dice que, mientras la app esté en "Testing", solo entran las cuentas car
 
 LemonHouse pide solo el email y el perfil, que para Google son permisos básicos. Si Google pide verificar la marca, lo hace desde su Centro de verificación con la página principal y la de privacidad de la sección Branding.
 
+## 12. Conectar el proceso que trae los precios
+
+Los valores actuales los escribe un proceso externo (por ejemplo un flujo de n8n), no la app. Entra con su propio usuario de la base, `carga_precios`, que las migraciones crean sin login. Ese usuario no puede leer ninguna tabla: solo puede pedir la lista de instrumentos a cotizar y guardar precios. Si alguien consiguiera su contraseña, no vería ningún dato personal.
+
+1. Generá una contraseña larga con un gestor de contraseñas.
+2. En el panel de Supabase, SQL Editor, corré esto con tu contraseña, y después borrá la consulta del editor sin guardarla:
+   ```sql
+   alter role carga_precios with login password 'LA-CONTRASEÑA';
+   ```
+3. Cargá la conexión en el proceso, con los datos de "Connect" > "Session pooler" del panel. El servidor y el puerto son los del pooler, la base es `postgres` y el usuario es `carga_precios.ID-DEL-PROYECTO`, con el id que figura en la dirección del panel. Desde una VM sin IPv6 hay que usar el pooler, porque la conexión directa es solo IPv6. La contraseña va solo en la credencial del proceso, nunca en el repositorio ni en `.env`.
+4. Probá la conexión con estas dos consultas. La primera tiene que devolver los instrumentos y la segunda tiene que fallar con "permission denied":
+   ```sql
+   select * from public.instrumentos_a_cotizar();
+   select count(*) from public.persona;
+   ```
+
+El proceso usa solo dos funciones:
+
+- `instrumentos_a_cotizar()` devuelve el id, el tipo, el ticker, la moneda y el código CAFCI de cada instrumento. No trae cantidades, cuentas ni personas.
+- `guardar_precios(precios)` recibe todos los precios de una corrida como una lista JSON, y guarda todos o ninguno. Si ya hay un precio de ese instrumento en esa fecha, lo reemplaza. `cada` dice cada cuántas unidades es el valor, tal como lo publica la fuente: 1000 para un FCI de la CAFCI, 100 para una ON y 1 para el resto. La moneda tiene que ser la del instrumento.
+  ```sql
+  select public.guardar_precios('[
+    {"instrumento_id": "…", "fecha": "2026-11-02", "valor": 2345678.90, "cada": 1000, "moneda": "ARS", "fuente": "CAFCI"}
+  ]'::jsonb);
+  ```
+
+Para sacarle el acceso al proceso: `alter role carga_precios nologin;`.
+
 ## Para tener en cuenta
 
 - **Supabase Free pausa el proyecto** después de una semana sin uso. Los datos quedan, y se reactiva desde el panel.

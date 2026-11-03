@@ -112,7 +112,7 @@ Cada tarea sigue el ciclo de `CLAUDE.md`: test que falla, código, suite complet
 
 **T9. Consultas.** `src/datos/consultas.ts` y el repositorio falso, con las columnas nuevas.
 - **Test.** Se suma al test existente de consultas.
-- **Adelantado en T7.** Al regenerar los tipos, `verificar` pidió las columnas nuevas en los datos falsos de los tests de pantalla, y se sumaron ahí. También apareció que `SinNulos` les quitaba el `null` a todas las columnas de las vistas, así que el valor habría quedado tipado como `number`. Ahora deja el `null` en `fecha_valor`, `valor`, `rendimiento` y `rendimiento_pct`, y un test de tipos en `repositorio.test.ts` lo exige (regla 5). Lo que queda de T9 es revisar `consultas.ts` cuando las pantallas pidan las columnas.
+- **Adelantado en T7.** Al regenerar los tipos, `verificar` pidió las columnas nuevas en los datos falsos de los tests de pantalla, y se sumaron ahí. También apareció que `SinNulos` les quitaba el `null` a todas las columnas de las vistas, así que el valor habría quedado tipado como `number`. Ahora deja el `null` en `fecha_valor`, `valor`, `rendimiento` y `rendimiento_pct`, y un test de tipos en `repositorio.test.ts` lo exige (regla 5). Lo que queda de T9 es revisar `consultas.ts` cuando las pantallas pidan las columnas. **Cerrado en T12:** el repositorio pide `select('*')`, así que las columnas nuevas llegan sin cambiar nada.
 - **Depende de** T7.
 
 **T10. Componentes `ValorActual` y `Rendimiento`.** `src/componentes/`.
