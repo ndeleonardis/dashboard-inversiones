@@ -30,6 +30,23 @@ export function esFutura(fecha: string, reloj: Date = new Date()): boolean {
   return fecha > hoy(reloj)
 }
 
+/** Los días entre dos fechas "AAAA-MM-DD", contados en el calendario y sin horas. */
+function diasEntre(desde: string, hasta: string): number {
+  const comoDia = (fecha: string) => {
+    const [anio, mes, dia] = fecha.split('-').map(Number)
+    return Date.UTC(anio!, mes! - 1, dia!)
+  }
+  return Math.round((comoDia(hasta) - comoDia(desde)) / 86_400_000)
+}
+
+/** Los días a partir de los cuales un valor se marca como desactualizado (C38). */
+export const DIAS_PARA_DESACTUALIZADO = 7
+
+/** Si el valor de esa fecha tiene más de 7 días. Un fondo que dejó de publicar se nota así. */
+export function estaDesactualizado(fecha: string, reloj: Date = new Date()): boolean {
+  return diasEntre(fecha.slice(0, 10), hoy(reloj)) > DIAS_PARA_DESACTUALIZADO
+}
+
 /** El aviso para confirmar una fecha posterior a hoy, o null si no hace falta. */
 export function avisoDeFechaFutura(fecha: string, reloj: Date = new Date()): string | null {
   return esFutura(fecha, reloj) ? `La fecha ${formatearFecha(fecha)} es posterior a hoy.` : null

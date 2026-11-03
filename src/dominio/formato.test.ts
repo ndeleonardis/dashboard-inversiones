@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { formatearCantidad, formatearFecha, formatearMes, formatearMomento, formatearMonto, formatearPrecio } from './formato.ts'
+import {
+  formatearCantidad,
+  formatearDiaYMes,
+  formatearFecha,
+  formatearMes,
+  formatearMomento,
+  formatearMonto,
+  formatearPorcentaje,
+  formatearPrecio,
+  formatearVariacion,
+} from './formato.ts'
 import { MONEDAS } from './moneda.ts'
 
 // Intl separa el símbolo del número con un espacio duro (U+00A0).
@@ -40,6 +50,21 @@ describe('precios unitarios', () => {
   })
 })
 
+describe('rendimiento (C42)', () => {
+  it('el porcentaje sale de una fracción, con signo y hasta un decimal', () => {
+    expect(formatearPorcentaje(0.125)).toBe('+12,5%')
+    expect(formatearPorcentaje('-0.1')).toBe('-10%')
+    expect(formatearPorcentaje('0.39394')).toBe('+39,4%')
+    expect(formatearPorcentaje(0)).toBe('0%')
+  })
+
+  it('la variación es un monto con su moneda y con signo', () => {
+    expect(sinEspacioDuro(formatearVariacion('97297.5', 'ARS'))).toBe('+$ 97.297,50')
+    expect(sinEspacioDuro(formatearVariacion(-21, 'USD'))).toBe('-US$ 21,00')
+    expect(sinEspacioDuro(formatearVariacion(0, 'ARS'))).toBe('$ 0,00')
+  })
+})
+
 describe('cantidades', () => {
   it('usan punto de miles y coma decimal, sin ceros de más', () => {
     expect(formatearCantidad(1234.5)).toBe('1.234,5')
@@ -55,6 +80,10 @@ describe('cantidades', () => {
 describe('fechas', () => {
   it('una fecha sale como día, mes y año', () => {
     expect(formatearFecha('2026-03-01')).toBe('01/03/2026')
+  })
+
+  it('la fecha de un valor sale como día y mes', () => {
+    expect(formatearDiaYMes('2026-11-02')).toBe('02/11')
   })
 
   it('un mes sale con su nombre', () => {

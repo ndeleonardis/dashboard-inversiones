@@ -29,6 +29,27 @@ export function formatearPrecio(valor: Numero, moneda: Moneda): string {
   return formatosDePrecio[moneda].format(comoNumero(valor))
 }
 
+const formatosDeVariacion: Record<Moneda, Intl.NumberFormat> = {
+  ARS: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 2, signDisplay: 'exceptZero' }),
+  USD: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, signDisplay: 'exceptZero' }),
+}
+
+/** Cuánto ganó o perdió algo, con su moneda y su signo: "+$ 97.297,50" o "-US$ 21,00" (C42). */
+export function formatearVariacion(valor: Numero, moneda: Moneda): string {
+  return formatosDeVariacion[moneda].format(comoNumero(valor))
+}
+
+const formatoDePorcentaje = new Intl.NumberFormat('es-AR', {
+  style: 'percent',
+  maximumFractionDigits: 1,
+  signDisplay: 'exceptZero',
+})
+
+/** Una fracción como porcentaje con signo: 0,125 → "+12,5%" (C42). */
+export function formatearPorcentaje(fraccion: Numero): string {
+  return formatoDePorcentaje.format(comoNumero(fraccion))
+}
+
 const formatoDeCantidad = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 8 })
 
 /** Una cantidad de un instrumento, con hasta 8 decimales y sin ceros de más. */
@@ -45,7 +66,13 @@ export function formatearFecha(fecha: string): string {
   return `${dia}/${mes}/${anio}`
 }
 
-const formatoDeMes = new Intl.DateTimeFormat('es-AR', { month: 'long', year: 'numeric' })
+/** "2026-11-02" → "02/11", para la fecha de un valor: "Valor al 02/11" (C34). */
+export function formatearDiaYMes(fecha: string): string {
+  const [, mes, dia] = fecha.slice(0, 10).split('-')
+  return `${dia}/${mes}`
+}
+
+const formatoDeMes =new Intl.DateTimeFormat('es-AR', { month: 'long', year: 'numeric' })
 
 /** "2026-10-01" → "octubre de 2026". */
 export function formatearMes(mes: string): string {
