@@ -27,6 +27,9 @@ insert into public.instrumento (tipo, ticker, nombre, moneda, vencimiento) value
   ('FCI', 'FCIEJ', 'FCI Ejemplo Ahorro', 'ARS', null),
   ('CRIPTO', 'CRIPEJ', 'Cripto Ejemplo', 'USD', null);
 
+insert into public.instrumento_fci (instrumento_id, codigo_cafci)
+select id, '0000' from public.instrumento where ticker = 'FCIEJ';
+
 -- "dias" cuenta desde el primer día del mes actual. Las compras van antes que
 -- las ventas, así ninguna venta queda sin respaldo.
 insert into public.operacion (cuenta_id, instrumento_id, tipo, fecha, cantidad, precio_unitario, moneda, comision)
@@ -45,6 +48,20 @@ from (values
 ) as o (entidad, ticker, moneda, tipo, dias, cantidad, precio, comision)
 join public.cuenta c on c.entidad = o.entidad
 join public.instrumento i on i.ticker = o.ticker and i.moneda = o.moneda::public.moneda;
+
+-- Precios de ejemplo, con fechas relativas a hoy. Hay uno que gana, uno que
+-- pierde, un FCI publicado cada mil cuotapartes, una ON cada 100 de valor
+-- nominal, uno viejo (desactualizado) y dos sin precio (DEMO y CRIPEJ).
+insert into public.precio (instrumento_id, fecha, valor, cada, moneda, fuente)
+select i.id, current_date - p.dias, p.valor, p.cada, i.moneda, 'Ejemplo'
+from (values
+  ('EJM', 'ARS', 1, 23000, 1),
+  ('EJMD', 'USD', 1, 14, 1),
+  ('FCIEJ', 'ARS', 1, 13250.75, 1000),
+  ('ONEJD', 'USD', 1, 101.25, 100),
+  ('ETFEJ', 'USD', 20, 510, 1)
+) as p (ticker, moneda, dias, valor, cada)
+join public.instrumento i on i.ticker = p.ticker and i.moneda = p.moneda::public.moneda;
 
 insert into public.gasto (tipo_gasto_id, persona_id, fecha, monto, moneda, descripcion)
 select t.id, p.id, (date_trunc('month', current_date) + g.dia * interval '1 day')::date,

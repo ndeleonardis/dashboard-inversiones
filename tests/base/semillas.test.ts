@@ -19,6 +19,18 @@ describe('semillas de ejemplo (C28)', () => {
     }
   })
 
+  it('dejan posiciones con precio, sin precio, con precio viejo y un FCI cada mil (valor-actual T6)', async () => {
+    const filas = await base.admin.consultar<{ valor: string | null }>('select valor::text from posicion')
+    expect(filas.some((f) => f.valor !== null)).toBe(true)
+    expect(filas.some((f) => f.valor === null)).toBe(true)
+    const viejos = await base.admin.consultar('select 1 from posicion where fecha_valor < current_date - 7')
+    expect(viejos.length).toBeGreaterThan(0)
+    const fciCadaMil = await base.admin.consultar(
+      `select 1 from precio pr join instrumento_fci f on f.instrumento_id = pr.instrumento_id where pr.cada = 1000`,
+    )
+    expect(fciCadaMil.length).toBeGreaterThan(0)
+  })
+
   it('usan solo emails de example.com (regla 3)', async () => {
     const filas = await base.admin.consultar<{ email: string }>('select email from persona where email is not null')
     expect(filas.length).toBeGreaterThan(0)
