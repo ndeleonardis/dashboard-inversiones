@@ -558,3 +558,24 @@ a.boton {
   r: 6;
   outline: none;
 }
+
+/* Pesaje: cada renglón de la carga es una tarjeta con el nombre arriba (C50). */
+.renglon-pesaje {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-4);
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-card);
+}
+
+.renglon-pesaje-titulo {
+  margin: 0;
+  font-size: var(--font-size-subhead);
+}
+
+.renglon-pesaje-enlace {
+  font-weight: var(--font-weight-semibold);
+}

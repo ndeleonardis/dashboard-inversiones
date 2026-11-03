@@ -16,6 +16,7 @@ import { EditarIngreso, ListaDeIngresos, NuevoIngreso } from './pantallas/ingres
 import { EditarInstrumento, ListaDeInstrumentos, NuevoInstrumento } from './pantallas/instrumentos/Instrumentos.tsx'
 import { EditarOperacion, ListaDeOperaciones, NuevaOperacion } from './pantallas/operaciones/Operaciones.tsx'
 import { EditarPersona, ListaDePersonas, NuevaPersona } from './pantallas/personas/Personas.tsx'
+import { CargarPesaje } from './pantallas/pesaje/CargarPesaje.tsx'
 import { EditarIntegrante, ListaDeIntegrantes, NuevoIntegrante } from './pantallas/pesaje/Integrantes.tsx'
 import { ListaDePesajes } from './pantallas/pesaje/Pesajes.tsx'
 import { Privacidad } from './pantallas/Privacidad.tsx'
@@ -79,6 +80,7 @@ export default function App({ autenticacion, repositorio, avisoInicial = null, p
                   {pesajeActivo && (
                     <>
                       <Route path={RUTAS.pesaje} element={<ListaDePesajes />} />
+                      <Route path={RUTAS.pesajeNuevo} element={<CargarPesaje />} />
                       <Route path={RUTAS.pesajeIntegrantes} element={<ListaDeIntegrantes />} />
                       <Route path={RUTAS.pesajeIntegranteNuevo} element={<NuevoIntegrante />} />
                       <Route path={rutaDeIntegranteDePesaje(':id')} element={<EditarIntegrante />} />

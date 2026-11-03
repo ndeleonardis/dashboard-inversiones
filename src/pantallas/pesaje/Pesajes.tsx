@@ -7,7 +7,7 @@ import { RUTAS } from '../../rutas.ts'
 export function ListaDePesajes() {
   return (
     <>
-      <Encabezado titulo="Pesaje" />
+      <Encabezado titulo="Pesaje" accion={{ a: RUTAS.pesajeNuevo, texto: 'Cargar pesaje' }} />
       <Link to={RUTAS.pesajeIntegrantes} className="boton boton-secundario">
         Quiénes se pesan
       </Link>

@@ -11,6 +11,7 @@ import type {
   Fila,
   FilaResumenMes,
   Origen,
+  PesoParaGuardar,
   TablaConId,
   TablaDelMes,
 } from './repositorio.ts'
@@ -96,6 +97,8 @@ export function useCambios() {
 
     guardarInstrumento: (datos: DatosDeInstrumento, id?: string) =>
       yRefrescar(repositorio.guardarInstrumento(datos, id)),
+
+    guardarPesajes: (fecha: string, pesos: PesoParaGuardar[]) => yRefrescar(repositorio.guardarPesajes(fecha, pesos)),
 
     async borrar(tabla: TablaConId, id: string) {
       try {
