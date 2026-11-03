@@ -17,11 +17,12 @@ import { EditarInstrumento, ListaDeInstrumentos, NuevoInstrumento } from './pant
 import { EditarOperacion, ListaDeOperaciones, NuevaOperacion } from './pantallas/operaciones/Operaciones.tsx'
 import { EditarPersona, ListaDePersonas, NuevaPersona } from './pantallas/personas/Personas.tsx'
 import { CargarPesaje } from './pantallas/pesaje/CargarPesaje.tsx'
+import { EditarPesaje } from './pantallas/pesaje/EditarPesaje.tsx'
 import { EditarIntegrante, ListaDeIntegrantes, NuevoIntegrante } from './pantallas/pesaje/Integrantes.tsx'
 import { ListaDePesajes } from './pantallas/pesaje/Pesajes.tsx'
 import { Privacidad } from './pantallas/Privacidad.tsx'
 import { Resumen } from './pantallas/Resumen.tsx'
-import { RUTAS, rutaDeCategoria, rutaDeIntegranteDePesaje, rutaDeNuevaCategoria } from './rutas.ts'
+import { RUTAS, rutaDeCategoria, rutaDeIntegranteDePesaje, rutaDeNuevaCategoria, rutaDePesaje } from './rutas.ts'
 
 type PropsApp = {
   autenticacion: Autenticacion
@@ -84,6 +85,7 @@ export default function App({ autenticacion, repositorio, avisoInicial = null, p
                       <Route path={RUTAS.pesajeIntegrantes} element={<ListaDeIntegrantes />} />
                       <Route path={RUTAS.pesajeIntegranteNuevo} element={<NuevoIntegrante />} />
                       <Route path={rutaDeIntegranteDePesaje(':id')} element={<EditarIntegrante />} />
+                      <Route path={rutaDePesaje(':id')} element={<EditarPesaje />} />
                     </>
                   )}
                   <Route path="*" element={<Navigate to={RUTAS.resumen} replace />} />
