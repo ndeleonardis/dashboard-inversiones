@@ -1,6 +1,6 @@
 # PRD de LemonHouse
 
-> Contexto permanente del producto. Dice por qué existe LemonHouse y qué reglas no cambian entre versiones. Lo que se construye en cada versión, con sus criterios de aceptación, vive en `docs/specs/`. Las decisiones técnicas viven en `docs/plans/`. Última actualización 2026-10-25.
+> Contexto permanente del producto. Dice por qué existe LemonHouse y qué reglas no cambian entre versiones. Lo que se construye en cada versión, con sus criterios de aceptación, vive en `docs/specs/`. Las decisiones técnicas viven en `docs/plans/`. Última actualización 2026-11-03.
 
 ## 1. Qué es y por qué existe
 
@@ -102,3 +102,7 @@ Los precios van en una versión aparte porque dependen de fuentes externas, y el
 | Pregunta | Qué bloquea |
 |---|---|
 | ¿El precio promedio sirve para el costo de las posiciones, o conviene primero que entra primero que sale? Se usa precio promedio desde el 2026-10-26 y se revisa después de usarlo | Nada. Si cambia, es un cambio sobre la spec de la v1 |
+
+## 11. Anexo: Pesaje, un módulo aparte
+
+Pesaje no es parte del propósito de LemonHouse. Es un registro semanal del peso de personas y mascotas que vive en la app solo porque ya está a mano. Viene apagado, y cada copia lo prende si lo quiere. No toca nada de lo financiero: quienes se pesan no son personas del grupo, y nada de Pesaje entra en cuentas, gastos, ingresos ni resumen. Lo que hace está en la spec, sección "Pesaje", y cómo se prende en `docs/changes/2026-11-03-pesaje/decision-interruptor.md`.
