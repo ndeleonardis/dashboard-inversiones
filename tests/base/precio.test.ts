@@ -115,6 +115,56 @@ describe('restricciones del precio', () => {
   })
 })
 
+describe('precios que dejan de corresponder (T3)', () => {
+  async function fondoConPrecio(codigo = '1234') {
+    const ana = base.conSesion(ANA)
+    contador += 1
+    const ticker = `FONDO${contador}`
+    const [fila] = await ana.consultar<{ id: string }>(
+      `select public.guardar_instrumento('FCI', $1, 'Fondo Ejemplo', 'ARS', p_codigo_cafci => $2) as id`,
+      [ticker, codigo],
+    )
+    await guardar([precioDe(fila!.id)])
+    return { ana, id: fila!.id, ticker }
+  }
+
+  it('si se corrige el código CAFCI, los precios del código anterior se borran', async () => {
+    const { ana, id, ticker } = await fondoConPrecio()
+    await ana.consultar(`select public.guardar_instrumento('FCI', $1, 'Fondo Ejemplo', 'ARS', $2, p_codigo_cafci => '9999')`, [
+      ticker,
+      id,
+    ])
+    expect(await preciosDe(id)).toEqual([])
+  })
+
+  it('si se saca el código CAFCI, los precios se borran', async () => {
+    const { ana, id, ticker } = await fondoConPrecio()
+    await ana.consultar(`select public.guardar_instrumento('FCI', $1, 'Fondo Ejemplo', 'ARS', $2)`, [ticker, id])
+    expect(await preciosDe(id)).toEqual([])
+  })
+
+  it('si cambia el ticker, los precios se borran', async () => {
+    const { ana, id } = await fondoConPrecio()
+    await ana.consultar(`update instrumento set ticker = 'OTRO' || $2 where id = $1`, [id, contador])
+    expect(await preciosDe(id)).toEqual([])
+  })
+
+  it('si cambia la moneda, los precios se borran en vez de frenar el cambio', async () => {
+    const { ana, id } = await fondoConPrecio()
+    await ana.consultar(`update instrumento set moneda = 'USD' where id = $1`, [id])
+    expect(await preciosDe(id)).toEqual([])
+  })
+
+  it('si se edita otro dato, como el nombre, los precios se quedan', async () => {
+    const { ana, id, ticker } = await fondoConPrecio()
+    await ana.consultar(`select public.guardar_instrumento('FCI', $1, 'Otro nombre', 'ARS', $2, p_codigo_cafci => '1234')`, [
+      ticker,
+      id,
+    ])
+    expect(await preciosDe(id)).toHaveLength(1)
+  })
+})
+
 describe('acceso a los precios', () => {
   it('carga_precios no ve ningún dato personal ni ninguna tabla', async () => {
     for (const relacion of ['persona', 'cuenta', 'operacion', 'gasto', 'ingreso', 'posicion', 'instrumento', 'precio']) {
