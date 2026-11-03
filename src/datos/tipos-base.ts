@@ -488,6 +488,83 @@ export type Database = {
         }
         Relationships: []
       }
+      pesaje: {
+        Row: {
+          creado_en: string
+          creado_por: string | null
+          fecha: string
+          id: string
+          modificado_en: string | null
+          modificado_por: string | null
+          observaciones: string | null
+          pesaje_integrante_id: string
+          peso: number
+        }
+        Insert: {
+          creado_en?: string
+          creado_por?: string | null
+          fecha: string
+          id?: string
+          modificado_en?: string | null
+          modificado_por?: string | null
+          observaciones?: string | null
+          pesaje_integrante_id: string
+          peso: number
+        }
+        Update: {
+          creado_en?: string
+          creado_por?: string | null
+          fecha?: string
+          id?: string
+          modificado_en?: string | null
+          modificado_por?: string | null
+          observaciones?: string | null
+          pesaje_integrante_id?: string
+          peso?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pesaje_pesaje_integrante_fk"
+            columns: ["pesaje_integrante_id"]
+            isOneToOne: false
+            referencedRelation: "pesaje_integrante"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pesaje_integrante: {
+        Row: {
+          activo: boolean
+          creado_en: string
+          creado_por: string | null
+          id: string
+          modificado_en: string | null
+          modificado_por: string | null
+          nombre: string
+          objetivo: string
+        }
+        Insert: {
+          activo?: boolean
+          creado_en?: string
+          creado_por?: string | null
+          id?: string
+          modificado_en?: string | null
+          modificado_por?: string | null
+          nombre: string
+          objetivo?: string
+        }
+        Update: {
+          activo?: boolean
+          creado_en?: string
+          creado_por?: string | null
+          id?: string
+          modificado_en?: string | null
+          modificado_por?: string | null
+          nombre?: string
+          objetivo?: string
+        }
+        Relationships: []
+      }
       precio: {
         Row: {
           cada: number
@@ -706,6 +783,28 @@ export type Database = {
         }
         Relationships: []
       }
+      pesaje_con_variacion: {
+        Row: {
+          activo: boolean | null
+          fecha: string | null
+          id: string | null
+          nombre: string | null
+          objetivo: string | null
+          observaciones: string | null
+          pesaje_integrante_id: string | null
+          peso: number | null
+          variacion: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pesaje_pesaje_integrante_fk"
+            columns: ["pesaje_integrante_id"]
+            isOneToOne: false
+            referencedRelation: "pesaje_integrante"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       posicion: {
         Row: {
           cantidad: number | null
@@ -793,6 +892,10 @@ export type Database = {
           p_vencimiento?: string
         }
         Returns: string
+      }
+      guardar_pesajes: {
+        Args: { p_fecha: string; p_pesos: Json }
+        Returns: number
       }
       guardar_precios: {
         Args: { p_precios: Json }

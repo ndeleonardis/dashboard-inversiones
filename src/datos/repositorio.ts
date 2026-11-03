@@ -19,8 +19,13 @@ export type Origen = Tabla | Vista
 // nuestras no tienen nulos: cada columna sale de un not null o de un coalesce.
 // La excepción son las del valor actual, que sin precio vienen null y nunca 0
 // (regla 5). Mantenerles el null obliga a cada pantalla a decir "Sin precio".
+// En Pesaje, el primer pesaje no tiene variación (C56) y las observaciones son
+// opcionales.
 export type ColumnasSinPrecio = 'fecha_valor' | 'valor' | 'rendimiento' | 'rendimiento_pct'
-type SinNulos<T> = { [K in keyof T]: K extends ColumnasSinPrecio ? T[K] : NonNullable<T[K]> }
+type ColumnasDePesajeQuePuedenFaltar = 'variacion' | 'observaciones'
+type SinNulos<T> = {
+  [K in keyof T]: K extends ColumnasSinPrecio | ColumnasDePesajeQuePuedenFaltar ? T[K] : NonNullable<T[K]>
+}
 
 export type Fila<T extends Origen> = T extends Tabla
   ? Esquema['Tables'][T]['Row']

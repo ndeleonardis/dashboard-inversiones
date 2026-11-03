@@ -186,4 +186,12 @@ describe('tipos generados de la base', () => {
     expectTypeOf<Fila<'posicion'>['costo']>().toEqualTypeOf<number>()
     expectTypeOf<Fila<'invertido_grupo'>['instrumentos_sin_precio']>().toEqualTypeOf<number>()
   })
+
+  // Si la variación perdiera el null, el primer pesaje mostraría "0,00 kg" en
+  // lugar de "Primer pesaje" (C56).
+  it('la variación y las observaciones del pesaje pueden faltar, y el peso no (pesaje T5)', () => {
+    expectTypeOf<Fila<'pesaje_con_variacion'>['variacion']>().toEqualTypeOf<number | null>()
+    expectTypeOf<Fila<'pesaje_con_variacion'>['observaciones']>().toEqualTypeOf<string | null>()
+    expectTypeOf<Fila<'pesaje_con_variacion'>['peso']>().toEqualTypeOf<number>()
+  })
 })
