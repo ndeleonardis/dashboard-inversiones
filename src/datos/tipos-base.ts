@@ -794,10 +794,17 @@ export type Database = {
         }
         Returns: string
       }
-      guardar_precios: { Args: { p_precios: Json }; Returns: number }
+      guardar_precios: {
+        Args: { p_precios: Json }
+        Returns: {
+          guardados: number
+          salteados: number
+        }[]
+      }
       instrumentos_a_cotizar: {
         Args: never
         Returns: {
+          clave: string
           codigo_cafci: string
           id: string
           moneda: Database["public"]["Enums"]["moneda"]
