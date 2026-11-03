@@ -579,3 +579,9 @@ a.boton {
 .renglon-pesaje-enlace {
   font-weight: var(--font-weight-semibold);
 }
+
+/* Pesaje: la fecha de la tabla no se corta en dos renglones. */
+.tabla .tabla-fecha {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
