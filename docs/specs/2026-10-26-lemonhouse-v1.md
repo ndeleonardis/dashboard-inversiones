@@ -9,10 +9,12 @@
 > Actualizada el 2026-10-29, al verificar la v1. La página de privacidad se ve sin entrar (C1), y la app instalada abre en su propia ventana, sin la barra del navegador (C32).
 >
 > Cerrada el 2026-10-30 con el tag `v1.0`. La copia real se levantó siguiendo `docs/levantar-una-copia.md`, que se corrigió en cada paso que no coincidía con los paneles (C28). En el sitio publicado, Noelia y Sergio entraron y llegaron al resumen (C2), y una cuenta no invitada vio el rechazo sin que se creara su usuario (C3). La app se instaló en un Samsung con Chrome, y desde ella se entró con Google sin pasar a una pestaña de Chrome (C32). Samsung Internet no la instala, probablemente porque la app no tiene service worker, que el plan descartó a propósito.
+>
+> Actualizada el 2026-11-03 al cerrar el cambio `docs/changes/2026-11-03-valor-actual/`, el primero de la v2: valor actual de las posiciones y de lo invertido (C34 a C42). C40 reemplaza a C23 y C29 sale de "Futuro". Se suman las aclaraciones de la verificación (C39, C40, C41, C42 y la tabla de errores).
 
 ## 1. Overview
 
-La v1 de LemonHouse permite entrar con usuario y registrar en un solo lugar las personas del grupo, sus cuentas, los instrumentos, las compras y ventas, los gastos y los ingresos, en pesos y en dólares. Una pantalla de resumen muestra cuánto quedó del mes para invertir y cuánto hay invertido a costo de compra, por persona y del grupo. No hay precios actuales, eso llega en la v2.
+La v1 de LemonHouse permite entrar con usuario y registrar en un solo lugar las personas del grupo, sus cuentas, los instrumentos, las compras y ventas, los gastos y los ingresos, en pesos y en dólares. Una pantalla de resumen muestra cuánto quedó del mes para invertir y cuánto hay invertido a costo de compra, por persona y del grupo. Desde el 2026-11-03 muestra también cuánto vale hoy cada posición y lo invertido, con el último precio conocido y su fecha. Los precios los trae un proceso externo.
 
 ## 2. Usuarios objetivo
 
@@ -42,13 +44,18 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 - Carga inicial de las tenencias actuales a mano, como una compra por tenencia.
 - Instalar la app en el celular desde el navegador, y usarla también desde la notebook.
 - Una página de privacidad pública, que Google pide para publicar el login.
+- Valor actual de cada posición, en la moneda del instrumento y con la fecha del valor, con la conversión de los FCI (cada mil cuotapartes) y de las ON (cada 100 de valor nominal). "Sin precio" cuando no hay valor conocido. Valor actual de lo invertido, por persona y del grupo, y el rendimiento (cambio del 2026-11-03).
 
 ### Queda fuera
 
 | Qué | Motivo |
 |---|---|
-| Precios actuales y rendimiento | Va en otra versión (v2). Depende de fuentes externas |
-| Gráficos | Va en otra versión (v3) |
+| Traer los valores automáticamente | Va en otro cambio, empezando por los FCI. El valor actual funciona con valores de cualquier origen |
+| Valores de acciones, CEDEAR, ON, ETF y cripto desde sus fuentes | Va en otros cambios, de a una fuente por vez |
+| Cargar o corregir un valor a mano desde la app | Poco impacto y riesgoso. Un valor escrito a mano puede quedar viejo o inventado sin que se note. Los valores vienen solo de las fuentes |
+| Comprar un FCI por monto y que la app calcule las cuotapartes | Descartado el 2026-11-03. La compra se carga con los datos del comprobante del banco, que es el dato real |
+| Historia del valor y gráficos | Va en otra versión (v3) |
+| Rentas, dividendos y amortizaciones en el rendimiento | Va en otra versión. Siguen sin poder cargarse (C30) |
 | Importar el Excel o resúmenes bancarios | Poco impacto. La carga inicial es de una vez y a mano alcanza |
 | Anular con contra-asientos | Muy complejo para la v1. Editar y borrar cubre la corrección |
 | Rentas, dividendos y amortizaciones | Va en otra versión. El modelo los admite como tipo de operación |
@@ -56,7 +63,7 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 | Invitar personas desde la app | Prematuro. En un grupo chico se invita una vez, a mano |
 | Permisos por persona | Prematuro. En una copia por grupo todos ven y editan todo |
 | Cuentas compartidas, dividir gastos, efectivo sin invertir, impuestos, operar desde la app, varios grupos por copia | Fuera del producto según el PRD |
-| Equivalencias entre pesos y dólares | Prematuro. Exige elegir un dólar y una fecha, y la v1 no tiene cotizaciones |
+| Equivalencias entre pesos y dólares, y un total que sume las dos monedas | Prematuro. Exige elegir un dólar y una fecha. La regla de nunca mezclar monedas sigue igual |
 | App en las tiendas (App Store y Play Store) | Muy complejo. Pide cuentas de desarrollador pagas y una revisión en cada actualización, y la app instalable desde el navegador resuelve lo mismo |
 | Usar la app sin conexión | Poco impacto. Los datos viven en la base, así que sin conexión no hay nada actualizado que mostrar |
 | Instalar la app en un iPhone y entrar con Google desde ahí | Poco impacto. El primer grupo usa celulares Samsung (Android) y una Mac, donde LemonHouse se usa desde Safari como página. Si otro grupo lo necesita, se suma como cambio |
@@ -96,6 +103,17 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
   - Los tres filtros se combinan. Con una persona elegida, solo se ofrecen sus cuentas.
   - Desde la posición de una cuenta, cada instrumento lleva a sus operaciones en esa cuenta.
 
+### Valor actual (cambio del 2026-11-03)
+
+- **C34 (P0).** DADO una posición con un valor conocido de su instrumento, CUANDO se mira la posición de la cuenta, ENTONCES cada instrumento muestra, además de la cantidad y el costo, el valor actual (cantidad por el último valor conocido), en la moneda del instrumento, con la fecha de ese valor ("Valor al 02/11"). Si el valor es de otro año, la fecha lleva el año ("Valor al 02/11/2025"), así un fondo que dejó de publicar no parece de ayer. Decidido el 2026-11-03, en la revisión de código.
+- **C35 (P0).** DADO un FCI, CUANDO se calcula su valor, ENTONCES se usa el valor de una cuotaparte, que es el publicado dividido 1.000. Ejemplo: 1.500 cuotapartes con un valor publicado de $ 2.345.678,90 valen $ 3.518.518,35.
+- **C36 (P0).** DADO una ON, CUANDO se calcula su valor, ENTONCES el precio se toma cada 100 de valor nominal. Ejemplo: 1.000 de valor nominal a US$ 102,50 valen US$ 1.025.
+- **C37 (P0).** DADO un instrumento sin ningún valor conocido, CUANDO se mira su posición, ENTONCES el valor dice "Sin precio", nunca $ 0, y el costo se sigue viendo.
+- **C38 (P1).** DADO un valor con más de 7 días de antigüedad, CUANDO se muestra, ENTONCES se marca como desactualizado, junto a su fecha.
+- **C39 (P1).** DADO un FCI sin código CAFCI, CUANDO se mira su posición, ENTONCES dice "Sin precio" y debajo "Falta el código CAFCI", que lleva al instrumento para cargarlo. Van en dos renglones para que el enlace se toque fácil en el celular. Decidido el 2026-11-03, al verificar.
+- **C42 (P1).** DADO una posición o un total con valor actual, CUANDO se muestra, ENTONCES también se ve el rendimiento (valor actual menos costo, en monto y en porcentaje), en verde si gana y en rojo si pierde. Si el valor es parcial o no hay precio, no se muestra rendimiento.
+  - Siempre lleva su signo, así no depende solo del color. Lo que redondea a $ 0,00 se muestra sin signo y sin color. Decidido el 2026-11-03, al verificar.
+
 ### Gastos e ingresos
 
 - **C16 (P0).** DADO un usuario, CUANDO carga un gasto con fecha, monto, moneda y categoría, ENTONCES se guarda como comunitario sin pedir persona. Asignarle una persona es opcional.
@@ -108,7 +126,10 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 
 - **C21 (P0).** DADO ingresos y gastos de un mes, CUANDO se abre el resumen, ENTONCES el bloque del mes muestra para el grupo ingresos, gastos y lo que queda para invertir (ingresos menos gastos), por separado en pesos y en dólares.
 - **C22 (P0).** DADO el resumen, CUANDO se elige otro mes, ENTONCES el bloque del mes muestra los números de ese mes. Por defecto se muestra el mes en curso.
-- **C23 (P0).** DADO operaciones cargadas, CUANDO se abre el resumen, ENTONCES el bloque de inversiones muestra el total invertido a costo de compra de cada persona y del grupo, por separado en pesos y en dólares.
+- **C40 (P0).** DADO operaciones cargadas, CUANDO se abre el resumen, ENTONCES el bloque de inversiones muestra para cada persona y para el grupo el costo de compra y el valor actual, por separado en pesos y en dólares. Reemplaza a C23 desde el 2026-11-03.
+  - Si una persona no tiene nada invertido en una moneda, en esa moneda el costo y el valor son $ 0,00, no "Sin precio": no hay nada que valuar. Decidido el 2026-11-03, al verificar.
+- **C41 (P0).** DADO un total con algún instrumento sin precio, CUANDO se muestra, ENTONCES el valor actual se marca como parcial y dice cuántos instrumentos no tienen precio. Nunca se muestra como si fuera completo.
+  - Un instrumento que está en dos cuentas cuenta una vez. Si ninguno tiene precio, el total dice "Sin precio" y debajo cuántos faltan. Decidido el 2026-11-03, al verificar.
 - **C24 (P0).** DADO cualquier pantalla con montos, CUANDO se muestran, ENTONCES llevan su moneda visible (`$ 25.291,50` o `US$ 25.291,50`) y ningún total suma pesos con dólares.
 - **C25 (P1).** DADO el bloque del mes, CUANDO se elige una persona, ENTONCES se ven sus ingresos y los gastos asignados a ella, además de los comunitarios del grupo.
   - Los gastos de la persona y los comunitarios se muestran por separado, como "Gastos propios" y "Gastos comunitarios", en cada moneda.
@@ -131,7 +152,6 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 
 ### Futuro (P2, no se construye)
 
-- **C29 (P2).** El diseño permite sumar precios actuales con fecha y fuente, y mostrar "sin precio" con la fecha del último conocido.
 - **C30 (P2).** El diseño permite sumar rentas, dividendos y amortizaciones como tipos de operación.
 - **C31 (P2).** El diseño permite pasar a cuentas compartidas como describe `docs/modelo-de-datos.md`.
 
@@ -155,7 +175,18 @@ Hoy los gastos están en una planilla o en la cabeza, las inversiones repartidas
 | Dos personas editan lo mismo a la vez | Gana la última edición y queda registrado quién la hizo |
 | En un iPhone, el login con Google deja la sesión en Safari y no en la app instalada | Queda fuera de la v1, porque el primer grupo no usa iPhone (sección 5). Si hiciera falta, el login se abriría en una ventana que iOS mantiene dentro de la app |
 | La lista de operaciones pasa de 1.000 | La base devuelve hasta 1.000 filas por pedido, y la lista lee todas las operaciones para filtrarlas. Al ritmo de carga de un grupo chico faltan años para llegar. Cuando se acerque, se suma un cambio para leerlas por partes. Las posiciones y el resumen no tienen este límite, porque los calcula la base |
+| Un instrumento nunca tuvo valor | "Sin precio" (C37). No suma al total, y el total se marca como parcial (C41) |
+| El último valor es viejo (por ejemplo, un fondo que dejó de publicar) | Se muestra con su fecha y marcado como desactualizado (C38) |
+| La fuente corrige el valor de un día ya publicado | Se muestra el valor corregido, sin ningún paso de la usuaria |
+| Se corrige el código CAFCI, el ticker o la moneda de un instrumento | Sus precios se borran, porque se pidieron con la clave vieja y son de otro instrumento. El proceso trae los nuevos en su próxima corrida. La spec del cambio nombraba solo el código CAFCI; el ticker y la moneda se sumaron al implementar. Decidido el 2026-11-03, al verificar |
+| El instrumento cambia mientras el proceso trae precios | El precio pedido con la clave o la moneda vieja se saltea y los demás se guardan. Decidido el 2026-11-03, en la revisión de código |
+| Un precio llega con fecha posterior a hoy (por ejemplo, el año mal escrito) | Se rechaza la corrida entera, así el error se nota y no tapa los precios correctos. Decidido el 2026-11-03, en la revisión de código |
+| Confundir el valor cada mil cuotapartes con el de una cuotaparte | Criterio C35 con su ejemplo. Un error así multiplica el valor por mil y se vería enseguida |
+| Posición vendida por completo | No aparece, aunque su instrumento tenga precio |
 
 ## 8. Preguntas abiertas
 
-Ninguna. La moneda de la operación quedó resuelta en el plan: se guarda en la operación y tiene que ser la del instrumento.
+La moneda de la operación quedó resuelta en el plan: se guarda en la operación y tiene que ser la del instrumento.
+
+- **No bloqueante.** ¿Las ON que ya amortizaron cotizan cada 100 de valor nominal original o del residual? Cambia la cuenta de C36 para esas ON. Se confirma con un dato real en el cambio de Open BYMA.
+- **No bloqueante.** ¿Siete días es el umbral correcto para "desactualizado" (C38)? Se ajusta después de usarlo.

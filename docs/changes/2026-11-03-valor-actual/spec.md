@@ -3,6 +3,8 @@
 > Cambio sobre la spec `docs/specs/2026-10-26-lemonhouse-v1.md`. Fecha 2026-11-03. Primer cambio de la v2. Solo dice qué cambia.
 >
 > Aprobada el 2026-11-03.
+>
+> Cerrada el 2026-11-03: verificada en el navegador (dev, 390 px y 1.280 px), revisada con `/code-review` y fusionada en `docs/specs/2026-10-26-lemonhouse-v1.md` con las aclaraciones de la verificación. Esta carpeta queda como historial.
 
 ## 1. Overview
 
