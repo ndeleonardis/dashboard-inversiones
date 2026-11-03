@@ -585,3 +585,18 @@ a.boton {
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
+
+/* Pesaje: aire entre el acceso a la lista, el filtro, el gráfico y la tabla. */
+.pesaje-acceso {
+  margin: 0 0 var(--space-4);
+}
+
+.grafico-peso {
+  margin-bottom: var(--space-4);
+}
+
+/* La píldora mide lo que su texto, también dentro de una tarjeta. */
+.pildora {
+  justify-self: start;
+  width: fit-content;
+}

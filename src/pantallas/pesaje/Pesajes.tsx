@@ -31,9 +31,11 @@ export function ListaDePesajes() {
   return (
     <>
       <Encabezado titulo="Pesaje" accion={{ a: RUTAS.pesajeNuevo, texto: 'Cargar pesaje' }} />
-      <Link to={RUTAS.pesajeIntegrantes} className="boton boton-secundario">
-        Quiénes se pesan
-      </Link>
+      <p className="pesaje-acceso">
+        <Link to={RUTAS.pesajeIntegrantes} className="boton boton-secundario">
+          Quiénes se pesan
+        </Link>
+      </p>
       <Carga cargado={cargado}>
         {({ pesajes, integrantes }) => {
           if (pesajes.length === 0) {

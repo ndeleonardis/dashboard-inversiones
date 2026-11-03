@@ -3,10 +3,13 @@
 // así 30 gramos de un gato se notan tanto como medio kilo de una persona. El
 // eje horizontal respeta el tiempo: una semana sin pesaje deja su hueco y nunca
 // se dibuja como cero. El objetivo va como etiqueta, sin colorear la línea.
-import { useState, type PointerEvent } from 'react'
+// El dibujo mide lo mismo que su lugar en la pantalla, así las letras no se
+// agrandan en la notebook.
+import { useEffect, useRef, useState, type PointerEvent } from 'react'
 import { formatearFecha, formatearPeso } from '../dominio/formato.ts'
 import { etiquetaDeObjetivo } from '../dominio/pesaje.ts'
 
+/** El ancho hasta que se mide el lugar, y el que queda donde no se puede medir. */
 export const ANCHO = 320
 export const ALTO = 160
 export const MARGEN = { arriba: 16, abajo: 24, izquierda: 64, derecha: 16 }
@@ -25,6 +28,20 @@ export function GraficoDePeso({ nombre, objetivo, pesajes }: PropsGraficoDePeso)
     .map((p) => ({ fecha: p.fecha.slice(0, 10), peso: Number(p.peso) }))
     .sort((a, b) => a.fecha.localeCompare(b.fecha))
   const [activo, setActivo] = useState<number | null>(null)
+  const [ancho, setAncho] = useState(ANCHO)
+  const lienzo = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const elemento = lienzo.current
+    if (!elemento || typeof ResizeObserver === 'undefined') return
+    const observador = new ResizeObserver(([entrada]) => {
+      const medido = Math.round(entrada?.contentRect.width ?? 0)
+      if (medido > 0) setAncho(medido)
+    })
+    observador.observe(elemento)
+    return () => observador.disconnect()
+  }, [])
+
   if (ordenados.length === 0) return null
 
   const pesos = ordenados.map((p) => p.peso)
@@ -37,7 +54,7 @@ export function GraficoDePeso({ nombre, objetivo, pesajes }: PropsGraficoDePeso)
 
   const primerDia = dias(ordenados[0]!.fecha)
   const totalDias = dias(ordenados.at(-1)!.fecha) - primerDia
-  const anchoDelDibujo = ANCHO - MARGEN.izquierda - MARGEN.derecha
+  const anchoDelDibujo = ancho - MARGEN.izquierda - MARGEN.derecha
   const altoDelDibujo = ALTO - MARGEN.arriba - MARGEN.abajo
   const x = (fecha: string) =>
     totalDias === 0 ? MARGEN.izquierda + anchoDelDibujo / 2 : MARGEN.izquierda + ((dias(fecha) - primerDia) / totalDias) * anchoDelDibujo
@@ -52,7 +69,7 @@ export function GraficoDePeso({ nombre, objetivo, pesajes }: PropsGraficoDePeso)
   const alMoverElPuntero = (evento: PointerEvent<SVGSVGElement>) => {
     const caja = evento.currentTarget.getBoundingClientRect()
     if (caja.width === 0) return
-    const enElDibujo = ((evento.clientX - caja.left) / caja.width) * ANCHO
+    const enElDibujo = ((evento.clientX - caja.left) / caja.width) * ancho
     const cercano = ordenados.reduce(
       (mejor, p, i) => (Math.abs(x(p.fecha) - enElDibujo) < Math.abs(x(ordenados[mejor]!.fecha) - enElDibujo) ? i : mejor),
       0,
@@ -69,57 +86,59 @@ export function GraficoDePeso({ nombre, objetivo, pesajes }: PropsGraficoDePeso)
       <p role="status" className="grafico-lectura">
         <strong>{formatearPeso(mostrado.peso)}</strong> · {formatearFecha(mostrado.fecha)}
       </p>
-      <svg
-        viewBox={`0 0 ${ANCHO} ${ALTO}`}
-        role="img"
-        aria-label={`Peso de ${nombre}: de ${formatearPeso(primero.peso)} el ${formatearFecha(primero.fecha)} a ${formatearPeso(ultimo.peso)} el ${formatearFecha(ultimo.fecha)}`}
-        onPointerMove={alMoverElPuntero}
-        onPointerLeave={() => setActivo(null)}
-      >
-        {[minimo, maximo].filter((valor, i) => i === 0 || valor !== minimo).map((valor) => (
-          <g key={valor} className="grafico-guia">
-            <line x1={MARGEN.izquierda} x2={ANCHO - MARGEN.derecha} y1={y(valor)} y2={y(valor)} />
-            <text x={MARGEN.izquierda - 8} y={y(valor)} dy="0.35em" textAnchor="end">
-              {formatearPeso(valor)}
+      <div ref={lienzo} className="grafico-lienzo">
+        <svg
+          viewBox={`0 0 ${ancho} ${ALTO}`}
+          role="img"
+          aria-label={`Peso de ${nombre}: de ${formatearPeso(primero.peso)} el ${formatearFecha(primero.fecha)} a ${formatearPeso(ultimo.peso)} el ${formatearFecha(ultimo.fecha)}`}
+          onPointerMove={alMoverElPuntero}
+          onPointerLeave={() => setActivo(null)}
+        >
+          {[minimo, maximo].filter((valor, i) => i === 0 || valor !== minimo).map((valor) => (
+            <g key={valor} className="grafico-guia">
+              <line x1={MARGEN.izquierda} x2={ancho - MARGEN.derecha} y1={y(valor)} y2={y(valor)} />
+              <text x={MARGEN.izquierda - 8} y={y(valor)} dy="0.35em" textAnchor="end">
+                {formatearPeso(valor)}
+              </text>
+            </g>
+          ))}
+          <g className="grafico-fechas">
+            <text x={x(primero.fecha)} y={ALTO - 6} textAnchor={totalDias === 0 ? 'middle' : 'start'}>
+              {formatearFecha(primero.fecha).slice(0, 5)}
             </text>
+            {totalDias > 0 && (
+              <text x={x(ultimo.fecha)} y={ALTO - 6} textAnchor="end">
+                {formatearFecha(ultimo.fecha).slice(0, 5)}
+              </text>
+            )}
           </g>
-        ))}
-        <g className="grafico-fechas">
-          <text x={x(primero.fecha)} y={ALTO - 6} textAnchor={totalDias === 0 ? 'middle' : 'start'}>
-            {formatearFecha(primero.fecha).slice(0, 5)}
-          </text>
-          {totalDias > 0 && (
-            <text x={x(ultimo.fecha)} y={ALTO - 6} textAnchor="end">
-              {formatearFecha(ultimo.fecha).slice(0, 5)}
-            </text>
+          {activo !== null && (
+            <line
+              className="grafico-cruz"
+              x1={x(mostrado.fecha)}
+              x2={x(mostrado.fecha)}
+              y1={MARGEN.arriba}
+              y2={ALTO - MARGEN.abajo}
+            />
           )}
-        </g>
-        {activo !== null && (
-          <line
-            className="grafico-cruz"
-            x1={x(mostrado.fecha)}
-            x2={x(mostrado.fecha)}
-            y1={MARGEN.arriba}
-            y2={ALTO - MARGEN.abajo}
-          />
-        )}
-        {ordenados.length > 1 && <path className="grafico-linea" d={linea} />}
-        {ordenados.map((p, i) => (
-          <circle
-            key={p.fecha}
-            className="grafico-punto"
-            data-fecha={p.fecha}
-            data-activo={i === activo || undefined}
-            cx={x(p.fecha)}
-            cy={y(p.peso)}
-            r={4}
-            tabIndex={0}
-            aria-label={`${formatearPeso(p.peso)} el ${formatearFecha(p.fecha)}`}
-            onFocus={() => setActivo(i)}
-            onBlur={() => setActivo(null)}
-          />
-        ))}
-      </svg>
+          {ordenados.length > 1 && <path className="grafico-linea" d={linea} />}
+          {ordenados.map((p, i) => (
+            <circle
+              key={p.fecha}
+              className="grafico-punto"
+              data-fecha={p.fecha}
+              data-activo={i === activo || undefined}
+              cx={x(p.fecha)}
+              cy={y(p.peso)}
+              r={4}
+              tabIndex={0}
+              aria-label={`${formatearPeso(p.peso)} el ${formatearFecha(p.fecha)}`}
+              onFocus={() => setActivo(i)}
+              onBlur={() => setActivo(null)}
+            />
+          ))}
+        </svg>
+      </div>
     </figure>
   )
 }
