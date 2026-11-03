@@ -37,6 +37,13 @@
   white-space: nowrap;
 }
 
+/* En una tabla, el valor, su aviso y el rendimiento van uno debajo del otro. */
+.celda-valor {
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+}
+
 .rendimiento-gana {
   color: var(--color-gain);
 }

@@ -36,7 +36,7 @@ La v1 muestra solo el costo de compra. Los FCI se publican cada mil cuotapartes 
 | **Valor y rendimiento se calculan en SQL**, como el costo (regla de la v1: las cuentas de plata se hacen en la base) | Calcular en la app |
 | **Los totales del resumen cuentan los instrumentos sin precio** (`instrumentos_sin_precio`, sin repetir instrumento). El valor es la suma de lo conocido, y el rendimiento es `null` si falta alguno | Excluir del costo las posiciones sin precio para que el rendimiento "cierre". Escondería costo real |
 | **"Desactualizado" se decide en la app** (`fechas.ts`, más de 7 días contra hoy) | En SQL con `current_date`. La base corre en UTC y la regla no se podría probar con el reloj fijo que ya usan los tests de la app |
-| **En el celular, el rendimiento va como segunda línea debajo del valor**. En la notebook va en su propia columna | Cinco columnas en 390 px, que no entran |
+| **El rendimiento va debajo del valor, en la misma celda**, en el celular y en la notebook. Cambiado en T11: tener una columna solo en la notebook obligaba a repetir el rendimiento en la página y esconder una copia con CSS | Cinco columnas en 390 px, que no entran. Y una columna solo para la notebook, que duplica el contenido |
 
 Los tests siguen en Vitest, con los mismos cuatro grupos.
 

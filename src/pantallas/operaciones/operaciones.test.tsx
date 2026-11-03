@@ -263,6 +263,58 @@ describe('operaciones', () => {
     expect(await screen.findByLabelText('Cuenta')).toHaveValue(cuenta.id)
   })
 
+  describe('valor actual de la posición (cambio valor-actual)', () => {
+    async function conValores() {
+      const ejemplo = await conEjemplo()
+      const { repositorio, cuenta, aapl, aapld } = ejemplo
+      const fondo = await repositorio.crear('instrumento', { tipo: 'FCI', ticker: 'FONDO', nombre: 'Fondo Ejemplo', moneda: 'ARS' })
+      const base = { cuenta_id: cuenta.id, persona_id: cuenta.persona_id, cantidad: 15, costo: 247702.5, ...SIN_PRECIO }
+      conPosicion(repositorio, async () => [
+        {
+          ...base,
+          instrumento_id: aapl.id,
+          moneda: 'ARS',
+          fecha_valor: '2026-11-02',
+          valor: 345000,
+          rendimiento: 97297.5,
+          rendimiento_pct: 0.3928,
+        },
+        { ...base, instrumento_id: aapld.id, moneda: 'USD' },
+        { ...base, instrumento_id: fondo.id, moneda: 'ARS', sin_codigo_cafci: true },
+      ])
+      abrirApp(`/cuentas/${cuenta.id}`, repositorio)
+      const posicion = await screen.findByRole('table', { name: 'Posición' })
+      return { posicion, fondo }
+    }
+
+    it('cada instrumento muestra su valor con la fecha del valor (C34)', async () => {
+      const { posicion } = await conValores()
+      expect(within(posicion).getByRole('columnheader', { name: 'Valor' })).toBeInTheDocument()
+      expect(within(filaDe(posicion, 'AAPL')).getByText('$ 345.000,00')).toBeInTheDocument()
+      expect(within(filaDe(posicion, 'AAPL')).getByText(/Valor al 02\/11/)).toBeInTheDocument()
+    })
+
+    it('un instrumento sin precio dice "Sin precio" y sigue mostrando su costo (C37)', async () => {
+      const { posicion } = await conValores()
+      const fila = filaDe(posicion, 'AAPLD')
+      expect(within(fila).getByText('Sin precio')).toBeInTheDocument()
+      expect(within(fila).getByText('US$ 247.702,50')).toBeInTheDocument()
+      expect(within(fila).queryByText(/US\$ 0,00/)).not.toBeInTheDocument()
+    })
+
+    it('un FCI sin código CAFCI lo dice y lleva al instrumento para cargarlo (C39)', async () => {
+      const { posicion, fondo } = await conValores()
+      const enlace = within(filaDe(posicion, 'FONDO')).getByRole('link', { name: 'Falta el código CAFCI' })
+      expect(enlace).toHaveAttribute('href', `/instrumentos/${fondo.id}`)
+    })
+
+    it('muestra el rendimiento en monto y porcentaje, y no lo muestra sin precio (C42)', async () => {
+      const { posicion } = await conValores()
+      expect(within(filaDe(posicion, 'AAPL')).getByText('+$ 97.297,50 (+39,3%)')).toHaveClass('rendimiento-gana')
+      expect(within(filaDe(posicion, 'AAPLD')).queryByText(/%/)).not.toBeInTheDocument()
+    })
+  })
+
   it('una cuenta sin posición lo dice', async () => {
     const { repositorio, cuenta } = await conEjemplo()
     abrirApp(`/cuentas/${cuenta.id}`, repositorio)

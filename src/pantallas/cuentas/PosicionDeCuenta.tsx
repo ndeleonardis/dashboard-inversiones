@@ -1,14 +1,17 @@
-// Lo que tiene una cuenta de cada instrumento y cuánto costó, en la moneda de
-// cada instrumento (C12). La calcula la base con precio promedio, así que acá
-// solo se muestra. No hay valor actual: los precios llegan en la v2 (regla 5).
+// Lo que tiene una cuenta de cada instrumento, cuánto costó y cuánto vale hoy,
+// en la moneda de cada instrumento (C12, C34). Costo, valor y rendimiento los
+// calcula la base, así que acá solo se muestran. Sin precio, el valor dice
+// "Sin precio" y nunca $ 0 (C37, regla 5).
 import { useId } from 'react'
 import { Link } from 'react-router'
 import { Carga } from '../../componentes/Carga.tsx'
 import { Monto } from '../../componentes/Monto.tsx'
+import { Rendimiento } from '../../componentes/Rendimiento.tsx'
+import { ValorActual } from '../../componentes/ValorActual.tsx'
 import { useListas } from '../../datos/consultas.ts'
 import { formatearCantidad } from '../../dominio/formato.ts'
 import { compararTextos } from '../../dominio/nombres.ts'
-import { rutaDeNuevaOperacion, rutaDeOperacionesFiltradas } from '../../rutas.ts'
+import { rutaDeInstrumento, rutaDeNuevaOperacion, rutaDeOperacionesFiltradas } from '../../rutas.ts'
 
 export function PosicionDeCuenta({ cuentaId }: { cuentaId: string }) {
   const cargado = useListas({ posiciones: 'posicion', instrumentos: 'instrumento' })
@@ -41,6 +44,9 @@ export function PosicionDeCuenta({ cuentaId }: { cuentaId: string }) {
                     <th scope="col" className="numero">
                       Costo
                     </th>
+                    <th scope="col" className="numero">
+                      Valor
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -60,11 +66,23 @@ export function PosicionDeCuenta({ cuentaId }: { cuentaId: string }) {
                       <td className="numero">
                         <Monto valor={fila.costo} moneda={fila.moneda} />
                       </td>
+                      {/* El rendimiento va debajo del valor: cinco columnas no entran en el celular. */}
+                      <td className="numero celda-valor">
+                        <ValorActual valor={fila.valor} moneda={fila.moneda} fecha={fila.fecha_valor} />
+                        {fila.sin_codigo_cafci && (
+                          <Link to={rutaDeInstrumento(fila.instrumento_id)} className="tabla-detalle">
+                            Falta el código CAFCI
+                          </Link>
+                        )}
+                        <Rendimiento monto={fila.rendimiento} fraccion={fila.rendimiento_pct} moneda={fila.moneda} />
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              <p className="tabla-nota">Costo de compra con precio promedio, con las comisiones.</p>
+              <p className="tabla-nota">
+                Costo de compra con precio promedio, con las comisiones. Valor con el último precio conocido.
+              </p>
             </div>
           )
         }}
