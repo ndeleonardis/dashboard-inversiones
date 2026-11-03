@@ -75,6 +75,13 @@ export const MENSAJES_DE_RESTRICCION: Record<string, ErrorParaMostrar> = {
   gasto_monto_decimales: enCampo('Usá hasta 2 decimales', 'monto'),
   ingreso_monto_positivo: enCampo('El monto tiene que ser mayor que cero', 'monto'),
   ingreso_monto_decimales: enCampo('Usá hasta 2 decimales', 'monto'),
+  // Los precios los escribe el proceso externo, no la app. Igual tienen su
+  // mensaje, por si alguna vez llegan a la pantalla.
+  precio_instrumento_fecha_unico: sinCampo('Ya hay un precio para ese instrumento en esa fecha'),
+  precio_valor_positivo: sinCampo('El precio tiene que ser mayor que cero'),
+  precio_valor_decimales: sinCampo('El precio tiene hasta 8 decimales'),
+  precio_cada_positivo: sinCampo('Cada cuántas unidades cotiza tiene que ser mayor que cero'),
+  precio_fuente_no_vacia: sinCampo('El precio necesita su fuente'),
 }
 
 type MensajesDeClaveForanea = {
@@ -146,6 +153,10 @@ export const CLAVES_FORANEAS: Record<string, MensajesDeClaveForanea> = {
     enUso: 'No se puede borrar: esta cuenta tiene ingresos cargados',
     alGuardar: enCampo('La cuenta elegida ya no existe. Puede que alguien la haya borrado', 'cuenta_id'),
   },
+  precio_moneda_instrumento_fk: {
+    enUso: 'No se puede cambiar la moneda: el instrumento tiene precios cargados',
+    alGuardar: sinCampo('El precio tiene que estar en la moneda del instrumento'),
+  },
 }
 
 /** Datos obligatorios que faltan, por nombre de columna. */
@@ -167,6 +178,9 @@ export const MENSAJES_DE_COLUMNA: Record<string, string> = {
   tipo_gasto_id: 'Elegí la categoría',
   tipo_ingreso_id: 'Elegí la categoría',
   codigo_cafci: 'Poné el código CAFCI',
+  valor: 'Poné el valor',
+  cada: 'Poné cada cuántas unidades cotiza',
+  fuente: 'Poné la fuente',
 }
 
 type ErrorDeLaBase = { code?: string; message?: string; details?: string | null }

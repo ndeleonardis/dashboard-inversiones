@@ -28,7 +28,8 @@ La v1 muestra solo el costo de compra. Los FCI se publican cada mil cuotapartes 
 |---|---|
 | **Tabla `precio`** con una fila por instrumento y fecha: valor, `cada`, moneda, fuente y hora de captura. La fuente reemplaza la fila si corrige un valor | Una fila por captura (historial de revisiones). Para valuar alcanza con el último, y el historial ya está en la base de mercado |
 | **`precio.cada` lo declara quien escribe el valor**: 1.000 para la CAFCI, 100 para una ON y 1 para el resto. El valor actual es cantidad × valor ÷ `cada` | Usar `tipo_instrumento.precio_cada`, que en el FCI vale 1 porque las operaciones van por cuotaparte. También queda descartado que el proceso externo convierta antes de escribir: la conversión quedaría fuera del repo y sin tests |
-| **Rol de Postgres `carga_precios`**, creado en la migración sin login. Quien administra la copia le da login y contraseña desde el panel. Puede leer y escribir `precio` y ejecutar `instrumentos_a_cotizar()`, nada más | Usar la key secreta de Supabase. Saltea RLS y puede leer todo, incluidos los datos personales |
+| **Rol de Postgres `carga_precios`**, creado en la migración sin login. Quien administra la copia le da login y contraseña desde el panel. No tiene permisos sobre ninguna tabla: solo ejecuta `guardar_precios(jsonb)` e `instrumentos_a_cotizar()`, las dos `security definer` | Usar la key secreta de Supabase. Saltea RLS y puede leer todo, incluidos los datos personales |
+| **`guardar_precios(jsonb)` recibe todos los precios de una corrida**, guarda todos o ninguno y reemplaza por instrumento y fecha. Cambiado en T1: el trigger de autoría llama a `auth.jwt()`, y escribir directo en la tabla obligaba a darle a `carga_precios` permisos sobre el esquema `auth` de Supabase | Dar permisos sobre la tabla a `carga_precios`. Abre el esquema `auth`, y la regla del reemplazo quedaría en n8n, sin tests |
 | **`instrumentos_a_cotizar()` como función `security definer`** que devuelve id, tipo, ticker, moneda y código CAFCI, ejecutable solo por `carga_precios` | Una vista. El test "toda vista le muestra datos a un miembro" la obligaría a abrirse a los miembros, y con `security_invoker` el RLS no la dejaría leer a `carga_precios` |
 | **Si cambia el código CAFCI o el ticker, se borran los precios del instrumento** (trigger). El proceso externo los vuelve a traer en su próxima corrida | Guardar en `precio` el código con el que se trajo y filtrar por él. Suma una columna y una condición en cada consulta, para un caso raro |
 | **Se suman columnas al final de `posicion`**: `fecha_valor`, `valor`, `rendimiento`, `rendimiento_pct` y `sin_codigo_cafci`. Sin precio, `valor` y el rendimiento son `null`, nunca 0 | Una vista aparte para el valor. La app tendría que pedir dos vistas y cruzarlas en el navegador |
@@ -59,10 +60,10 @@ Cada tarea sigue el ciclo de `CLAUDE.md`: test que falla, código, suite complet
 
 **T1. Tabla `precio` y rol `carga_precios`.** Migración `precio` y `tests/base/crear-base.ts`.
 - Restricciones: valor mayor que 0 con hasta 8 decimales, `cada` mayor que 0, fuente no vacía, moneda del instrumento y una fila por instrumento y fecha. Borrar el instrumento borra sus precios.
-- Autoría y RLS (miembros solo leen; `carga_precios` lee, inserta y actualiza). Mensajes en `errores.ts`.
+- Autoría y RLS (miembros solo leen). `carga_precios` escribe solo con `guardar_precios(jsonb)`. Mensajes en `errores.ts`.
 - **Test.** `tests/base/precio.test.ts`:
-  - `carga_precios` inserta y reemplaza el valor de una fecha (error "la fuente corrige el valor").
-  - `carga_precios` no puede leer `persona`, `operacion` ni `posicion`.
+  - `carga_precios` guarda y reemplaza el valor de una fecha (error "la fuente corrige el valor"). Si un precio de la corrida es inválido, no se guarda ninguno.
+  - `carga_precios` no puede leer ninguna tabla ni vista, ni escribir en `precio` sin la función.
   - Un miembro no puede escribir en `precio`, y el anónimo no ve nada.
   - Un precio en otra moneda que la del instrumento se rechaza (regla 2).
   - Siguen pasando los tests de toda tabla con autoría y RLS.

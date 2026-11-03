@@ -19,10 +19,12 @@ export interface BaseDePrueba {
   anonimo: Consultor
   /** El rol con el que Supabase Auth ejecuta los hooks. */
   authAdmin: Consultor
+  /** El proceso externo que trae los precios. Entra con su propio login. */
+  cargaPrecios: Consultor
   cerrar(): Promise<void>
 }
 
-type Rol = 'anon' | 'authenticated' | 'supabase_auth_admin'
+type Rol = 'anon' | 'authenticated' | 'supabase_auth_admin' | 'carga_precios'
 
 export function listarMigraciones(): string[] {
   let archivos: string[]
@@ -68,6 +70,7 @@ export async function crearBase(opciones: { semillas?: boolean } = {}): Promise<
     conSesion: (email) => como('authenticated', { role: 'authenticated', email, sub: crypto.randomUUID() }),
     anonimo: como('anon', { role: 'anon' }),
     authAdmin: como('supabase_auth_admin', {}),
+    cargaPrecios: como('carga_precios', {}),
     cerrar: () => pg.close(),
   }
 }
