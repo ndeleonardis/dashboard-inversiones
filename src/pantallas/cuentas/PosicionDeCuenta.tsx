@@ -67,14 +67,16 @@ export function PosicionDeCuenta({ cuentaId }: { cuentaId: string }) {
                         <Monto valor={fila.costo} moneda={fila.moneda} />
                       </td>
                       {/* El rendimiento va debajo del valor: cinco columnas no entran en el celular. */}
-                      <td className="numero celda-valor">
-                        <ValorActual valor={fila.valor} moneda={fila.moneda} fecha={fila.fecha_valor} />
-                        {fila.sin_codigo_cafci && (
-                          <Link to={rutaDeInstrumento(fila.instrumento_id)} className="tabla-detalle">
-                            Falta el código CAFCI
-                          </Link>
-                        )}
-                        <Rendimiento monto={fila.rendimiento} fraccion={fila.rendimiento_pct} moneda={fila.moneda} />
+                      <td className="numero">
+                        <div className="celda-valor">
+                          <ValorActual valor={fila.valor} moneda={fila.moneda} fecha={fila.fecha_valor} />
+                          {fila.sin_codigo_cafci && (
+                            <Link to={rutaDeInstrumento(fila.instrumento_id)} className="tabla-detalle">
+                              Falta el código CAFCI
+                            </Link>
+                          )}
+                          <Rendimiento monto={fila.rendimiento} fraccion={fila.rendimiento_pct} moneda={fila.moneda} />
+                        </div>
                       </td>
                     </tr>
                   ))}
