@@ -65,6 +65,9 @@ export type DatosDeInstrumento = {
   valor_nominal_residual: string | null
 }
 
+/** Un peso de la carga de un pesaje. El peso va como texto exacto, igual que los montos. */
+export type PesoParaGuardar = { pesaje_integrante_id: string; peso: string; observaciones: string | null }
+
 export interface Repositorio {
   /** Todas las filas de una tabla o una vista. */
   listar<T extends Origen>(origen: T): Promise<Fila<T>[]>
@@ -82,6 +85,11 @@ export interface Repositorio {
    * Sin id es uno nuevo. Devuelve el id.
    */
   guardarInstrumento(datos: DatosDeInstrumento, id?: string): Promise<string>
+  /**
+   * Guarda la carga de un pesaje, todos juntos en una fecha (C50). Se guarda
+   * entera o no se guarda. Devuelve cuántos pesos guardó.
+   */
+  guardarPesajes(fecha: string, pesos: PesoParaGuardar[]): Promise<number>
   /**
    * Ingresos, gastos y lo que queda, una fila por moneda (C21). El mes es
    * cualquier día del mes. Con una persona, sus ingresos, sus gastos y los
@@ -150,6 +158,12 @@ export function crearRepositorioSupabase(cliente: Cliente): Repositorio {
       const { data, error } = await sinTipos.rpc('guardar_instrumento', argumentos)
       if (error) throw error
       return data as string
+    },
+
+    async guardarPesajes(fecha, pesos) {
+      const { data, error } = await cliente.rpc('guardar_pesajes', { p_fecha: fecha, p_pesos: pesos })
+      if (error) throw error
+      return data
     },
 
     async resumenMes(mes, personaId) {

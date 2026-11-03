@@ -1,7 +1,9 @@
 // Repositorio en memoria para los tests de pantallas. Se comporta como el de
 // Supabase en lo que las pantallas notan: completa id y autoría, devuelve
 // copias y falla con "No se encontró" si la fila no existe. Las vistas y el
-// resumen no se calculan: devuelven lo que carga cada test.
+// resumen no se calculan: devuelven lo que carga cada test. La excepción es la
+// de Pesaje, que se calcula con lo cargado para que una edición cambie la
+// variación igual que en la base (C54).
 import { ErrorDeLaApp, MENSAJE_NO_SE_ENCONTRO } from '../../src/datos/errores.ts'
 import type {
   Alta,
@@ -9,6 +11,7 @@ import type {
   Fila,
   FilaResumenMes,
   Origen,
+  PesoParaGuardar,
   Repositorio,
   TablaConId,
   TablaDelMes,
@@ -32,10 +35,12 @@ const POR_DEFECTO: { [T in TablaConId]?: Partial<Fila<T>> } = {
   operacion: { comision: 0 },
   gasto: { persona_id: null, descripcion: null },
   ingreso: { cuenta_id: null, descripcion: null },
+  pesaje_integrante: { objetivo: 'ninguno', activo: true },
+  pesaje: { observaciones: null },
 }
 
 // Columnas numeric: la app las manda como texto y la API las devuelve como número.
-const NUMERICAS = new Set(['cantidad', 'precio_unitario', 'comision', 'monto', 'ratio', 'valor_nominal_residual'])
+const NUMERICAS = new Set(['cantidad', 'precio_unitario', 'comision', 'monto', 'ratio', 'valor_nominal_residual', 'peso'])
 
 // Las tablas de detalle de cada tipo de instrumento, con sus columnas (C10).
 const DETALLES = {
@@ -43,6 +48,18 @@ const DETALLES = {
   instrumento_cedear: { tipo: 'CEDEAR', columnas: ['ratio', 'subyacente'] },
   instrumento_on: { tipo: 'ON', columnas: ['emisor', 'valor_nominal_residual'] },
 } as const
+
+// Los errores que daría la base, para que la pantalla los traduzca igual.
+const PESAJE_REPETIDO = {
+  code: '23505',
+  message: 'duplicate key value violates unique constraint "pesaje_integrante_fecha_unico"',
+}
+const SIN_PESOS = { code: 'LH007', message: 'Cargá al menos un peso' }
+const INTEGRANTE_CON_PESAJES = {
+  code: '23503',
+  message:
+    'update or delete on table "pesaje_integrante" violates foreign key constraint "pesaje_pesaje_integrante_fk" on table "pesaje"',
+}
 
 function comoLaBase(datos: object): FilaSuelta {
   return Object.fromEntries(
@@ -70,8 +87,22 @@ export function crearRepositorioFalso(datos: DatosFalsos = {}): Repositorio {
   let orden = filasDe('operacion').length
   const autoria = () => ({ creado_por: email, creado_en: new Date().toISOString(), modificado_por: null, modificado_en: null })
 
+  // Como la vista de la base: el nombre y el objetivo actuales, y la variación
+  // contra el pesaje anterior del mismo integrante (C56).
+  const pesajeConVariacion = () =>
+    filasDe('pesaje').map((pesaje) => {
+      const integrante = filasDe('pesaje_integrante').find((i) => i.id === pesaje.pesaje_integrante_id) ?? {}
+      const anterior = filasDe('pesaje')
+        .filter((p) => p.pesaje_integrante_id === pesaje.pesaje_integrante_id && String(p.fecha) < String(pesaje.fecha))
+        .sort((a, b) => String(b.fecha).localeCompare(String(a.fecha)))[0]
+      const variacion = anterior ? Math.round((Number(pesaje.peso) - Number(anterior.peso)) * 100) / 100 : null
+      const { nombre, objetivo, activo } = integrante as FilaSuelta
+      return { ...pesaje, nombre, objetivo, activo, variacion }
+    })
+
   const repositorio: Repositorio = {
     async listar<T extends Origen>(origen: T) {
+      if (origen === 'pesaje_con_variacion') return pesajeConVariacion() as Fila<T>[]
       return filasDe(origen).map((fila) => ({ ...fila })) as Fila<T>[]
     },
 
@@ -107,6 +138,9 @@ export function crearRepositorioFalso(datos: DatosFalsos = {}): Repositorio {
     },
 
     async borrar(tabla, id) {
+      if (tabla === 'pesaje_integrante' && filasDe('pesaje').some((p) => p.pesaje_integrante_id === id)) {
+        throw INTEGRANTE_CON_PESAJES
+      }
       const filas = filasDe(tabla)
       filas.splice(filas.indexOf(buscar(tabla, id)), 1)
     },
@@ -132,6 +166,16 @@ export function crearRepositorioFalso(datos: DatosFalsos = {}): Repositorio {
         }
       }
       return guardado.id
+    },
+
+    // Como la función de la base: todos o ninguno.
+    async guardarPesajes(fecha: string, pesos: PesoParaGuardar[]) {
+      if (pesos.length === 0) throw SIN_PESOS
+      const yaCargados = filasDe('pesaje').filter((p) => p.fecha === fecha).map((p) => p.pesaje_integrante_id)
+      const ids = pesos.map((p) => p.pesaje_integrante_id)
+      if (ids.some((id, i) => yaCargados.includes(id) || ids.indexOf(id) !== i)) throw PESAJE_REPETIDO
+      for (const peso of pesos) await repositorio.crear('pesaje', { ...peso, fecha })
+      return pesos.length
     },
 
     async resumenMes() {

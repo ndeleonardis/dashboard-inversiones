@@ -122,6 +122,17 @@ describe('repositorio con Supabase', () => {
     const error = await repositorio.borrar('persona', ID).catch((e: unknown) => e)
     expect(traducirError(error)).toEqual({ mensaje: 'No se puede borrar: esta persona tiene cuentas' })
   })
+
+  it('la carga de un pesaje va en una sola llamada, con la fecha y todos los pesos (pesaje T8)', async () => {
+    const { repositorio, pedidos, enviados } = conRespuesta(200, 2)
+    const pesos = [
+      { pesaje_integrante_id: ID, peso: '57.3', observaciones: null },
+      { pesaje_integrante_id: ID, peso: '4.35', observaciones: 'Comió antes' },
+    ]
+    await expect(repositorio.guardarPesajes('2026-11-01', pesos)).resolves.toBe(2)
+    expect(pedidos).toEqual([{ metodo: 'POST', url: expect.stringContaining('/rest/v1/rpc/guardar_pesajes') }])
+    expect(enviados).toEqual([{ p_fecha: '2026-11-01', p_pesos: pesos }])
+  })
 })
 
 describe('repositorio falso', () => {
@@ -167,6 +178,64 @@ describe('repositorio falso', () => {
     const ana = await repositorio.crear('persona', { nombre: 'Ana Ejemplo' })
     ana.nombre = 'Otro'
     expect(await repositorio.listar('persona')).toMatchObject([{ nombre: 'Ana Ejemplo' }])
+  })
+
+  describe('pesaje (T8)', () => {
+    async function conIntegrantes() {
+      const repositorio = crearRepositorioFalso()
+      const uno = await repositorio.crear('pesaje_integrante', { nombre: 'Ana Ejemplo', objetivo: 'bajar' })
+      const otro = await repositorio.crear('pesaje_integrante', { nombre: 'Mascota de ejemplo' })
+      return { repositorio, uno: uno.id, otro: otro.id }
+    }
+
+    it('un integrante nuevo arranca activo y sin objetivo, como en la base', async () => {
+      const { repositorio, otro } = await conIntegrantes()
+      expect(await repositorio.obtener('pesaje_integrante', otro)).toMatchObject({ objetivo: 'ninguno', activo: true })
+    })
+
+    it('guarda la carga entera, y la vista trae la variación contra el pesaje anterior', async () => {
+      const { repositorio, uno, otro } = await conIntegrantes()
+      await repositorio.guardarPesajes('2026-10-25', [{ pesaje_integrante_id: uno, peso: '57', observaciones: null }])
+      await repositorio.guardarPesajes('2026-11-01', [
+        { pesaje_integrante_id: uno, peso: '56.85', observaciones: null },
+        { pesaje_integrante_id: otro, peso: '4.35', observaciones: 'Comió antes' },
+      ])
+      const vista = await repositorio.listar('pesaje_con_variacion')
+      expect(vista.map(({ nombre, fecha, peso, variacion, objetivo }) => [nombre, fecha, peso, variacion, objetivo])).toEqual([
+        ['Ana Ejemplo', '2026-10-25', 57, null, 'bajar'],
+        ['Ana Ejemplo', '2026-11-01', 56.85, -0.15, 'bajar'],
+        ['Mascota de ejemplo', '2026-11-01', 4.35, null, 'ninguno'],
+      ])
+    })
+
+    it('si alguien ya tenía peso ese día, rechaza el lote entero con el error de la base', async () => {
+      const { repositorio, uno, otro } = await conIntegrantes()
+      await repositorio.guardarPesajes('2026-11-01', [{ pesaje_integrante_id: uno, peso: '57', observaciones: null }])
+      const error = await repositorio
+        .guardarPesajes('2026-11-01', [
+          { pesaje_integrante_id: otro, peso: '4.35', observaciones: null },
+          { pesaje_integrante_id: uno, peso: '58', observaciones: null },
+        ])
+        .catch((e: unknown) => e)
+      expect(traducirError(error)).toEqual({ mensaje: 'Ya tiene un pesaje ese día', campo: 'fecha' })
+      expect(await repositorio.listar('pesaje')).toHaveLength(1)
+    })
+
+    it('sin pesos da el error de la base', async () => {
+      const { repositorio } = await conIntegrantes()
+      const error = await repositorio.guardarPesajes('2026-11-01', []).catch((e: unknown) => e)
+      expect(traducirError(error)).toEqual({ mensaje: 'Cargá al menos un peso' })
+    })
+
+    it('no borra a alguien con pesajes, igual que la base (C49)', async () => {
+      const { repositorio, uno, otro } = await conIntegrantes()
+      await repositorio.guardarPesajes('2026-11-01', [{ pesaje_integrante_id: uno, peso: '57', observaciones: null }])
+      const error = await repositorio.borrar('pesaje_integrante', uno).catch((e: unknown) => e)
+      expect(traducirError(error)).toEqual({
+        mensaje: 'No se puede borrar: tiene pesajes cargados. Desactivalo para que no aparezca en la carga',
+      })
+      await repositorio.borrar('pesaje_integrante', otro)
+    })
   })
 })
 
