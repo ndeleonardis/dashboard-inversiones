@@ -469,3 +469,92 @@ a.boton {
   background: var(--color-surface-card);
   font-weight: var(--font-weight-semibold);
 }
+
+/* Pesaje: el gráfico de evolución (C58). Una sola serie en la tinta de la
+   marca, guías de un pixel y texto con los tokens de texto. */
+.grafico-peso {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-card);
+}
+
+.grafico-encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.grafico-titulo {
+  font-weight: var(--font-weight-semibold);
+}
+
+.pildora {
+  padding: 2px var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-pill);
+  font-size: var(--font-size-caption);
+  color: var(--color-text-primary);
+}
+
+.grafico-lectura {
+  margin: 0;
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.grafico-lectura strong {
+  font-size: var(--font-size-subhead);
+  color: var(--color-text-primary);
+}
+
+.grafico-peso svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  touch-action: pan-y;
+}
+
+.grafico-guia line {
+  stroke: var(--color-surface-pill);
+  stroke-width: 1;
+}
+
+.grafico-guia text,
+.grafico-fechas text {
+  fill: var(--color-text-secondary);
+  font-size: var(--font-size-micro);
+  font-variant-numeric: tabular-nums;
+}
+
+.grafico-cruz {
+  stroke: var(--color-text-secondary);
+  stroke-width: 1;
+}
+
+.grafico-linea {
+  fill: none;
+  stroke: var(--color-surface-active);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+/* El anillo del color de la tarjeta separa el punto de la línea. */
+.grafico-punto {
+  fill: var(--color-surface-active);
+  stroke: var(--color-surface-card);
+  stroke-width: 2;
+  cursor: pointer;
+}
+
+.grafico-punto[data-activo],
+.grafico-punto:focus-visible {
+  r: 6;
+  outline: none;
+}
