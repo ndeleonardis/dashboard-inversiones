@@ -52,6 +52,27 @@
   color: var(--color-loss);
 }
 
+/* Pesaje: el color sale del objetivo de cada uno, no del signo (C62). */
+.variacion-peso {
+  display: inline-flex;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.variacion-buena {
+  color: var(--color-gain);
+}
+
+.variacion-mala {
+  color: var(--color-loss);
+}
+
+.variacion-neutra {
+  color: var(--color-text-secondary);
+}
+
 .autoria {
   display: grid;
   gap: 2px;
