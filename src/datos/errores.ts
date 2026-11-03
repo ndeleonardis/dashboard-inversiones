@@ -82,6 +82,12 @@ export const MENSAJES_DE_RESTRICCION: Record<string, ErrorParaMostrar> = {
   precio_valor_decimales: sinCampo('El precio tiene hasta 8 decimales'),
   precio_cada_positivo: sinCampo('Cada cuántas unidades cotiza tiene que ser mayor que cero'),
   precio_fuente_no_vacia: sinCampo('El precio necesita su fuente'),
+  pesaje_integrante_nombre_no_vacio: enCampo('Poné un nombre', 'nombre'),
+  pesaje_integrante_nombre_unico: enCampo('Ya hay alguien con ese nombre en la lista', 'nombre'),
+  pesaje_integrante_objetivo_valido: enCampo('Elegí bajar, subir o sin objetivo', 'objetivo'),
+  pesaje_peso_valido: enCampo('El peso tiene que ser mayor que 0 y no pasar de 300 kg', 'peso'),
+  pesaje_peso_decimales: enCampo('Usá hasta 2 decimales', 'peso'),
+  pesaje_integrante_fecha_unico: enCampo('Ya tiene un pesaje ese día', 'fecha'),
 }
 
 type MensajesDeClaveForanea = {
@@ -160,6 +166,10 @@ export const CLAVES_FORANEAS: Record<string, MensajesDeClaveForanea> = {
     enUso: MENSAJE_GENERICO,
     alGuardar: sinCampo('El precio tiene que estar en la moneda del instrumento'),
   },
+  pesaje_pesaje_integrante_fk: {
+    enUso: 'No se puede borrar: tiene pesajes cargados. Desactivalo para que no aparezca en la carga',
+    alGuardar: enCampo('Ya no está en la lista. Puede que alguien lo haya borrado', 'pesaje_integrante_id'),
+  },
 }
 
 /** Datos obligatorios que faltan, por nombre de columna. */
@@ -184,6 +194,8 @@ export const MENSAJES_DE_COLUMNA: Record<string, string> = {
   valor: 'Poné el valor',
   cada: 'Poné cada cuántas unidades cotiza',
   fuente: 'Poné la fuente',
+  pesaje_integrante_id: 'Elegí a quién se pesó',
+  peso: 'Poné el peso',
 }
 
 type ErrorDeLaBase = { code?: string; message?: string; details?: string | null }
