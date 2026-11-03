@@ -134,7 +134,10 @@ describe('operaciones del mismo día (decisión 3)', () => {
 })
 
 describe('forma de la vista', () => {
-  it('tiene solo cantidad y costo, sin ningún valor actual que pueda salir en cero (regla 5)', async () => {
+  // El valor actual llegó con el cambio valor-actual, y su guarda de la regla 5
+  // está en posicion-valor.test.ts. Este test sigue fijando las columnas, así
+  // ninguna nueva entra sin pasar por un plan.
+  it('tiene las columnas del plan, y nada más (regla 5)', async () => {
     const columnas = await base.admin.consultar<{ column_name: string }>(
       `select column_name from information_schema.columns
        where table_schema = 'public' and table_name = 'posicion' order by ordinal_position`,
@@ -146,6 +149,11 @@ describe('forma de la vista', () => {
       'moneda',
       'cantidad',
       'costo',
+      'fecha_valor',
+      'valor',
+      'rendimiento',
+      'rendimiento_pct',
+      'sin_codigo_cafci',
     ])
   })
 
