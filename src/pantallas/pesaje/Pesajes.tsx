@@ -64,7 +64,7 @@ export function ListaDePesajes() {
                   </select>
                 </div>
               </div>
-              {elegido && <GraficoDePeso nombre={elegido.nombre} objetivo={elegido.objetivo} pesajes={visibles} />}
+              {elegido && <GraficoDePeso key={elegido.id} nombre={elegido.nombre} objetivo={elegido.objetivo} pesajes={visibles} />}
               {visibles.length === 0 ? (
                 <p className="vacio">No hay pesajes de {elegido?.nombre ?? 'quien elegiste'}.</p>
               ) : (

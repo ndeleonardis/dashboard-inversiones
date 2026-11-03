@@ -40,9 +40,13 @@ export type SentidoDeVariacion = 'buena' | 'mala' | 'neutra'
  * Si una variación va hacia el objetivo de quien se pesó (C62). Sin objetivo, o
  * si el peso no cambió, es neutra: subir o bajar no es bueno ni malo por sí mismo.
  */
+/** El signo de la variación ya redondeada a 10 gramos, como se lee: 1, -1 o 0. */
+export function signoDeVariacion(variacion: number | string): number {
+  return Math.sign(Math.round(Number(variacion) * 100))
+}
+
 export function sentidoDeVariacion(variacion: number | string, objetivo: string): SentidoDeVariacion {
-  // El signo de la variación ya redondeada a 10 gramos, como se lee.
-  const signo = Math.sign(Math.round(Number(variacion) * 100))
+  const signo = signoDeVariacion(variacion)
   if (signo === 0) return 'neutra'
   if (objetivo === 'bajar') return signo < 0 ? 'buena' : 'mala'
   if (objetivo === 'subir') return signo > 0 ? 'buena' : 'mala'

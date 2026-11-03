@@ -5,8 +5,8 @@
 // se dibuja como cero. El objetivo va como etiqueta, sin colorear la línea.
 // El dibujo mide lo mismo que su lugar en la pantalla, así las letras no se
 // agrandan en la notebook.
-import { useEffect, useRef, useState, type PointerEvent } from 'react'
-import { formatearFecha, formatearPeso } from '../dominio/formato.ts'
+import { useCallback, useState, type PointerEvent } from 'react'
+import { formatearDiaYMes, formatearFecha, formatearPeso } from '../dominio/formato.ts'
 import { etiquetaDeObjetivo } from '../dominio/pesaje.ts'
 
 /** El ancho hasta que se mide el lugar, y el que queda donde no se puede medir. */
@@ -29,10 +29,9 @@ export function GraficoDePeso({ nombre, objetivo, pesajes }: PropsGraficoDePeso)
     .sort((a, b) => a.fecha.localeCompare(b.fecha))
   const [activo, setActivo] = useState<number | null>(null)
   const [ancho, setAncho] = useState(ANCHO)
-  const lienzo = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const elemento = lienzo.current
+  // Se mide cuando aparece el lugar, que puede ser después del primer dibujo
+  // si al principio no había pesajes.
+  const lienzo = useCallback((elemento: HTMLDivElement | null) => {
     if (!elemento || typeof ResizeObserver === 'undefined') return
     const observador = new ResizeObserver(([entrada]) => {
       const medido = Math.round(entrada?.contentRect.width ?? 0)
@@ -104,11 +103,11 @@ export function GraficoDePeso({ nombre, objetivo, pesajes }: PropsGraficoDePeso)
           ))}
           <g className="grafico-fechas">
             <text x={x(primero.fecha)} y={ALTO - 6} textAnchor={totalDias === 0 ? 'middle' : 'start'}>
-              {formatearFecha(primero.fecha).slice(0, 5)}
+              {formatearDiaYMes(primero.fecha)}
             </text>
             {totalDias > 0 && (
               <text x={x(ultimo.fecha)} y={ALTO - 6} textAnchor="end">
-                {formatearFecha(ultimo.fecha).slice(0, 5)}
+                {formatearDiaYMes(ultimo.fecha)}
               </text>
             )}
           </g>

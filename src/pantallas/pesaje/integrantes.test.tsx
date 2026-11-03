@@ -27,6 +27,14 @@ describe('quiénes se pesan', () => {
     expect(items.map((item) => item.textContent)).toEqual(['Caro EjemploSin objetivo', 'Mascota de ejemploObjetivo: bajar'])
   })
 
+  it('con la lista vacía, lo dice y lleva a agregar a alguien', async () => {
+    const repositorio = crearRepositorioFalso()
+    await cargarEjemplo(repositorio)
+    abrir('/pesaje/integrantes', repositorio)
+    expect(await screen.findByText(/Todavía no hay nadie en la lista/)).toBeInTheDocument()
+    expect(screen.queryByRole('list', { name: 'Quiénes se pesan' })).toBeNull()
+  })
+
   it('alguien nuevo arranca sin objetivo y no aparece en Personas (C45, C61)', async () => {
     const { repositorio } = await conLista()
     const { usuario } = abrir('/pesaje/integrantes', repositorio)

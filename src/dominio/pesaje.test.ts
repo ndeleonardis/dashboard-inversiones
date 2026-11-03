@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { formatearPeso, formatearVariacionDePeso } from './formato.ts'
-import { etiquetaDeObjetivo, leerPeso, PESO_MAXIMO, sentidoDeVariacion } from './pesaje.ts'
+import { etiquetaDeObjetivo, leerPeso, PESO_MAXIMO, sentidoDeVariacion, signoDeVariacion } from './pesaje.ts'
 
 describe('leerPeso (C51)', () => {
   it('lee kilogramos con coma decimal', () => {
@@ -71,6 +71,12 @@ describe('sentidoDeVariacion (C62)', () => {
 
   it('un objetivo que la app no conoce es neutro: no decide por su cuenta qué es bueno', () => {
     expect(sentidoDeVariacion('0.3', 'mantener')).toBe('neutra')
+  })
+
+  it('el signo es el de la variación redondeada a 10 gramos, como se lee', () => {
+    expect(signoDeVariacion('0.3')).toBe(1)
+    expect(signoDeVariacion('-0.15')).toBe(-1)
+    expect(signoDeVariacion('0.004')).toBe(0)
   })
 })
 

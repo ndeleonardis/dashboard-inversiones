@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { ALTO, GraficoDePeso, MARGEN } from './GraficoDePeso.tsx'
 
 const puntos = (container: HTMLElement) => [...container.querySelectorAll<SVGCircleElement>('circle.grafico-punto')]
@@ -64,6 +64,24 @@ describe('GraficoDePeso (C58)', () => {
     expect(
       screen.getByRole('img', { name: 'Peso de Mascota de ejemplo: de 4,35 kg el 04/10/2026 a 4,10 kg el 25/10/2026' }),
     ).toBeInTheDocument()
+  })
+
+  it('mide su lugar aunque al principio no tenga pesajes para dibujar', () => {
+    class ObservadorFalso {
+      constructor(private avisar: ResizeObserverCallback) {}
+      observe() {
+        this.avisar([{ contentRect: { width: 640 } } as ResizeObserverEntry], this as unknown as ResizeObserver)
+      }
+      disconnect() {}
+    }
+    vi.stubGlobal('ResizeObserver', ObservadorFalso)
+    try {
+      const { container, rerender } = render(<GraficoDePeso nombre="Mascota" objetivo="bajar" pesajes={[]} />)
+      rerender(<GraficoDePeso nombre="Mascota" objetivo="bajar" pesajes={SEMANAS} />)
+      expect(container.querySelector('svg')?.getAttribute('viewBox')).toBe(`0 0 640 ${ALTO}`)
+    } finally {
+      vi.unstubAllGlobals()
+    }
   })
 
   it('al pasar por un punto con el teclado, muestra su peso y su fecha', () => {
