@@ -30,6 +30,11 @@ describe('ValorActual', () => {
     expect(getByText(/desactualizado/)).toHaveClass('valor-desactualizado')
   })
 
+  it('un valor de otro año muestra el año, así no parece de ayer', () => {
+    const { container } = render(<ValorActual valor="1530" moneda="USD" fecha="2025-11-02" reloj={reloj} />)
+    expect(texto(container)).toBe('US$ 1.530,00Valor al 02/11/2025 · desactualizado')
+  })
+
   it('un valor de hace 7 días todavía no está desactualizado', () => {
     const { container } = render(<ValorActual valor="1530" moneda="USD" fecha="2026-10-27" reloj={reloj} />)
     expect(texto(container)).not.toMatch(/desactualizado/)
@@ -61,6 +66,16 @@ describe('Rendimiento (C42)', () => {
     const { container } = render(<Rendimiento monto={0} fraccion={0} moneda="ARS" />)
     expect(container.firstElementChild).not.toHaveClass('rendimiento-gana')
     expect(container.firstElementChild).not.toHaveClass('rendimiento-pierde')
+  })
+
+  it('lo que se redondea a cero centavos tampoco tiene color, porque se lee sin signo', () => {
+    for (const monto of ['0.004', '-0.004']) {
+      const { container, unmount } = render(<Rendimiento monto={monto} fraccion="0.00001" moneda="ARS" />)
+      expect(texto(container)).toMatch(/^\$ 0,00/)
+      expect(container.firstElementChild).not.toHaveClass('rendimiento-gana')
+      expect(container.firstElementChild).not.toHaveClass('rendimiento-pierde')
+      unmount()
+    }
   })
 
   it('sin precio o con un total parcial no se muestra', () => {

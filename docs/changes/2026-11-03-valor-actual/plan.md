@@ -181,3 +181,6 @@ Al terminar siguen `verify-after-changes` y `/code-review`, y la spec del cambio
 - **El pooler y los roles propios.** Supavisor acepta roles propios con el formato `carga_precios.<id-del-proyecto>`. Se confirma en T13 conectando desde la VM.
 - **El valor de una ON amortizada** (pregunta abierta de la spec). Si cotiza sobre el residual, cambia la cuenta de C36 para esas ON. Se resuelve en el cambio de Open BYMA.
 - **PGlite usa Postgres 18 y Supabase la 17.** Valen las mismas precauciones que en la v1.
+- **Pendiente de la revisión de código (2026-11-03).** Quedan para un cambio aparte dos cosas de poco impacto en un grupo chico:
+  - La regla del total parcial (valor, faltantes y rendimiento) está repetida en `invertido_por_persona` y en `invertido_grupo`. Si cambia C41 o C42, hay que cambiarla en las dos vistas, y los tests de `resumen-valor.test.ts` lo cubren.
+  - El resumen recalcula `posicion` varias veces por persona y moneda, y la posición suma ahora un precio y un chequeo de código CAFCI por fila. Con pocas operaciones no se nota. Se suma al pendiente de la v1 sobre el detalle de cuenta, que pide todas las posiciones.

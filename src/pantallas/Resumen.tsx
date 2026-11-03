@@ -34,14 +34,18 @@ function Tarjeta({ titulo, children }: { titulo: string; children: ReactNode }) 
   )
 }
 
-type PropsDato = { etiqueta: string; valor: number; moneda: Moneda; destacado?: boolean }
+/** Un renglón de tarjeta: una etiqueta y su monto, o lo que se muestre en lugar del monto. */
+type PropsDato = { etiqueta: string; destacado?: boolean } & (
+  | { valor: number; moneda: Moneda; children?: never }
+  | { children: ReactNode; valor?: never; moneda?: never }
+)
 
-function Dato({ etiqueta, valor, moneda, destacado = false }: PropsDato) {
+function Dato({ etiqueta, destacado = false, ...contenido }: PropsDato) {
   return (
     <div className={destacado ? 'dato dato-destacado' : 'dato'}>
       <dt>{etiqueta}</dt>
       <dd>
-        <Monto valor={valor} moneda={moneda} />
+        {contenido.valor === undefined ? contenido.children : <Monto valor={contenido.valor} moneda={contenido.moneda} />}
       </dd>
     </div>
   )
@@ -164,13 +168,12 @@ function Invertidos({ filas }: { filas: Invertido[] }) {
         return (
           <Fragment key={fila.moneda}>
             <Dato etiqueta={`Costo en ${moneda}`} valor={fila.costo} moneda={fila.moneda} />
-            <div className="dato">
-              <dt>{`Valor en ${moneda}`}</dt>
-              <dd className="celda-valor">
+            <Dato etiqueta={`Valor en ${moneda}`}>
+              <div className="celda-valor">
                 <ValorActual valor={fila.valor} moneda={fila.moneda} fecha={null} sinPrecio={fila.instrumentos_sin_precio} />
                 <Rendimiento monto={fila.rendimiento} fraccion={fila.rendimiento_pct} moneda={fila.moneda} />
-              </dd>
-            </div>
+              </div>
+            </Dato>
           </Fragment>
         )
       })}

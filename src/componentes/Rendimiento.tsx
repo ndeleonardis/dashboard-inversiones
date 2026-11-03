@@ -13,7 +13,9 @@ type PropsRendimiento = {
 
 export function Rendimiento({ monto, fraccion, moneda }: PropsRendimiento) {
   if (monto === null || fraccion === null) return null
-  const signo = Math.sign(Number(monto))
+  // El signo del monto ya redondeado a centavos, como se lee: "$ 0,00" no lleva
+  // signo, y entonces tampoco color.
+  const signo = Math.sign(Math.round(Number(monto) * 100))
   const clase = signo > 0 ? 'rendimiento rendimiento-gana' : signo < 0 ? 'rendimiento rendimiento-pierde' : 'rendimiento'
   return (
     <span className={clase}>

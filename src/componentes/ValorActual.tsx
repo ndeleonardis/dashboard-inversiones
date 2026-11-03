@@ -1,8 +1,8 @@
 // Lo que vale hoy una posición o un total, con la fecha del valor (C34). Sin
 // precio dice "Sin precio" y nunca $ 0 (C37, regla 5): por eso el valor puede
 // ser null acá, y en Monto no.
-import { estaDesactualizado } from '../dominio/fechas.ts'
-import { formatearDiaYMes } from '../dominio/formato.ts'
+import { estaDesactualizado, hoy } from '../dominio/fechas.ts'
+import { formatearDiaYMes, formatearFecha } from '../dominio/formato.ts'
 import type { Moneda } from '../dominio/moneda.ts'
 import { Monto } from './Monto.tsx'
 
@@ -22,7 +22,8 @@ export function ValorActual({ valor, moneda, fecha, sinPrecio = 0, reloj }: Prop
       {valor === null ? <span className="sin-precio">Sin precio</span> : <Monto valor={valor} moneda={moneda} />}
       {valor !== null && fecha !== null && (
         <span className="valor-fecha">
-          Valor al {formatearDiaYMes(fecha)}
+          {/* Un valor de otro año lleva el año, así un fondo que dejó de publicar no parece de ayer. */}
+          Valor al {fecha.slice(0, 4) === hoy(reloj).slice(0, 4) ? formatearDiaYMes(fecha) : formatearFecha(fecha)}
           {estaDesactualizado(fecha, reloj) && <span className="valor-desactualizado"> · desactualizado</span>}
         </span>
       )}
