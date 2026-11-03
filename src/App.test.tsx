@@ -12,4 +12,28 @@ describe('App', () => {
     expect(screen.getByRole('navigation', { name: 'Secciones' })).toBeInTheDocument()
     expect(screen.getByRole('navigation', { name: 'Cargar' })).toBeInTheDocument()
   })
+
+  describe('Pesaje (C43)', () => {
+    const abrir = (ruta: string, pesajeActivo?: boolean) => {
+      window.history.replaceState(null, '', ruta)
+      render(
+        <App
+          autenticacion={crearAutenticacionFalsa('ana@example.com')}
+          repositorio={crearRepositorioFalso()}
+          pesajeActivo={pesajeActivo}
+        />,
+      )
+    }
+
+    it('apagado, su pantalla no se abre ni escribiendo la dirección: lleva al resumen', async () => {
+      abrir('/pesaje')
+      expect(await screen.findByRole('heading', { name: 'Resumen', level: 1 })).toBeInTheDocument()
+      expect(window.location.pathname).toBe('/')
+    })
+
+    it('prendido, la dirección abre Pesaje', async () => {
+      abrir('/pesaje', true)
+      expect(await screen.findByRole('heading', { name: 'Pesaje', level: 1 })).toBeInTheDocument()
+    })
+  })
 })

@@ -16,6 +16,11 @@ export const RUTAS = {
   instrumentos: '/instrumentos',
   instrumentoNuevo: '/instrumentos/nuevo',
   categorias: '/categorias',
+  // Pesaje, el módulo opcional fuera de lo financiero (C43).
+  pesaje: '/pesaje',
+  pesajeNuevo: '/pesaje/cargar',
+  pesajeIntegrantes: '/pesaje/integrantes',
+  pesajeIntegranteNuevo: '/pesaje/integrantes/nuevo',
 } as const
 
 /** Las categorías de gastos y las de ingresos tienen cada una sus direcciones. */
@@ -30,6 +35,10 @@ export const rutaDeOperacion = (id: string) => `${RUTAS.operaciones}/${id}`
 /** La lista de operaciones ya filtrada (C15), por ejemplo por cuenta e instrumento. */
 export const rutaDeOperacionesFiltradas = (filtro: { persona?: string; cuenta?: string; instrumento?: string }) =>
   `${RUTAS.operaciones}?${new URLSearchParams(filtro)}`
+export const rutaDePesaje = (id: string) => `${RUTAS.pesaje}/${id}`
+export const rutaDeIntegranteDePesaje = (id: string) => `${RUTAS.pesajeIntegrantes}/${id}`
+/** La lista de pesajes de una sola persona o mascota, con su gráfico (C57, C58). */
+export const rutaDePesajesDe = (integranteId: string) => `${RUTAS.pesaje}?${new URLSearchParams({ quien: integranteId })}`
 export const rutaDeGasto = (id: string) => `${RUTAS.gastos}/${id}`
 export const rutaDeIngreso = (id: string) => `${RUTAS.ingresos}/${id}`
 /** Una lista de a un mes, en el mes de esa fecha: rutaDelMes(RUTAS.gastos, '2026-03-10') → "/gastos?mes=2026-03". */

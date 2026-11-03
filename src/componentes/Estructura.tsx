@@ -1,6 +1,7 @@
 // Lo que comparten todas las pantallas: la cabecera con el menú de secciones,
 // el contenido y la barra flotante para cargar. En el celular el menú se abre
-// con un botón. Desde 768 px queda siempre a la vista (C33).
+// con un botón. Desde 768 px queda siempre a la vista (C33). Pesaje, si la
+// copia lo prende, va al final y separado de lo financiero (C44).
 import { useId, useState, type ReactNode } from 'react'
 import { Link, NavLink } from 'react-router'
 import { RUTAS } from '../rutas.ts'
@@ -38,9 +39,9 @@ function IconoMenu() {
   )
 }
 
-type PropsEstructura = { alSalir: () => void | Promise<void>; children: ReactNode }
+type PropsEstructura = { alSalir: () => void | Promise<void>; pesaje?: boolean; children: ReactNode }
 
-export function Estructura({ alSalir, children }: PropsEstructura) {
+export function Estructura({ alSalir, pesaje = false, children }: PropsEstructura) {
   const [menuAbierto, setMenuAbierto] = useState(false)
   const idMenu = useId()
 
@@ -69,6 +70,13 @@ export function Estructura({ alSalir, children }: PropsEstructura) {
                 </NavLink>
               </li>
             ))}
+            {pesaje && (
+              <li className="menu-aparte">
+                <NavLink to={RUTAS.pesaje} onClick={() => setMenuAbierto(false)}>
+                  Pesaje
+                </NavLink>
+              </li>
+            )}
             <li>
               <button
                 type="button"

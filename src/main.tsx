@@ -25,12 +25,14 @@ if (avisoInicial) window.history.replaceState(window.history.state, '', sinAviso
 
 function iniciar(): ReactNode {
   try {
-    const cliente = crearCliente(leerConfiguracion())
+    const configuracion = leerConfiguracion()
+    const cliente = crearCliente(configuracion)
     return (
       <App
         autenticacion={crearAutenticacionSupabase(cliente)}
         repositorio={crearRepositorioSupabase(cliente)}
         avisoInicial={avisoInicial}
+        pesajeActivo={configuracion.pesaje}
       />
     )
   } catch (error) {

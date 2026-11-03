@@ -4,10 +4,10 @@ import { MemoryRouter } from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
 import { Estructura } from './Estructura.tsx'
 
-function enLaRuta(ruta: string, alSalir = () => {}) {
+function enLaRuta(ruta: string, alSalir = () => {}, pesaje = false) {
   return render(
     <MemoryRouter initialEntries={[ruta]}>
-      <Estructura alSalir={alSalir}>
+      <Estructura alSalir={alSalir} pesaje={pesaje}>
         <h1>Contenido</h1>
       </Estructura>
     </MemoryRouter>,
@@ -69,5 +69,29 @@ describe('Estructura', () => {
     const menu = screen.getByRole('navigation', { name: 'Secciones' })
     await usuario.click(within(menu).getByRole('button', { name: 'Salir' }))
     expect(alSalir).toHaveBeenCalledOnce()
+  })
+
+  describe('Pesaje (C43 y C44)', () => {
+    it('apagado, no aparece en el menú', () => {
+      enLaRuta('/')
+      const menu = screen.getByRole('navigation', { name: 'Secciones' })
+      expect(within(menu).queryByRole('link', { name: 'Pesaje' })).toBeNull()
+    })
+
+    it('prendido, es la última sección, separada de las financieras', () => {
+      enLaRuta('/', () => {}, true)
+      const menu = screen.getByRole('navigation', { name: 'Secciones' })
+      const secciones = within(menu).getAllByRole('link')
+      expect(secciones.at(-1)?.textContent).toBe('Pesaje')
+      expect(secciones.at(-1)).toHaveAttribute('href', '/pesaje')
+      expect(secciones.at(-1)?.closest('li')).toHaveClass('menu-aparte')
+      expect(secciones.at(-2)?.closest('li')).not.toHaveClass('menu-aparte')
+    })
+
+    it('prendido, se marca en cualquier pantalla de Pesaje', () => {
+      enLaRuta('/pesaje/cargar', () => {}, true)
+      const menu = screen.getByRole('navigation', { name: 'Secciones' })
+      expect(within(menu).getByRole('link', { name: 'Pesaje' })).toHaveAttribute('aria-current', 'page')
+    })
   })
 })

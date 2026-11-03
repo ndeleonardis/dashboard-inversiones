@@ -16,6 +16,7 @@ import { EditarIngreso, ListaDeIngresos, NuevoIngreso } from './pantallas/ingres
 import { EditarInstrumento, ListaDeInstrumentos, NuevoInstrumento } from './pantallas/instrumentos/Instrumentos.tsx'
 import { EditarOperacion, ListaDeOperaciones, NuevaOperacion } from './pantallas/operaciones/Operaciones.tsx'
 import { EditarPersona, ListaDePersonas, NuevaPersona } from './pantallas/personas/Personas.tsx'
+import { ListaDePesajes } from './pantallas/pesaje/Pesajes.tsx'
 import { Privacidad } from './pantallas/Privacidad.tsx'
 import { Resumen } from './pantallas/Resumen.tsx'
 import { RUTAS, rutaDeCategoria, rutaDeNuevaCategoria } from './rutas.ts'
@@ -24,18 +25,20 @@ type PropsApp = {
   autenticacion: Autenticacion
   repositorio: Repositorio
   avisoInicial?: AvisoDeEntrada | null
+  /** Si la copia prendió Pesaje (C43). Apagado, sus rutas no existen. */
+  pesajeActivo?: boolean
 }
 
-function ConEstructura() {
+function ConEstructura({ pesaje }: { pesaje: boolean }) {
   const { salir } = useSesion()
   return (
-    <Estructura alSalir={salir}>
+    <Estructura alSalir={salir} pesaje={pesaje}>
       <Outlet />
     </Estructura>
   )
 }
 
-export default function App({ autenticacion, repositorio, avisoInicial = null }: PropsApp) {
+export default function App({ autenticacion, repositorio, avisoInicial = null, pesajeActivo = false }: PropsApp) {
   const [consultas] = useState(() => new QueryClient())
 
   return (
@@ -47,7 +50,7 @@ export default function App({ autenticacion, repositorio, avisoInicial = null }:
               <Route path={RUTAS.entrar} element={<Entrar />} />
               <Route path={RUTAS.privacidad} element={<Privacidad />} />
               <Route element={<RutaProtegida />}>
-                <Route element={<ConEstructura />}>
+                <Route element={<ConEstructura pesaje={pesajeActivo} />}>
                   <Route index element={<Resumen />} />
                   <Route path={RUTAS.gastos} element={<ListaDeGastos />} />
                   <Route path={RUTAS.gastoNuevo} element={<NuevoGasto />} />
@@ -72,6 +75,7 @@ export default function App({ autenticacion, repositorio, avisoInicial = null }:
                   <Route path={rutaDeCategoria('gastos', ':id')} element={<EditarCategoria clase="gastos" />} />
                   <Route path={rutaDeNuevaCategoria('ingresos')} element={<NuevaCategoria clase="ingresos" />} />
                   <Route path={rutaDeCategoria('ingresos', ':id')} element={<EditarCategoria clase="ingresos" />} />
+                  {pesajeActivo && <Route path={RUTAS.pesaje} element={<ListaDePesajes />} />}
                   <Route path="*" element={<Navigate to={RUTAS.resumen} replace />} />
                 </Route>
               </Route>
