@@ -13,7 +13,7 @@ afterAll(async () => {
 
 describe('semillas de ejemplo (C28)', () => {
   it('cargan sobre las migraciones y dejan datos en cada tabla', async () => {
-    for (const tabla of ['persona', 'cuenta', 'instrumento', 'operacion', 'gasto', 'ingreso']) {
+    for (const tabla of ['persona', 'cuenta', 'instrumento', 'operacion', 'gasto', 'ingreso', 'pesaje_integrante', 'pesaje']) {
       const [fila] = await base.admin.consultar<{ n: string }>(`select count(*) as n from public.${tabla}`)
       expect(Number(fila?.n), tabla).toBeGreaterThan(0)
     }
@@ -29,6 +29,19 @@ describe('semillas de ejemplo (C28)', () => {
       `select 1 from precio pr join instrumento_fci f on f.instrumento_id = pr.instrumento_id where pr.cada = 1000`,
     )
     expect(fciCadaMil.length).toBeGreaterThan(0)
+  })
+
+  it('dejan quienes se pesan con cada objetivo, uno desactivado y una semana en la que falta alguien (pesaje T4)', async () => {
+    const objetivos = await base.admin.consultar<{ objetivo: string }>('select distinct objetivo from pesaje_integrante order by 1')
+    expect(objetivos.map((f) => f.objetivo)).toEqual(['bajar', 'ninguno', 'subir'])
+    const desactivados = await base.admin.consultar('select 1 from pesaje_integrante where not activo')
+    expect(desactivados.length).toBeGreaterThan(0)
+    const porSemana = await base.admin.consultar<{ n: string }>(
+      `select count(*) as n from pesaje p join pesaje_integrante i on i.id = p.pesaje_integrante_id
+       where i.activo group by p.fecha`,
+    )
+    expect(porSemana.length).toBeGreaterThanOrEqual(6)
+    expect(new Set(porSemana.map((f) => f.n)).size).toBeGreaterThan(1)
   })
 
   it('usan solo emails de example.com (regla 3)', async () => {

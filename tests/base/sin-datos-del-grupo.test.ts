@@ -35,10 +35,12 @@ describe('sin datos de un grupo en el código (regla 6)', () => {
        union select nombre from persona
        union select email from persona where email is not null
        union select entidad from cuenta
-       union select nombre from cuenta where nombre is not null`,
+       union select nombre from cuenta where nombre is not null
+       union select nombre from pesaje_integrante`,
     )
     const nombres = filas.map((f) => f.nombre)
     expect(nombres).toContain('Súper')
+    expect(nombres).toContain('Mascota de ejemplo')
 
     const hallazgos = archivosDeLaApp('src').flatMap((archivo) =>
       buscarNombresDelGrupo(readFileSync(archivo, 'utf8'), nombres).map((nombre) => `${archivo}: ${nombre}`),

@@ -89,3 +89,36 @@ from (values
 join public.tipo_ingreso t on t.nombre = i.categoria
 join public.persona p on p.nombre = i.persona
 left join public.cuenta c on c.entidad = i.entidad;
+
+-- Pesaje, con nombres ficticios (C60): uno con cada objetivo y uno
+-- desactivado. Seis semanas, y en una de ellas falta alguien.
+insert into public.pesaje_integrante (nombre, objetivo, activo) values
+  ('Ana Ejemplo', 'bajar', true),
+  ('Caro Ejemplo', 'subir', true),
+  ('Mascota de ejemplo', 'ninguno', true),
+  ('Mascota anterior de ejemplo', 'bajar', false);
+
+insert into public.pesaje (pesaje_integrante_id, fecha, peso, observaciones)
+select i.id, current_date - p.semanas * 7, p.peso, p.observaciones
+from (values
+  ('Ana Ejemplo', 5, 62.40, null),
+  ('Ana Ejemplo', 4, 62.10, null),
+  ('Ana Ejemplo', 3, 62.30, 'Después de un cumpleaños'),
+  ('Ana Ejemplo', 2, 61.90, null),
+  ('Ana Ejemplo', 1, 61.75, null),
+  ('Ana Ejemplo', 0, 61.80, null),
+  ('Caro Ejemplo', 5, 30.10, null),
+  ('Caro Ejemplo', 4, 30.25, null),
+  ('Caro Ejemplo', 3, 30.20, null),
+  ('Caro Ejemplo', 1, 30.60, null),
+  ('Caro Ejemplo', 0, 30.75, null),
+  ('Mascota de ejemplo', 5, 4.35, null),
+  ('Mascota de ejemplo', 4, 4.40, 'Comió antes de pesarse'),
+  ('Mascota de ejemplo', 3, 4.35, null),
+  ('Mascota de ejemplo', 2, 4.30, null),
+  ('Mascota de ejemplo', 1, 4.30, null),
+  ('Mascota de ejemplo', 0, 4.25, null),
+  ('Mascota anterior de ejemplo', 8, 6.10, null),
+  ('Mascota anterior de ejemplo', 7, 6.00, null)
+) as p (nombre, semanas, peso, observaciones)
+join public.pesaje_integrante i on i.nombre = p.nombre;
