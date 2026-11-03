@@ -33,3 +33,6 @@ Thumbs.db
 # === Editores ===
 .idea/
 .obsidian/
+
+# === Documentos personales ===
+docs/changes/2026-11-03-valor-actual/Que hace este cambio.docx
