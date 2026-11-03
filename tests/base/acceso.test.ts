@@ -54,6 +54,12 @@ beforeAll(async () => {
     `insert into ingreso (tipo_ingreso_id, persona_id, fecha, monto, moneda) values ($1, $2, '2026-10-01', 90000, 'ARS')`,
     [tipoIngreso!.id, ana!.id],
   )
+  const [integrante] = await base.admin.consultar<{ id: string }>(
+    `insert into pesaje_integrante (nombre) values ('Mascota de ejemplo') returning id`,
+  )
+  await base.admin.consultar(`insert into pesaje (pesaje_integrante_id, fecha, peso) values ($1, '2026-10-04', 4.35)`, [
+    integrante!.id,
+  ])
 
   const filas = await base.admin.consultar<{ nombre: string }>(
     `select relname as nombre from pg_class
