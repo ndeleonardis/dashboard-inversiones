@@ -37,7 +37,31 @@ describe('configuración de la copia', () => {
   it('con las variables, devuelve la URL y la key', () => {
     expect(
       leerConfiguracion({ VITE_SUPABASE_URL: ' https://abc.supabase.co ', VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_abc' }),
-    ).toEqual({ supabaseUrl: 'https://abc.supabase.co', supabaseKey: 'sb_publishable_abc' })
+    ).toEqual({ supabaseUrl: 'https://abc.supabase.co', supabaseKey: 'sb_publishable_abc', pesaje: false })
+  })
+
+  describe('Pesaje, que viene apagado (C43)', () => {
+    const conPesaje = (valor?: string) =>
+      leerConfiguracion({
+        VITE_SUPABASE_URL: 'https://abc.supabase.co',
+        VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_abc',
+        VITE_MODULO_PESAJE: valor,
+      }).pesaje
+
+    it('sin la variable, o en blanco, queda apagado', () => {
+      expect(conPesaje()).toBe(false)
+      expect(conPesaje('  ')).toBe(false)
+    })
+
+    it('con cualquier valor que no sea "si", queda apagado', () => {
+      expect(conPesaje('no')).toBe(false)
+      expect(conPesaje('true')).toBe(false)
+    })
+
+    it('con "si", sin importar mayúsculas ni espacios, se prende', () => {
+      expect(conPesaje('si')).toBe(true)
+      expect(conPesaje(' SI ')).toBe(true)
+    })
   })
 
   it('rechaza la key secreta, que llegaría al navegador (regla 7)', () => {

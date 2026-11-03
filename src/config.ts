@@ -2,7 +2,12 @@
 // pasa al navegador solo las variables que empiezan con VITE_, así que
 // ninguna de ellas puede ser un secreto (regla 7).
 
-export type Configuracion = { supabaseUrl: string; supabaseKey: string }
+export type Configuracion = {
+  supabaseUrl: string
+  supabaseKey: string
+  /** Pesaje es un módulo opcional, ajeno a lo financiero. Viene apagado y se prende con VITE_MODULO_PESAJE=si (C43). */
+  pesaje: boolean
+}
 
 type Entorno = Record<string, string | undefined>
 
@@ -21,5 +26,6 @@ export function leerConfiguracion(entorno: Entorno = import.meta.env): Configura
   if (supabaseKey.startsWith('sb_secret_')) {
     throw new Error('VITE_SUPABASE_PUBLISHABLE_KEY tiene la key secreta. Usá la publicable, que empieza con sb_publishable_.')
   }
-  return { supabaseUrl, supabaseKey }
+  const pesaje = entorno.VITE_MODULO_PESAJE?.trim().toLowerCase() === 'si'
+  return { supabaseUrl, supabaseKey, pesaje }
 }
