@@ -5,15 +5,11 @@
 // se dibuja como cero. El objetivo va como etiqueta, sin colorear la línea.
 import { useState, type PointerEvent } from 'react'
 import { formatearFecha, formatearPeso } from '../dominio/formato.ts'
+import { etiquetaDeObjetivo } from '../dominio/pesaje.ts'
 
 export const ANCHO = 320
 export const ALTO = 160
 export const MARGEN = { arriba: 16, abajo: 24, izquierda: 64, derecha: 16 }
-
-const ETIQUETA_DE_OBJETIVO: Record<string, string> = {
-  bajar: 'Objetivo: bajar',
-  subir: 'Objetivo: subir',
-}
 
 type PesajeDelGrafico = { fecha: string; peso: number | string }
 
@@ -68,7 +64,7 @@ export function GraficoDePeso({ nombre, objetivo, pesajes }: PropsGraficoDePeso)
     <figure className="grafico-peso">
       <figcaption className="grafico-encabezado">
         <span className="grafico-titulo">{nombre}</span>
-        <span className="pildora">{ETIQUETA_DE_OBJETIVO[objetivo] ?? 'Sin objetivo'}</span>
+        <span className="pildora">{etiquetaDeObjetivo(objetivo)}</span>
       </figcaption>
       <p role="status" className="grafico-lectura">
         <strong>{formatearPeso(mostrado.peso)}</strong> · {formatearFecha(mostrado.fecha)}

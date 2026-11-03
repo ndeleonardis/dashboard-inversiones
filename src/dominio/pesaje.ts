@@ -29,6 +29,11 @@ export const OBJETIVOS: { valor: Objetivo; nombre: string }[] = [
   { valor: 'subir', nombre: 'Subir' },
 ]
 
+/** Cómo se muestra el objetivo de alguien: "Objetivo: bajar" o "Sin objetivo" (C58). */
+export function etiquetaDeObjetivo(objetivo: string): string {
+  return objetivo === 'bajar' || objetivo === 'subir' ? `Objetivo: ${objetivo}` : 'Sin objetivo'
+}
+
 export type SentidoDeVariacion = 'buena' | 'mala' | 'neutra'
 
 /**

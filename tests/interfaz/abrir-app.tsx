@@ -10,10 +10,14 @@ import { crearRepositorioFalso } from './repositorio-falso.ts'
 /** El email de quien está conectado en los tests. Es el de Ana en cargarEjemplo. */
 export const EMAIL_CONECTADO = 'ana@example.com'
 
-export function abrirApp(ruta: string, repositorio: Repositorio = crearRepositorioFalso({ email: EMAIL_CONECTADO })) {
+export function abrirApp(
+  ruta: string,
+  repositorio: Repositorio = crearRepositorioFalso({ email: EMAIL_CONECTADO }),
+  { pesaje = false }: { pesaje?: boolean } = {},
+) {
   window.history.replaceState(null, '', ruta)
   const usuario = userEvent.setup()
-  render(<App autenticacion={crearAutenticacionFalsa(EMAIL_CONECTADO)} repositorio={repositorio} />)
+  render(<App autenticacion={crearAutenticacionFalsa(EMAIL_CONECTADO)} repositorio={repositorio} pesajeActivo={pesaje} />)
   return { usuario, repositorio }
 }
 
