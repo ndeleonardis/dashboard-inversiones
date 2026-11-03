@@ -6,6 +6,45 @@
   white-space: nowrap;
 }
 
+/* Valor actual: el monto arriba y debajo su fecha, o "Sin precio" (regla 5). */
+.valor-actual {
+  display: inline-grid;
+  justify-items: end;
+  gap: 2px;
+}
+
+.sin-precio {
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.valor-fecha,
+.valor-parcial {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-micro);
+  white-space: nowrap;
+}
+
+.valor-desactualizado {
+  color: var(--color-loss);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Rendimiento en verde y rojo (DESIGN.md), siempre con su signo. */
+.rendimiento {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.rendimiento-gana {
+  color: var(--color-gain);
+}
+
+.rendimiento-pierde {
+  color: var(--color-loss);
+}
+
 .autoria {
   display: grid;
   gap: 2px;
