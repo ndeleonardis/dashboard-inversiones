@@ -147,3 +147,90 @@ describe('el peso', () => {
     expect(autoria?.creado_por).toBe(ANA)
   })
 })
+
+// Pesaje T2. La carga de todos juntos se guarda entera o no se guarda.
+describe('guardar_pesajes()', () => {
+  type PesoParaGuardar = { pesaje_integrante_id: string; peso: string | number; observaciones?: string | null }
+
+  const guardar = (fecha: string, pesos: PesoParaGuardar[]) =>
+    ana().consultar<{ guardados: number }>('select public.guardar_pesajes($1, $2::jsonb) as guardados', [
+      fecha,
+      JSON.stringify(pesos),
+    ])
+
+  const pesosDe = (fecha: string, ids: string[]) =>
+    ana().consultar<{ pesaje_integrante_id: string; peso: string; observaciones: string | null }>(
+      `select pesaje_integrante_id, peso::text, observaciones from pesaje
+       where fecha = $1 and pesaje_integrante_id = any($2::uuid[]) order by peso`,
+      [fecha, ids],
+    )
+
+  it('guarda los pesos de todos, cada uno con sus observaciones, en la fecha dada (C50)', async () => {
+    const ids = [await integrante(), await integrante(), await integrante()]
+    const [resultado] = await guardar('2026-09-06', [
+      { pesaje_integrante_id: ids[0]!, peso: '4.35', observaciones: 'Comió antes' },
+      { pesaje_integrante_id: ids[1]!, peso: '57.3' },
+      { pesaje_integrante_id: ids[2]!, peso: '82', observaciones: null },
+    ])
+    expect(Number(resultado?.guardados)).toBe(3)
+    expect(await pesosDe('2026-09-06', ids)).toEqual([
+      { pesaje_integrante_id: ids[0], peso: '4.35', observaciones: 'Comió antes' },
+      { pesaje_integrante_id: ids[1], peso: '57.3', observaciones: null },
+      { pesaje_integrante_id: ids[2], peso: '82', observaciones: null },
+    ])
+  })
+
+  it('sin ningún peso no guarda nada y lo dice (C50)', async () => {
+    const error = await errorDe(guardar('2026-09-07', []))
+    expect(error.code).toBe('LH007')
+    expect(error.message).toBe('Cargá al menos un peso')
+  })
+
+  it('si un peso es inválido, no guarda ninguno', async () => {
+    const ids = [await integrante(), await integrante()]
+    const error = await errorDe(
+      guardar('2026-09-08', [
+        { pesaje_integrante_id: ids[0]!, peso: '57.3' },
+        { pesaje_integrante_id: ids[1]!, peso: '4350' },
+      ]),
+    )
+    expect(error.constraint).toBe('pesaje_peso_valido')
+    expect(await pesosDe('2026-09-08', ids)).toEqual([])
+  })
+
+  it('si alguien ya tenía peso ese día, no guarda ninguno (C52)', async () => {
+    const ids = [await integrante(), await integrante()]
+    await pesar(ids[1]!, 60, '2026-09-09')
+    const error = await errorDe(
+      guardar('2026-09-09', [
+        { pesaje_integrante_id: ids[0]!, peso: '57.3' },
+        { pesaje_integrante_id: ids[1]!, peso: '61' },
+      ]),
+    )
+    expect(error.message).toContain('pesaje_integrante_fecha_unico')
+    expect((await pesosDe('2026-09-09', ids)).map((f) => f.peso)).toEqual(['60'])
+  })
+
+  it('pasa por las mismas reglas de acceso: sin invitación no guarda', async () => {
+    const id = await integrante()
+    const error = await errorDe(
+      base
+        .conSesion('intruso@example.com')
+        .consultar('select public.guardar_pesajes($1, $2::jsonb)', [
+          '2026-09-10',
+          JSON.stringify([{ pesaje_integrante_id: id, peso: '57' }]),
+        ]),
+    )
+    expect(error.code).toBe('42501')
+  })
+
+  it('queda registrado quién cargó cada peso (C59)', async () => {
+    const id = await integrante()
+    await guardar('2026-09-11', [{ pesaje_integrante_id: id, peso: '57' }])
+    const [fila] = await base.admin.consultar<{ creado_por: string }>(
+      `select creado_por from pesaje where pesaje_integrante_id = $1`,
+      [id],
+    )
+    expect(fila?.creado_por).toBe(ANA)
+  })
+})

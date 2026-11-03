@@ -17,6 +17,7 @@ const FUNCIONES_PARA_MIEMBROS = [
   'email_de_la_sesion',
   'es_miembro',
   'guardar_instrumento',
+  'guardar_pesajes',
   'resumen_mes',
   'validar_posicion',
 ]
