@@ -58,6 +58,18 @@ erDiagram
 | `tipo_ingreso` e `ingreso` | Entradas de plata | persona, cuenta (opcional), tipo, fecha, monto, moneda, descripción |
 | `precio` (v2) | Valor de mercado de un instrumento en una fecha | instrumento, fecha, valor, cada cuántas unidades (`cada`), moneda (la del instrumento), fuente, hora de captura. Una fila por instrumento y fecha: si la fuente corrige el valor, se reemplaza. La escribe solo el proceso externo, con el rol `carga_precios` |
 
+### Pesaje, aparte de lo financiero
+
+Pesaje es un módulo opcional (`docs/changes/2026-11-03-pesaje/`). Sus tablas no se relacionan con ninguna financiera: quienes se pesan no son personas del grupo, así una mascota nunca aparece en cuentas, gastos ni ingresos.
+
+| Entidad | Qué guarda | Campos principales |
+|---|---|---|
+| `pesaje_integrante` | Quién se pesa, persona o mascota | nombre (único), objetivo (`bajar`, `subir` o `ninguno`), activo |
+| `pesaje` | El peso de alguien en una fecha | integrante, fecha, peso en kg (mayor que 0, hasta 300, con 2 decimales), observaciones. Uno por integrante y fecha |
+| `pesaje_con_variacion` (vista) | Cada pesaje listo para la tabla | el nombre y el objetivo actuales, y la variación contra el pesaje anterior del mismo integrante (vacía en el primero) |
+
+La carga de todos juntos pasa por `guardar_pesajes(fecha, pesos)`, que guarda todo o nada. Un integrante con pesajes no se borra: se desactiva.
+
 Todas las tablas llevan fecha de alta y quién cargó la fila.
 
 ## Reglas que hace cumplir la base

@@ -306,6 +306,8 @@ Ganancia en verde y pérdida en rojo, como en cualquier app de finanzas, con el 
 | `--color-gain` | `#0F5C30` | 5,93 a 1 | 4,87 a 1 |
 | `--color-loss` | `#9A1B12` | 6,06 a 1 | 4,97 a 1 |
 
+En Pesaje, los mismos dos colores marcan si la variación del peso va hacia el objetivo de quien se pesó, no si sube o baja. Con objetivo "bajar", bajar es verde. Con "subir", subir es verde. Sin objetivo, la variación va en `--color-text-secondary`. Siempre con el signo y una flecha. El gráfico de evolución es una sola línea en la tinta de la marca (`--color-surface-active`), con guías de un pixel.
+
 Son tonos oscuros a propósito. El mínimo de accesibilidad para texto chico (WCAG AA) es 4,5 a 1, y un verde y un rojo más vivos (`#146B3A`, `#B42318`) dan 3,95 a 1 sobre la tarjeta rosa.
 
 ### Contraste del texto secundario

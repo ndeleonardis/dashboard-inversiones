@@ -44,6 +44,7 @@ Copiá `.env.example` con el nombre `.env.production` y completá cada variable.
 | `SUPABASE_DB_PASSWORD` | La contraseña de la base |
 | `SUPABASE_ACCESS_TOKEN` | El token personal de la CLI |
 | `PUBLICAR_DESTINO` | El servidor y la carpeta del sitio, como `usuario@servidor:/var/www/lemonhouse`. Si entrás con un alias de SSH (paso 8), `alias:/var/www/lemonhouse` |
+| `VITE_MODULO_PESAJE` | Opcional. `si` prende Pesaje (mirá "Prender Pesaje" más abajo). Vacía, Pesaje no aparece |
 
 `.env.production` no se versiona, porque `.gitignore` lo deja afuera. No lo compartas ni lo pegues en ningún chat.
 
@@ -190,6 +191,22 @@ El proceso usa solo dos funciones:
   Devuelve `guardados` (cuántos precios cambiaron) y `salteados`. Si ya hay un precio de ese instrumento en esa fecha, lo reemplaza, y si el mismo instrumento y fecha vienen dos veces, se queda con el último. Saltea, sin fallar, el precio de un instrumento que se borró o cuya clave o moneda cambió mientras corría el proceso: era de otro instrumento. En cambio, un valor inválido (cero, negativo o con más de 8 decimales) o una fecha posterior a hoy rechazan la corrida entera, así el error se nota.
 
 Para sacarle el acceso al proceso: `alter role carga_precios nologin;`.
+
+## Prender Pesaje (opcional)
+
+Pesaje es un registro semanal del peso de personas y mascotas. No tiene que ver con las finanzas: es un módulo aparte que viene apagado, y una copia que no lo prende no lo ve. Sus tablas existen igual en la base, vacías.
+
+1. Agregá esta línea a `.env.production`:
+
+   ```
+   VITE_MODULO_PESAJE=si
+   ```
+
+   Va en la computadora desde donde publicás, no en el servidor. `npm run publicar` arma la app con ese archivo y al servidor sube solo el resultado.
+2. Publicá de nuevo (paso 9).
+3. En la app, entrá a Pesaje, después a **Quiénes se pesan**, y agregá a cada uno con su objetivo: bajar, subir o sin objetivo.
+
+Para probarlo en desarrollo, la misma línea va en `.env.development`. Para apagarlo, borrá la línea y publicá de nuevo: lo cargado no se borra, y reaparece si se vuelve a prender.
 
 ## Para tener en cuenta
 
