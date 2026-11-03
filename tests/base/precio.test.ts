@@ -2,7 +2,7 @@
 // carga_precios y a través de guardar_precios(). Los miembros solo los leen, y
 // carga_precios no ve ningún dato personal.
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { errorDe } from './ayudas.ts'
+import { errorDe, guardarPrecios, type PrecioParaGuardar } from './ayudas.ts'
 import { crearBase, type BaseDePrueba } from './crear-base.ts'
 
 const ANA = 'ana@example.com'
@@ -22,19 +22,15 @@ afterAll(async () => {
 async function instrumento(moneda: 'ARS' | 'USD' = 'ARS'): Promise<string> {
   contador += 1
   const [fila] = await base.admin.consultar<{ id: string }>(
-    `insert into instrumento (tipo, ticker, nombre, moneda) values ('FCI', $1, 'Fondo Ejemplo', $2) returning id`,
-    [`FONDO${contador}`, moneda],
+    `insert into instrumento (tipo, ticker, nombre, moneda) values ('CEDEAR', $1, 'Ejemplo', $2) returning id`,
+    [`TICK${contador}`, moneda],
   )
   return fila!.id
 }
 
-type Precio = { instrumento_id: string; fecha: string; valor: number | string; cada: number; moneda: string; fuente: string }
+type Precio = PrecioParaGuardar
 
-function guardar(precios: Precio[]) {
-  return base.cargaPrecios.consultar<{ cambiados: number }>('select public.guardar_precios($1::jsonb) as cambiados', [
-    JSON.stringify(precios),
-  ])
-}
+const guardar = (precios: Precio[]) => guardarPrecios(base.cargaPrecios, precios)
 
 function precioDe(id: string, cambios: Partial<Precio> = {}): Precio {
   return { instrumento_id: id, fecha: '2026-11-02', valor: '2345678.9', cada: 1000, moneda: 'ARS', fuente: 'CAFCI', ...cambios }
@@ -51,8 +47,7 @@ async function preciosDe(id: string) {
 describe('carga_precios guarda los precios', () => {
   it('guarda el valor con su fecha, cada cuántas unidades y su fuente', async () => {
     const id = await instrumento()
-    const [resultado] = await guardar([precioDe(id)])
-    expect(Number(resultado?.cambiados)).toBe(1)
+    expect(await guardar([precioDe(id)])).toEqual({ guardados: 1, salteados: 0 })
     expect(await preciosDe(id)).toEqual([{ fecha: '2026-11-02', valor: '2345678.9', cada: 1000, fuente: 'CAFCI' }])
   })
 
@@ -66,8 +61,7 @@ describe('carga_precios guarda los precios', () => {
   it('si el valor no cambió, no cuenta como cambio', async () => {
     const id = await instrumento()
     await guardar([precioDe(id)])
-    const [resultado] = await guardar([precioDe(id)])
-    expect(Number(resultado?.cambiados)).toBe(0)
+    expect(await guardar([precioDe(id)])).toEqual({ guardados: 0, salteados: 0 })
   })
 
   it('guarda varias fechas de una vez', async () => {
@@ -84,11 +78,67 @@ describe('carga_precios guarda los precios', () => {
   })
 })
 
-describe('restricciones del precio', () => {
-  it('el precio va en la moneda de su instrumento (regla 2)', async () => {
+describe('qué se guarda y qué no', () => {
+  it('un precio en otra moneda que la del instrumento no se guarda (regla 2)', async () => {
     const id = await instrumento('ARS')
-    const error = await errorDe(guardar([precioDe(id, { moneda: 'USD' })]))
-    expect(error.constraint).toBe('precio_moneda_instrumento_fk')
+    expect(await guardar([precioDe(id, { moneda: 'USD' })])).toEqual({ guardados: 0, salteados: 1 })
+    expect(await preciosDe(id)).toEqual([])
+    // Aunque se escriba directo en la tabla, la clave foránea lo impide.
+    const directo = await errorDe(
+      base.admin.consultar(
+        `insert into precio (instrumento_id, fecha, valor, cada, moneda, fuente) values ($1, '2026-11-02', 1, 1, 'USD', 'X')`,
+        [id],
+      ),
+    )
+    expect(directo.constraint).toBe('precio_moneda_instrumento_fk')
+  })
+
+  it('una fecha posterior a hoy se rechaza y no se guarda nada de la corrida', async () => {
+    const id = await instrumento()
+    const error = await errorDe(guardar([precioDe(id), precioDe(id, { fecha: '2999-01-01' })]))
+    expect(error.code).toBe('LH005')
+    expect(await preciosDe(id)).toEqual([])
+  })
+
+  it('si la corrida trae dos veces el mismo instrumento y fecha, queda el último', async () => {
+    const id = await instrumento()
+    expect(await guardar([precioDe(id, { valor: 10 }), precioDe(id, { valor: 20 })])).toEqual({ guardados: 1, salteados: 0 })
+    expect((await preciosDe(id)).map((p) => p.valor)).toEqual(['20'])
+  })
+
+  // Entre que el proceso pide la lista y guarda, alguien puede cambiar el
+  // instrumento. Un precio pedido con una clave vieja es de otro instrumento.
+  it('se saltea el precio de un instrumento que se borró, y los demás se guardan', async () => {
+    const borrado = await instrumento()
+    const sigue = await instrumento()
+    const precios = [precioDe(borrado, { clave: `TICK${contador - 1}` }), precioDe(sigue)]
+    await base.admin.consultar('delete from instrumento where id = $1', [borrado])
+    expect(await guardar(precios)).toEqual({ guardados: 1, salteados: 1 })
+    expect(await preciosDe(sigue)).toHaveLength(1)
+  })
+
+  it('se saltea el precio pedido con un ticker que cambió mientras corría el proceso', async () => {
+    const id = await instrumento()
+    const tickerViejo = `TICK${contador}`
+    await base.admin.consultar(`update instrumento set ticker = 'NUEVO' || $2 where id = $1`, [id, contador])
+    expect(await guardar([precioDe(id, { clave: tickerViejo })])).toEqual({ guardados: 0, salteados: 1 })
+    expect(await preciosDe(id)).toEqual([])
+  })
+
+  it('se saltea el precio de un FCI pedido con un código CAFCI que cambió', async () => {
+    const [fila] = await base.admin.consultar<{ id: string }>(
+      `select public.guardar_instrumento('FCI', 'FONDOX', 'Fondo Ejemplo', 'ARS', p_codigo_cafci => '1111') as id`,
+    )
+    await base.admin.consultar(`update instrumento_fci set codigo_cafci = '2222' where instrumento_id = $1`, [fila!.id])
+    expect(await guardar([precioDe(fila!.id, { clave: '1111' })])).toEqual({ guardados: 0, salteados: 1 })
+    expect(await guardar([precioDe(fila!.id, { clave: '2222' })])).toEqual({ guardados: 1, salteados: 0 })
+  })
+
+  it('un FCI sin código CAFCI no tiene clave, y su precio se saltea', async () => {
+    const [fila] = await base.admin.consultar<{ id: string }>(
+      `select public.guardar_instrumento('FCI', 'FONDOY', 'Fondo Ejemplo', 'ARS') as id`,
+    )
+    expect(await guardar([precioDe(fila!.id, { clave: 'FONDOY' })])).toEqual({ guardados: 0, salteados: 1 })
   })
 
   it('el valor tiene que ser mayor que cero y con hasta 8 decimales', async () => {

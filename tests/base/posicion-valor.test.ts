@@ -1,6 +1,7 @@
 // T4. El valor actual de cada posición, con la fecha del último precio. Sin
 // precio, el valor es null y nunca 0 (regla 5).
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { guardarPrecios } from './ayudas.ts'
 import { crearBase, type BaseDePrueba } from './crear-base.ts'
 
 let base: BaseDePrueba
@@ -52,9 +53,7 @@ async function vender(e: Escenario, cantidad: number | string, precio: number | 
 }
 
 async function cotizar(e: Escenario, fecha: string, valor: number | string, cada: number) {
-  await base.cargaPrecios.consultar('select public.guardar_precios($1::jsonb)', [
-    JSON.stringify([{ instrumento_id: e.instrumento, fecha, valor, cada, moneda: 'ARS', fuente: 'Prueba' }]),
-  ])
+  await guardarPrecios(base.cargaPrecios, [{ instrumento_id: e.instrumento, fecha, valor, cada, moneda: 'ARS', fuente: 'Prueba' }])
 }
 
 type Fila = {

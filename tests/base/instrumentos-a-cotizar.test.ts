@@ -32,10 +32,21 @@ afterAll(async () => {
 describe('instrumentos_a_cotizar()', () => {
   it('devuelve cada instrumento con su clave, y nada más', async () => {
     const filas = await base.cargaPrecios.consultar('select * from public.instrumentos_a_cotizar()')
+    // La clave es con lo que se pide el precio: el código CAFCI de un FCI y el ticker del resto.
     expect(filas).toEqual([
-      { id: cedear, tipo: 'CEDEAR', ticker: 'EJEMD', moneda: 'USD', codigo_cafci: null },
-      { id: fondo, tipo: 'FCI', ticker: 'FONDOA', moneda: 'ARS', codigo_cafci: '1234' },
+      { id: cedear, tipo: 'CEDEAR', ticker: 'EJEMD', moneda: 'USD', codigo_cafci: null, clave: 'EJEMD' },
+      { id: fondo, tipo: 'FCI', ticker: 'FONDOA', moneda: 'ARS', codigo_cafci: '1234', clave: '1234' },
     ])
+  })
+
+  it('un FCI sin código CAFCI no tiene clave', async () => {
+    const [fila] = await base.admin.consultar<{ id: string }>(
+      `select public.guardar_instrumento('FCI', 'FONDOB', 'Fondo Ejemplo', 'ARS') as id`,
+    )
+    const filas = await base.cargaPrecios.consultar<{ id: string; clave: string | null }>(
+      'select id, clave from public.instrumentos_a_cotizar()',
+    )
+    expect(filas.find((f) => f.id === fila!.id)?.clave).toBeNull()
   })
 
   it('solo la ejecuta carga_precios', async () => {

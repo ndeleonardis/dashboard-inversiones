@@ -2,6 +2,7 @@
 // algún instrumento no tiene precio, el total es parcial y dice cuántos faltan
 // (C41), y no hay rendimiento (C42). Siempre una fila por moneda (regla 2).
 import { beforeEach, afterEach, describe, expect, it } from 'vitest'
+import { guardarPrecios } from './ayudas.ts'
 import { crearBase, type BaseDePrueba } from './crear-base.ts'
 
 let base: BaseDePrueba
@@ -53,8 +54,8 @@ async function comprar(cuentaId: string, instrumentoId: string, moneda: 'ARS' | 
 }
 
 async function cotizar(instrumentoId: string, moneda: 'ARS' | 'USD', valor: number) {
-  await base.cargaPrecios.consultar('select public.guardar_precios($1::jsonb)', [
-    JSON.stringify([{ instrumento_id: instrumentoId, fecha: '2026-11-02', valor, cada: 1, moneda, fuente: 'Prueba' }]),
+  await guardarPrecios(base.cargaPrecios, [
+    { instrumento_id: instrumentoId, fecha: '2026-11-02', valor, cada: 1, moneda, fuente: 'Prueba' },
   ])
 }
 

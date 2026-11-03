@@ -154,7 +154,10 @@ export const CLAVES_FORANEAS: Record<string, MensajesDeClaveForanea> = {
     alGuardar: enCampo('La cuenta elegida ya no existe. Puede que alguien la haya borrado', 'cuenta_id'),
   },
   precio_moneda_instrumento_fk: {
-    enUso: 'No se puede cambiar la moneda: el instrumento tiene precios cargados',
+    // No debería pasar: al borrar un instrumento o cambiarle la moneda, sus
+    // precios se borran antes (T3). Si pasara, no hay nada que explicarle a
+    // la persona.
+    enUso: MENSAJE_GENERICO,
     alGuardar: sinCampo('El precio tiene que estar en la moneda del instrumento'),
   },
 }

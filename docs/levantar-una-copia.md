@@ -180,13 +180,14 @@ Los valores actuales los escribe un proceso externo (por ejemplo un flujo de n8n
 
 El proceso usa solo dos funciones:
 
-- `instrumentos_a_cotizar()` devuelve el id, el tipo, el ticker, la moneda y el código CAFCI de cada instrumento. No trae cantidades, cuentas ni personas.
-- `guardar_precios(precios)` recibe todos los precios de una corrida como una lista JSON, y guarda todos o ninguno. Si ya hay un precio de ese instrumento en esa fecha, lo reemplaza. `cada` dice cada cuántas unidades es el valor, tal como lo publica la fuente: 1000 para un FCI de la CAFCI, 100 para una ON y 1 para el resto. La moneda tiene que ser la del instrumento.
+- `instrumentos_a_cotizar()` devuelve el id, el tipo, el ticker, la moneda, el código CAFCI y la **clave** de cada instrumento. La clave es con lo que se pide el precio a la fuente: el código CAFCI de un FCI y el ticker del resto. Un FCI sin código CAFCI no tiene clave, y no se le puede pedir precio. No trae cantidades, cuentas ni personas.
+- `guardar_precios(precios)` recibe todos los precios de una corrida como una lista JSON. Cada precio lleva la clave tal como vino de `instrumentos_a_cotizar()`. `cada` dice cada cuántas unidades es el valor, tal como lo publica la fuente: 1000 para un FCI de la CAFCI, 100 para una ON y 1 para el resto.
   ```sql
-  select public.guardar_precios('[
-    {"instrumento_id": "…", "fecha": "2026-11-02", "valor": 2345678.90, "cada": 1000, "moneda": "ARS", "fuente": "CAFCI"}
+  select * from public.guardar_precios('[
+    {"instrumento_id": "…", "clave": "1234", "fecha": "2026-11-02", "valor": 2345678.90, "cada": 1000, "moneda": "ARS", "fuente": "CAFCI"}
   ]'::jsonb);
   ```
+  Devuelve `guardados` (cuántos precios cambiaron) y `salteados`. Si ya hay un precio de ese instrumento en esa fecha, lo reemplaza, y si el mismo instrumento y fecha vienen dos veces, se queda con el último. Saltea, sin fallar, el precio de un instrumento que se borró o cuya clave o moneda cambió mientras corría el proceso: era de otro instrumento. En cambio, un valor inválido (cero, negativo o con más de 8 decimales) o una fecha posterior a hoy rechazan la corrida entera, así el error se nota.
 
 Para sacarle el acceso al proceso: `alter role carga_precios nologin;`.
 
