@@ -1,13 +1,15 @@
 // El resumen, en dos bloques: cuánto quedó del mes para invertir, del grupo o
-// de una persona (C21, C22, C25), y cuánto hay invertido a costo de compra,
-// por persona y del grupo (C23). Abajo, los últimos movimientos (C26). Todo va
-// por moneda: pesos y dólares nunca se suman (regla 2). Las cuentas las hace
-// la base, y acá solo se muestran.
-import { useId, type ReactNode } from 'react'
+// de una persona (C21, C22, C25), y cuánto hay invertido a costo de compra y
+// cuánto vale hoy, por persona y del grupo (C40). Abajo, los últimos
+// movimientos (C26). Todo va por moneda: pesos y dólares nunca se suman
+// (regla 2). Las cuentas las hace la base, y acá solo se muestran.
+import { Fragment, useId, type ReactNode } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { Carga } from '../componentes/Carga.tsx'
 import { Encabezado } from '../componentes/Encabezado.tsx'
 import { Monto } from '../componentes/Monto.tsx'
+import { Rendimiento } from '../componentes/Rendimiento.tsx'
+import { ValorActual } from '../componentes/ValorActual.tsx'
 import { SelectorDeMes, useMesDeLaRuta } from '../componentes/SelectorDeMes.tsx'
 import { useListas, useResumenMes } from '../datos/consultas.ts'
 import type { Fila } from '../datos/repositorio.ts'
@@ -148,12 +150,30 @@ function porPersona(filas: Fila<'invertido_por_persona'>[]): InvertidoDePersona[
   return porNombre([...personas.values()])
 }
 
-function Costos({ filas }: { filas: { moneda: Moneda; costo: number }[] }) {
+type Invertido = Pick<
+  Fila<'invertido_grupo'>,
+  'moneda' | 'costo' | 'valor' | 'instrumentos_sin_precio' | 'rendimiento' | 'rendimiento_pct'
+>
+
+/** Por moneda, el costo de compra y el valor actual con su rendimiento (C40, C41, C42). */
+function Invertidos({ filas }: { filas: Invertido[] }) {
   return (
     <dl>
-      {porMoneda(filas).map((fila) => (
-        <Dato key={fila.moneda} etiqueta={NOMBRE_DE_MONEDA[fila.moneda]} valor={fila.costo} moneda={fila.moneda} />
-      ))}
+      {porMoneda(filas).map((fila) => {
+        const moneda = NOMBRE_DE_MONEDA[fila.moneda].toLowerCase()
+        return (
+          <Fragment key={fila.moneda}>
+            <Dato etiqueta={`Costo en ${moneda}`} valor={fila.costo} moneda={fila.moneda} />
+            <div className="dato">
+              <dt>{`Valor en ${moneda}`}</dt>
+              <dd className="celda-valor">
+                <ValorActual valor={fila.valor} moneda={fila.moneda} fecha={null} sinPrecio={fila.instrumentos_sin_precio} />
+                <Rendimiento monto={fila.rendimiento} fraccion={fila.rendimiento_pct} moneda={fila.moneda} />
+              </dd>
+            </div>
+          </Fragment>
+        )
+      })}
     </dl>
   )
 }
@@ -165,17 +185,17 @@ function BloqueDeInversiones() {
   return (
     <section aria-labelledby={idTitulo} className="seccion">
       <h2 id={idTitulo}>Inversiones</h2>
-      <p className="seccion-nota">A costo de compra. Los precios actuales llegan en otra versión.</p>
+      <p className="seccion-nota">Costo de compra y valor con el último precio conocido de cada instrumento.</p>
       <Carga cargado={cargado}>
         {({ personas, grupo }) => (
           <div className="tarjetas-resumen">
             <Tarjeta titulo="Todo el grupo">
-              <Costos filas={grupo} />
+              <Invertidos filas={grupo} />
             </Tarjeta>
             {porPersona(personas).map((persona) => (
               <Tarjeta key={persona.id} titulo={persona.nombre}>
                 {persona.tieneInversiones ? (
-                  <Costos filas={persona.filas} />
+                  <Invertidos filas={persona.filas} />
                 ) : (
                   <p className="tarjeta-detalle">Sin inversiones</p>
                 )}

@@ -137,14 +137,58 @@ describe('resumen', () => {
 
     const inversiones = await bloque('Inversiones')
     const grupo = await within(inversiones).findByRole('group', { name: 'Todo el grupo' })
-    expect(monto(grupo, 'Pesos')).toBe('$ 247.702,50')
-    expect(monto(grupo, 'Dólares')).toBe('US$ 301,00')
+    expect(monto(grupo, 'Costo en pesos')).toBe('$ 247.702,50')
+    expect(monto(grupo, 'Costo en dólares')).toBe('US$ 301,00')
     const ana = within(inversiones).getByRole('group', { name: 'Ana' })
-    expect(monto(ana, 'Pesos')).toBe('$ 247.702,50')
-    expect(monto(ana, 'Dólares')).toBe('US$ 301,00')
+    expect(monto(ana, 'Costo en pesos')).toBe('$ 247.702,50')
+    expect(monto(ana, 'Costo en dólares')).toBe('US$ 301,00')
     const beto = within(inversiones).getByRole('group', { name: 'Beto' })
     expect(beto).toHaveTextContent('Sin inversiones')
-    expect(within(beto).queryByText('Pesos')).not.toBeInTheDocument()
+    expect(within(beto).queryByText('Costo en pesos')).not.toBeInTheDocument()
+  })
+
+  describe('valor actual de lo invertido (cambio valor-actual)', () => {
+    // Ana tiene precio de todo en pesos, y en dólares le falta uno.
+    const CON_VALORES = {
+      invertido_por_persona: [
+        { ...invertido('ana', 'Ana', 'ARS', 247702.5), valor: 345000, instrumentos_sin_precio: 0, rendimiento: 97297.5, rendimiento_pct: 0.3928 },
+        { ...invertido('ana', 'Ana', 'USD', 301), valor: 280, instrumentos_sin_precio: 1 },
+        invertido('beto', 'Beto', 'ARS', 0),
+        invertido('beto', 'Beto', 'USD', 0),
+      ],
+      invertido_grupo: [
+        { moneda: 'ARS', costo: 247702.5, valor: 345000, instrumentos_sin_precio: 0, rendimiento: 97297.5, rendimiento_pct: 0.3928 },
+        { moneda: 'USD', costo: 301, valor: null, instrumentos_sin_precio: 2, rendimiento: null, rendimiento_pct: null },
+      ] satisfies Fila<'invertido_grupo'>[],
+    }
+
+    async function inversiones() {
+      abrirApp('/', crearRepositorioFalso({ resumenMes: SIN_MOVIMIENTOS, ...CON_VALORES }))
+      const bloqueDeInversiones = await bloque('Inversiones')
+      return {
+        grupo: await within(bloqueDeInversiones).findByRole('group', { name: 'Todo el grupo' }),
+        ana: within(bloqueDeInversiones).getByRole('group', { name: 'Ana' }),
+      }
+    }
+
+    it('cada persona y el grupo tienen costo y valor actual en cada moneda (C40)', async () => {
+      const { grupo, ana } = await inversiones()
+      expect(monto(ana, 'Costo en pesos')).toBe('$ 247.702,50')
+      expect(monto(ana, 'Valor en pesos')).toMatch(/^\$ 345\.000,00/)
+      expect(monto(grupo, 'Valor en pesos')).toMatch(/^\$ 345\.000,00/)
+    })
+
+    it('un total con instrumentos sin precio se marca como parcial y dice cuántos faltan (C41)', async () => {
+      const { grupo, ana } = await inversiones()
+      expect(monto(ana, 'Valor en dólares')).toBe('US$ 280,00Parcial: 1 instrumento sin precio')
+      expect(monto(grupo, 'Valor en dólares')).toBe('Sin precioParcial: 2 instrumentos sin precio')
+    })
+
+    it('el total completo muestra su rendimiento, y el parcial no (C42)', async () => {
+      const { ana } = await inversiones()
+      expect(within(ana).getByText('+$ 97.297,50 (+39,3%)')).toHaveClass('rendimiento-gana')
+      expect(monto(ana, 'Valor en dólares')).not.toMatch(/%/)
+    })
   })
 
   it('después de editar un gasto, el resumen lo refleja (C19)', async () => {
